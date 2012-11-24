@@ -1,0 +1,2 @@
+VERSION = pre0
+DEFS    = -DnoDEBUG
