@@ -6,6 +6,9 @@ AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([src])
 #AC_CONFIG_HEADERS([config])
 
+AC_PREFIX_DEFAULT(/usr)
+#AC_PREFIX_PROGRAM(make)
+
 # Checks for programs.
 
 AC_PROG_CXX
@@ -20,6 +23,7 @@ AC_CHECK_LIB(formw,    main,  , [AC_MSG_ERROR([Couldn't find formw library])] )
 AC_CHECK_LIB(panelw,   main,  , [AC_MSG_ERROR([Couldn't find panelw library])] )
 
 # Checks for header files.
+
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS( \
 [ \
