@@ -1,0 +1,31 @@
+include	config
+
+CPP	= @CXX@
+
+SRCS	= ncolorstring.cpp nhline.cpp nvline.cpp nscrollview.cpp nselectlist.cpp nview.cpp \
+          ngroup.cpp nstatictext.cpp nform.cpp nprogram.cpp \
+          kclog.cpp cfg.cpp srvdata.cpp mbstring.cpp net.cpp resultparse.cpp resultdom.cpp \
+          mainprog.cpp infopanel.cpp mainwin.cpp msgwin.cpp taskwin.cpp tui-main.cpp cfgform.cpp
+
+OBJS	= $(patsubst %.cpp,$(ODIR)/%.o,$(SRCS))
+LIBS    = @LIBS@
+LDFLAGS = $(LIBS)
+CXXFLAGS = @CXXFLAGS@
+TARGET  = boinctui-$(VERSION)
+ODIR	= .obj
+SDIR	= src
+
+###############################################################################
+
+all: $(OBJS)
+	@echo "\nLinking...\n"
+	$(CPP) -o $(TARGET) $(OBJS) $(LDFLAGS)
+	strip $(TARGET)
+
+$(ODIR)/%.o: $(SDIR)/%.cpp
+	$(CPP) -c $(CXXFLAGS) $(DEFS) -o $(ODIR)/$*.o $< $(CPPFLAG)
+
+clean:
+	rm -f $(ODIR)/*.o $(TARGET)
+
+
