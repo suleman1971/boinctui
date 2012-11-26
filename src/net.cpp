@@ -2,6 +2,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
 #include <vector>
@@ -53,6 +54,27 @@ void TConnect::disconnect()
     hsock = -1;
 }
 
+
+void TConnect::sendreq(const char* fmt, ...) //отправить запрос на сервер
+{
+    //формируем строку запроса
+    va_list	args;
+    va_start(args, fmt);
+    char req[1024];
+    vsnprintf(req, sizeof(req), fmt, args);
+    va_end(args);
+    //конектимся (если соединения еще нет)
+    if (hsock == -1)
+	createconnect(shost,sport);
+    //отправляем запрос
+    if (send(hsock, req, strlen(req), 0) != strlen(req))
+    {
+	kLogPrintf("send request %s:%s error\n",shost,sport);
+	disconnect();
+    }
+}
+
+/*
 void TConnect::sendreq(const char* req) //отправить запрос на сервер
 {
     if (hsock == -1)
@@ -63,7 +85,7 @@ void TConnect::sendreq(const char* req) //отправить запрос на �
 	disconnect();
     }
 }
-
+*/
 
 char* TConnect::waitresult() //получить ответ от сервера (потом нужно освобождать память извне)
 {
