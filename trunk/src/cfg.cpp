@@ -66,8 +66,7 @@ void Config::load()
 	root = xmlparse(buf, st.st_size);
 	fclose (pfile);
     }
-
-};
+}
 
 
 void Config::save()
@@ -123,20 +122,10 @@ void Config::addhost(const char* shost, const char* sport, const char* spwd)
 
 void Config::generatedefault()
 {
-    kLogPrintf("GENERATEDEFAULT()\n");
+    kLogPrintf("generatedafault()\n");
     root       = new Item(""); //корневой
     Item* cfg  = new Item("boinctui_cfg");
-    addhost("127.0.0.1","31416","");
-/*
-    Item* srv  = new Item("server");
-    Item* ip   = new Item("ip");
-    ip->appendvalue("127.0.0.1");
-    Item* port = new Item("port");
-    port->appendvalue("31416");
-    srv->addsubitem(ip);
-    srv->addsubitem(port);
-    cfg->addsubitem(srv);
-*/
     root->addsubitem(cfg);
-};
+    addhost("127.0.0.1","31416","");
+}
 
