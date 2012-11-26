@@ -57,12 +57,18 @@ void TConnect::disconnect()
 
 void TConnect::sendreq(const char* fmt, ...) //отправить запрос на сервер
 {
-    //формируем строку запроса
     va_list	args;
     va_start(args, fmt);
-    char req[1024];
-    vsnprintf(req, sizeof(req), fmt, args);
+    sendreq(fmt,args);
     va_end(args);
+}
+
+
+void TConnect::sendreq(const char* fmt, va_list vl) //отправить запрос на сервер
+{
+    //формируем строку запроса
+    char req[1024];
+    vsnprintf(req, sizeof(req), fmt, vl);
     //конектимся (если соединения еще нет)
     if (hsock == -1)
 	createconnect(shost,sport);
@@ -74,18 +80,6 @@ void TConnect::sendreq(const char* fmt, ...) //отправить запрос �
     }
 }
 
-/*
-void TConnect::sendreq(const char* req) //отправить запрос на сервер
-{
-    if (hsock == -1)
-	createconnect(shost,sport);
-    if (send(hsock, req, strlen(req), 0) != strlen(req))
-    {
-	kLogPrintf("send request %s:%s error\n",shost,sport);
-	disconnect();
-    }
-}
-*/
 
 char* TConnect::waitresult() //получить ответ от сервера (потом нужно освобождать память извне)
 {
