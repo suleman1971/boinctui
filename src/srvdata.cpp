@@ -4,8 +4,6 @@
 #include "resultparse.h"
 
 
-//SrvList* gsrvlist; //глобальный список серверов
-
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки статистики true если дата stat1 > stat2
 {
@@ -95,14 +93,14 @@ Srv::~Srv()
 Item* Srv::req(const char* op) //выполнить запрос (вернет дерево или NULL)
 {
     // === посылаем запрос ===
-    char r[256];
-    snprintf(r,sizeof(r),"<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
-    sendreq(r);
+    //char r[256];
+    //snprintf(r,sizeof(r),"<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
+    sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
     char* result = waitresult();
     if (result != NULL) //получен ответ
     {
 	// === костыль ТОЛЬКО для <get_messages>
-	if (strstr(r, "<get_messages>") != NULL)
+	if (strstr(op, "<get_messages>") != NULL)
 	    result =  (char*)stripinvalidtag(result, strlen(result)); //убираем кривые теги
 	// === разбираем ответ ===
 	Item* dom = xmlparse(result, strlen(result)); //парсим xml
@@ -194,9 +192,9 @@ void Srv::suspendtask(Item* result) //приостановить задачу
 	return;
     if (result->findItem("active_task") == NULL)
 	return; //меняем состояние только для активных
-    char req[1024];
-    snprintf(req, sizeof(req), "<boinc_gui_rpc_request>\n<suspend_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</suspend_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
-    sendreq(req);
+    //char req[1024];
+    //snprintf(req, sizeof(req), "<boinc_gui_rpc_request>\n<suspend_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</suspend_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
+    sendreq("<boinc_gui_rpc_request>\n<suspend_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</suspend_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
     char* s = waitresult();
     free(s); //результат не проверяем
 }
@@ -210,9 +208,9 @@ void Srv::resumetask(Item* result) //возобновить задачу
 	return;
     if (result->findItem("active_task") == NULL)
 	return; //меняем состояние только для активных
-    char req[1024];
-    snprintf(req, sizeof(req), "<boinc_gui_rpc_request>\n<resume_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</resume_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
-    sendreq(req);
+    //char req[1024];
+    //snprintf(req, sizeof(req), "<boinc_gui_rpc_request>\n<resume_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</resume_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
+    sendreq("<boinc_gui_rpc_request>\n<resume_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</resume_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
     char* s = waitresult();
     free(s); //результат не проверяем
 }
