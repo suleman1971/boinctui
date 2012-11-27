@@ -36,10 +36,10 @@ void NGroup::refresh()
 void NGroup::eventhandle(NEvent* ev)	//обработчик событий
 {
     NView::eventhandle(ev); //предок
-    std::list<NView*>::iterator it;
-    for(it = items.begin(); it != items.end(); it++) //отправить всем подэлементам
+    std::list<NView*>::reverse_iterator rit;
+    for(rit = items.rbegin(); rit != items.rend(); rit++) //отправить всем подэлементам
     {
-	(*it)->eventhandle(ev);
+	(*rit)->eventhandle(ev);
 	if (ev->done)
 	    break; //прекращаем если событие обработано
     }

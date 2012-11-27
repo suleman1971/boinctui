@@ -8,7 +8,7 @@
 class NVLine : public NView
 {
   public:
-    NVLine(NRect rect, const char* s) : NView(rect) { };
+    NVLine(NRect rect, const char* s) : NView(rect) { bgcolor = 0; };
     ~NVLine() { };
     void setbgcolor(int colorpair) { bgcolor = colorpair; };
     virtual void refresh();
