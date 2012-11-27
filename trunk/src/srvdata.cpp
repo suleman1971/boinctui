@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <algorithm>
+#include <stdarg.h>
+#include <openssl/md5.h>
 #include "srvdata.h"
 #include "resultparse.h"
-
+#include "kclog.h"
 
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки статистики true если дата stat1 > stat2
@@ -47,11 +49,15 @@ void SrvList::refreshcfg() //перечитать из конфига
     std::vector<Item*>::iterator it;
     for (it = slist.begin(); it != slist.end(); it++)
     {
-	Item* ip = (*it)->findItem("ip");
+	Item* host = (*it)->findItem("host");
 	Item* port = (*it)->findItem("port");
-	if ((ip != NULL)&&(port != NULL))
+	Item* pwd = (*it)->findItem("pwd");
+	if ((host != NULL)&&(port != NULL))
 	{
-	    servers.push_back(new Srv(ip->getsvalue(),port->getsvalue()));
+	    if (pwd == NULL)
+		servers.push_back(new Srv(host->getsvalue(), port->getsvalue(), ""));
+	    else
+		servers.push_back(new Srv(host->getsvalue(), port->getsvalue(), pwd->getsvalue()));
 	}
     }
     if (!servers.empty())
@@ -87,20 +93,34 @@ Srv::~Srv()
     if (statedom != NULL) delete statedom;
     if (dusagedom != NULL) delete dusagedom;
     if (statisticsdom != NULL) delete statisticsdom;
+    if (pwd != NULL) delete pwd;
 }
 
 
-Item* Srv::req(const char* op) //выполнить запрос (вернет дерево или NULL)
+//Item* Srv::req(const char* op) //выполнить запрос (вернет дерево или NULL)
+Item* Srv::req(const char* fmt, ...) //выполнить запрос (вернет дерево или NULL)
 {
+    if (hsock == -1)
+	createconnect();
+    if (hsock == -1)
+	return NULL;
     // === посылаем запрос ===
-    //char r[256];
-    //snprintf(r,sizeof(r),"<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
-    sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
+    char req[1024];
+//    snprintf(r,sizeof(r),"<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
+    strcpy(req, "<boinc_gui_rpc_request>\n");
+    strcat(req, fmt);
+    strcat(req, "\n</boinc_gui_rpc_request>\n\003");
+    va_list	args;
+    va_start(args, fmt);
+//    sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003", fmt, args);
+    sendreq(req, args);
+    va_end(args);
+    //sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
     char* result = waitresult();
     if (result != NULL) //получен ответ
     {
 	// === костыль ТОЛЬКО для <get_messages>
-	if (strstr(op, "<get_messages>") != NULL)
+	if (strstr(/*op*/fmt, "<get_messages>") != NULL)
 	    result =  (char*)stripinvalidtag(result, strlen(result)); //убираем кривые теги
 	// === разбираем ответ ===
 	Item* dom = xmlparse(result, strlen(result)); //парсим xml
@@ -109,6 +129,52 @@ Item* Srv::req(const char* op) //выполнить запрос (вернет �
     }
     else
 	return NULL;
+}
+
+
+void Srv::createconnect()
+{
+    TConnect::createconnect();
+    if (hsock != -1)
+	login();
+}
+
+
+bool Srv::login() //авторизоваться на сервере
+{
+    bool result = false;
+    if (strlen(pwd) == 0)
+	return true; //пароль не задан (считаем что логин серверу не требуется)
+    //получить случайную строку (nonce)
+    Item* r1 = req("<auth1/>");
+    if (r1 == NULL)
+	return result;
+    kLogPrintf("login() nonce='%s'\n", r1->toxmlstring().c_str());
+    Item* nonce = r1->findItem("nonce");
+    if ( nonce == NULL )
+    {
+	delete r1;
+	return result;
+    }
+    const char* snonce = r1->findItem("nonce")->getsvalue();
+    //расчитать хэш md5 от nonce+pwd
+    unsigned char md5digest[MD5_DIGEST_LENGTH];
+    MD5_CTX c;
+    MD5_Init(&c);
+    MD5_Update(&c, snonce, strlen(snonce));
+    MD5_Update(&c, pwd , strlen(pwd));
+    MD5_Final(md5digest,&c);
+    char shash[1024]; //строковое представление хэша
+    for (int i=0;i<MD5_DIGEST_LENGTH;i++)
+	sprintf(shash+i*2,"%02x",md5digest[i]);
+    kLogPrintf("login() md5_hash '%s%s' = %d\n",snonce,pwd,shash);
+    //вторая фаза авторизации
+    Item* r2 = req("<auth2>\n<nonce_hash>%s</nonce_hash>\n</auth2>",shash);
+    kLogPrintf("login() Boinc answer ---\n%s\n", r2->toxmlstring().c_str());
+    if ( r2->findItem("authorize") != NULL ) //авторизация успешна
+	result = true;
+    delete r2;
+    return result;
 }
 
 

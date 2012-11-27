@@ -22,10 +22,10 @@ class TReq //информация о запросе
 */
 
 
-void TConnect::createconnect(const char* shost, const char* sport)
+void TConnect::createconnect(/*const char* shost, const char* sport*/)
 {
-    this->shost = strdup(shost); 
-    this->sport = strdup(sport); 
+    //this->shost = strdup(shost); 
+    //this->sport = strdup(sport); 
 
     struct sockaddr_in boincaddr;
     unsigned short port = atoi(sport);
@@ -69,9 +69,10 @@ void TConnect::sendreq(const char* fmt, va_list vl) //отправить зап�
     //формируем строку запроса
     char req[1024];
     vsnprintf(req, sizeof(req), fmt, vl);
+    kLogPrintf("[%s]\n",req);
     //конектимся (если соединения еще нет)
     if (hsock == -1)
-	createconnect(shost,sport);
+	createconnect(/*shost,sport*/);
     //отправляем запрос
     if (send(hsock, req, strlen(req), 0) != strlen(req))
     {
@@ -84,7 +85,7 @@ void TConnect::sendreq(const char* fmt, va_list vl) //отправить зап�
 char* TConnect::waitresult() //получить ответ от сервера (потом нужно освобождать память извне)
 {
     if (hsock == -1)
-	createconnect(shost,sport);
+	createconnect(/*shost,sport*/);
     //чтение частями из сокета
     char* answbuf = NULL;
     int totalBytesRcvd = 0;

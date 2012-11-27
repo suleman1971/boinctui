@@ -15,7 +15,7 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортир
 class Srv : public TConnect //описание соединения с сервером
 {
   public:
-    Srv(const char* shost, const char* sport) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = NULL; lastmsgno = 0; };
+    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
     ~Srv();
     void updatemsgs();		//обновить список сообщений <get_messages>
     void updatestate();		//обновить состояние <get_state>
@@ -31,9 +31,13 @@ class Srv : public TConnect //описание соединения с серв�
     Item*	statedom; 	//xml дерево состояний
     Item*	dusagedom;	//xml дерево для <get_disk_usage>
     Item*	statisticsdom;	//xml дерево для <get_statistics>
+    Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
+    bool  login(); 		//авторизоваться на сервере
+    virtual void  createconnect();
   protected:
     void updatedata();		//обновить данные с сервера
-    Item* req(const char* op);  //выполнить запрос (вернет дерево или NULL)
+    char* pwd;
+    //Item* req(const char* op);  //выполнить запрос (вернет дерево или NULL)
 };
 
 

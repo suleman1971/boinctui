@@ -9,7 +9,7 @@
 class TConnect //информация о соединении с boinc сервером
 {
   public:
-    TConnect(const char* shost, const char* sport) { this->shost = strdup(shost); this->sport = strdup(sport); hsock = -1; /*createconnect(shost,sport);*/ };
+    TConnect(const char* shost, const char* sport) { this->shost = strdup(shost); this->sport = strdup(sport); hsock = -1; };
     ~TConnect() { disconnect(); free(shost); free(sport); };
     int   getsock() {return hsock;};
     void  sendreq(const char* fmt, va_list vl); //отправить запрос на сервер
@@ -18,8 +18,8 @@ class TConnect //информация о соединении с boinc серв�
     char* gethost() { return shost; };
     char* getport() { return sport; };
   protected:
-    void  createconnect (const char* shost, const char* sport);
-    void  disconnect();
+    virtual void  createconnect (/*const char* shost, const char* sport*/);
+    virtual void  disconnect();
     int   hsock; //дескриптор сокета
     char* shost;
     char* sport;
