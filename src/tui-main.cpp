@@ -12,7 +12,7 @@ void initcurses()
     noecho();
     curs_set(0);
     keypad(stdscr,true); //разрешаем стрелки и т.п.
-    timeout(100); //ожидание для getch() 100 милисекунд
+    timeout(250); //ожидание для getch() 250 милисекунд
     start_color();
     init_pair(1,COLOR_WHITE,COLOR_GREEN); //цвет для строки заголовка и статус строки
     init_pair(2,COLOR_YELLOW,COLOR_GREEN);
