@@ -101,9 +101,9 @@ void Config::addhost(const char* shost, const char* sport, const char* spwd)
 
     Item* srv  = new Item("server");
 
-    Item* ip   = new Item("ip");
-    ip->appendvalue(shost);
-    srv->addsubitem(ip);
+    Item* host   = new Item("host");
+    host->appendvalue(shost);
+    srv->addsubitem(host);
 
     Item* port = new Item("port");
     port->appendvalue(sport);
