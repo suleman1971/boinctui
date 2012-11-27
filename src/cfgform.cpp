@@ -96,9 +96,9 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	//set_field_type(field[nf], TYPE_ALNUM, 0);
 	if (i < slist.size())
 	{
-	    Item* ip = slist[i]->findItem("ip");
-	    if (ip != NULL)
-		set_field_buffer(fields[nf], 0, ip->getsvalue());
+	    Item* host = slist[i]->findItem("host");
+	    if (host != NULL)
+		set_field_buffer(fields[nf], 0, host->getsvalue());
 	}
 	if (i == 0)
 	    set_current_field(frm, fields[nf]); //фокус на поле
