@@ -8,7 +8,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Source0:	boinctui-%{version}.tgz
 
 #BuildRequires:	autoconf
-Requires:	libcurses libexpat
+#Requires:	libcurses libexpat
 
 %description
 boinctui is a fullscreen text based control toot for BOINC client.
