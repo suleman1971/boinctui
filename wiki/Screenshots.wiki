@@ -3,9 +3,9 @@
 
 = Main Window =
 
-<p align=right> AAAAA </p>
-
+<p align=right> 
 [https://lh5.googleusercontent.com/-gnfBExE2YH4/ULeGjGmVatI/AAAAAAAAAD0/I0RTs61C9mI/s720/boinctui-screenshot.png]
+</p>
 
 = Configuration Form =
 
