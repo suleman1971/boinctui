@@ -1,0 +1,15 @@
+#Screenshots 
+
+
+[https://lh5.googleusercontent.com/-gnfBExE2YH4/ULeGjGmVatI/AAAAAAAAAD0/I0RTs61C9mI/s720/boinctui-screenshot.png ZZZZZZZ]
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
