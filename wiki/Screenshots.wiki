@@ -1,4 +1,4 @@
-#Screenshots 
+#summary Boinctui Screenshots
 
 = Main Window =
 
