@@ -3,10 +3,11 @@
 
 = Main Window =
 
-<p align=right> 
+<p align=center> 
 [https://lh5.googleusercontent.com/-gnfBExE2YH4/ULeGjGmVatI/AAAAAAAAAD0/I0RTs61C9mI/s720/boinctui-screenshot.png]
 </p>
 
 = Configuration Form =
-
+<p align=center> 
 [https://lh5.googleusercontent.com/-j1pbKqWeBus/ULeGm01qZtI/AAAAAAAAAD8/TLasF9ltyis/s720/boinctui-screenshot2.png]
+</p>
