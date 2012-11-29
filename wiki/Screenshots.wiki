@@ -1,4 +1,5 @@
 #summary Boinctui Screenshots
+#labels Featured,screenshots
 
 = Main Window =
 
