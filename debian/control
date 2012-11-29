@@ -1,6 +1,7 @@
 Source: boinctui
 Section: net
 Priority: optional
+Version: 0.0.1-1
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev
 Standards-Version: 3.9.2
