@@ -1,0 +1,24 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+Fullscreen text based manager for [http://boinc.berkeley.edu BOINC] client.
+Linux version.
+
+===Main Features:===
+  * Fullscreen curses based text user interface
+  * Switch between several BOINC clients hosts via hot key
+  * View task list (run, queue, suspend e.t.c state)
+  * View message list
+  * Suspend/Resume tasks
+  * Manage BOINC client on remote hosts via boinc_gui protocol
