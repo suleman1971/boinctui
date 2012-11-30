@@ -4,7 +4,7 @@
 == Main Window ==
 
 <p align=center> 
-[https://lh5.googleusercontent.com/-gnfBExE2YH4/ULeGjGmVatI/AAAAAAAAAD0/I0RTs61C9mI/s720/boinctui-screenshot.png]
+[https://lh6.googleusercontent.com/-2vT30N3v7CQ/ULhO6K61cZI/AAAAAAAAAEw/MmhuHhenw78/s700/boinctui-screen1-small.png]
 </p>
 <p align=center> 
 [https://lh5.googleusercontent.com/-gnfBExE2YH4/ULeGjGmVatI/AAAAAAAAAD0/I0RTs61C9mI/s884/boinctui-screenshot.png View full size image]
@@ -15,5 +15,5 @@
 == Configuration Form ==
 
 <p align=center> 
-[https://lh5.googleusercontent.com/-j1pbKqWeBus/ULeGm01qZtI/AAAAAAAAAD8/TLasF9ltyis/s720/boinctui-screenshot2.png]
+[https://lh6.googleusercontent.com/-2vT30N3v7CQ/ULhO6K61cZI/AAAAAAAAAEw/MmhuHhenw78/s700/boinctui-screen2-small.png]
 </p>
