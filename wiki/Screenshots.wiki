@@ -3,10 +3,8 @@
 
 == Main Window ==
 
-<img src="https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s1004/boinctui-screen1.png"/>
-
 <p align=center> 
-[https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s600/boinctui-screen1.png]
+<img src="https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s1004/boinctui-screen1.png" width=600/>
 </p>
 <p align=center> 
 [https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s1004/boinctui-screen1.png View full size image]
@@ -17,7 +15,7 @@
 == Configuration Form ==
 
 <p align=center> 
-[https://lh6.googleusercontent.com/-QKh3tASNF-U/ULhPMtffU8I/AAAAAAAAAFI/N59T4yGOi7k/s600/bionctui-screen2.png]
+<img src="https://lh6.googleusercontent.com/-QKh3tASNF-U/ULhPMtffU8I/AAAAAAAAAFI/N59T4yGOi7k/s1004/bionctui-screen2.png" width=600/>
 </p>
 
 <p align=center> 
