@@ -1,9 +1,9 @@
 #summary Boinctui Screenshots
 #labels Featured
 
+<p align=center> 
 == Main Window ==
 
-<p align=center> 
 [https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s600/boinctui-screen1.png]
 </p>
 <p align=center> 
