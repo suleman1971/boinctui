@@ -19,8 +19,10 @@ AC_PROG_CXX
 
 AC_CHECK_LIB(expat,    main,  , [AC_MSG_ERROR([Couldn't find expat library])] )
 AC_CHECK_LIB(ncursesw, main,  , [AC_MSG_ERROR([Couldn't find ncursesw library])] )
+#AC_CHECK_LIB(ncurses++w, main,  , [AC_MSG_ERROR([Couldn't find ncurses++w library])] )
 AC_CHECK_LIB(formw,    main,  , [AC_MSG_ERROR([Couldn't find formw library])] )
 AC_CHECK_LIB(panelw,   main,  , [AC_MSG_ERROR([Couldn't find panelw library])] )
+AC_CHECK_LIB(menuw,    main,  , [AC_MSG_ERROR([Couldn't find menuw library])] )
 AC_CHECK_LIB(crypto ,  main,  , [AC_MSG_ERROR([Couldn't find crypto library])] )
 
 # Checks for header files.
