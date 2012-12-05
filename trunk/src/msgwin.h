@@ -10,7 +10,7 @@ class MsgWin : public NScrollView
 {
   public:
     MsgWin(NRect rect/*, void* hconnect*/):NScrollView(rect) { /*this->hconnect = hconnect; lastmsgno = 0;*/  };
-    ~MsgWin() { /*if (domtree!=NULL) delete domtree;*/ }
+    virtual ~MsgWin() { /*if (domtree!=NULL) delete domtree;*/ }
     void	updatedata(); 	//обновить данные с сервера
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     void* 	setserver(Srv* srv) { if (this->srv != srv) { this->srv = srv; lastmsgno = 0; } };

@@ -13,7 +13,7 @@ class CfgForm : public NForm
 {
   public:
     CfgForm(int lines, int rows, Config* cfg);
-    ~CfgForm();
+    virtual ~CfgForm();
     void genfields(bool extfields); //создаст массив полей (extfields если нужно добавить хост)
     void delfields(); //удаляет все поля
     virtual void eventhandle(NEvent* ev); 	//обработчик событий

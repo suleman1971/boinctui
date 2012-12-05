@@ -9,7 +9,7 @@ class NHLine : public NView
 {
   public:
     NHLine(NRect rect, const char* s) : NView(rect) { bgcolor = 0; };
-    ~NHLine() { };
+    virtual ~NHLine() { };
     void setbgcolor(int colorpair) { bgcolor = colorpair; };
     virtual void refresh();
   protected:

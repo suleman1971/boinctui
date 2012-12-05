@@ -12,13 +12,15 @@ class NView //базовый визуальный класс
 {
   public:
     NView(NRect rect);
-    ~NView() { del_panel(pan); delwin(win); };
+    virtual ~NView() { del_panel(pan); delwin(win); };
     //virtual void draw() {};
     virtual void resize(int rows, int cols);
     virtual void move(int begrow, int begcol);
     PANEL* getpan() 	{ return pan; }; //!!!!!!!!!!!!!!!!!!!!
     int getwidth()  	{ return rect.cols; }; 	//ширина в символах
     int getheight() 	{ return rect.rows; }; 	//высота в строках
+    int getbegrow()	{ return rect.begrow; }; //начальная строка
+    int getbegcol()	{ return rect.begcol; }; //начальный столбец
     void erase() 	{ werase(win); }; 	//очистить
     virtual void refresh(); 	//перерисовать
     virtual void setneedrefresh() { needrefresh = true; };

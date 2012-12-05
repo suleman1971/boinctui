@@ -11,7 +11,7 @@ class NForm : public NGroup
 {
   public:
     NForm(int lines, int rows);
-    ~NForm();
+    virtual ~NForm();
     //int eventloop();
     virtual void refresh();
     virtual void settitle(const char* title) { this->title = strdup(title); };
