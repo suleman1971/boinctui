@@ -22,8 +22,10 @@ class MainWin : public NGroup
     TaskWin* 	wtask;		//окно задач
     MsgWin* 	wmsg;		//окно эвентов
     NStaticText* tablheader; 	//заголовок таблицы процессов
-    NHLine*	hline; //гориз линия завершающая таблицу процессов
     InfoPanel*	panel1; //инф-ная панель
+    NColorString* caption; //строка заголовка
+  protected:
+    NHLine*	hline; //гориз линия завершающая таблицу процессов
     NVLine*	vline; //верт линия отделяющая инф панель
 };
 
