@@ -10,7 +10,7 @@ class NGroup : public NView
 {
   public:
     NGroup(NRect rect) : NView(rect) {};
-    ~NGroup();
+    virtual ~NGroup();
     void insert(NView* view) { view->setowner(this); items.push_back(view); };
     void remove(NView* view) { items.remove(view); };
     virtual void refresh();

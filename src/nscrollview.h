@@ -11,7 +11,7 @@ class NScrollView : public NView //область со скроллингом
 {
   public:
     NScrollView(NRect rect) : NView(rect) { startindex = 0; autoscroll = false; needrefresh = true;};
-    ~NScrollView();
+    virtual ~NScrollView();
     void addstring(int attr, const char* fmt, ...);
     void addstring(NColorString* s) { content.push_back(s); needrefresh = true; }; //добавляет строку
     void clearcontent(); //очищает строковый буфер
