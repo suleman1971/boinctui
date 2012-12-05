@@ -69,7 +69,7 @@ void TConnect::sendreq(const char* fmt, va_list vl) //отправить зап�
     //формируем строку запроса
     char req[1024];
     vsnprintf(req, sizeof(req), fmt, vl);
-    kLogPrintf("[%s]\n",req);
+    //kLogPrintf("[%s]\n",req);
     //конектимся (если соединения еще нет)
     if (hsock == -1)
 	createconnect(/*shost,sport*/);

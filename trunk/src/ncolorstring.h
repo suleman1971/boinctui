@@ -28,6 +28,7 @@ class NColorString
     void vappend(int attr, const char* fmt, va_list vl);
     std::list<NColorStringPart*> parts;
     int getlen(); //вернет длинну в ЭКРАННЫХ СИМВОЛАХ
+    void clear() { while(!parts.empty()) { delete parts.front(); parts.remove(parts.front());} }; //очищаем строку
   protected:
     void append(NColorStringPart* part) { parts.push_back(part); }; //добавить подстроку к строке
 };
