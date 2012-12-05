@@ -249,7 +249,7 @@ void Srv::updatemsgs() //обновить сообщения
     lastmsgno = curseqno;
 }
 
-
+/*
 void Srv::suspendtask(Item* result) //приостановить задачу
 {
     Item* name = result->findItem("name");
@@ -264,9 +264,10 @@ void Srv::suspendtask(Item* result) //приостановить задачу
     char* s = waitresult();
     free(s); //результат не проверяем
 }
+*/
 
-
-void Srv::resumetask(Item* result) //возобновить задачу
+void Srv::optask(Item* result, const char* op) //действия над задачей ("suspend_result",...)
+//void Srv::resumetask(Item* result) //возобновить задачу
 {
     Item* name = result->findItem("name");
     Item* project_url = result->findItem("project_url");
@@ -274,13 +275,34 @@ void Srv::resumetask(Item* result) //возобновить задачу
 	return;
     if (result->findItem("active_task") == NULL)
 	return; //меняем состояние только для активных
-    //char req[1024];
-    //snprintf(req, sizeof(req), "<boinc_gui_rpc_request>\n<resume_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</resume_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
-    sendreq("<boinc_gui_rpc_request>\n<resume_result>\n<project_url>%s</project_url>\n<name>%s</name>\n</resume_result>\n</boinc_gui_rpc_request>\n\003",project_url->getsvalue(),name->getsvalue());
+    sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,project_url->getsvalue(),name->getsvalue(),op);
     char* s = waitresult();
     free(s); //результат не проверяем
 }
 
+
+void  Srv::opproject(const char* name, const char* op) //действия над проектом ("project_suspend","project_resume",...)
+//void Srv::suspendproject(const char* name) //приостановить проект
+{
+    if (statedom == NULL)
+	return;
+    std::string url = findProjectUrl(statedom,name);
+    sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,url.c_str(),op);
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+
+/*
+void Srv::resumeproject(const char* name) //продолжить проект
+{
+    if (statedom == NULL)
+	return;
+    std::string url = findProjectUrl(statedom,name);
+    sendreq("<boinc_gui_rpc_request>\n<project_resume>\n<project_url>%s</project_url>\n</project_resume>\n</boinc_gui_rpc_request>\n\003",url.c_str());
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+*/
 
 std::string Srv::findProjectName(Item* tree, const char* url) //найти в дереве tree имя проекта с заданным url
 {
@@ -299,6 +321,26 @@ std::string Srv::findProjectName(Item* tree, const char* url) //найти в д
 	}
     }
     return "???";
+}
+
+
+std::string Srv::findProjectUrl(Item* tree, const char* name) //найти в дереве tree url проекта с заданным именем
+{
+    Item* client_state = tree->findItem("client_state");
+    if (client_state == NULL)
+	return "ERR2";
+    std::vector<Item*> projects = client_state->getItems("project"); //список проектов
+    std::vector<Item*>::iterator it;
+    for (it = projects.begin(); it!=projects.end(); it++)
+    {
+ 	Item* project_name = (*it)->findItem("project_name");
+	if ( strcmp(name, project_name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
+	{
+	    Item* master_url = (*it)->findItem("master_url");
+	    return master_url->getsvalue();
+	}
+    }
+    return "";
 }
 
 

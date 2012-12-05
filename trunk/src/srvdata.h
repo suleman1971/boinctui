@@ -16,15 +16,18 @@ class Srv : public TConnect //описание соединения с серв�
 {
   public:
     Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
-    ~Srv();
+    virtual ~Srv();
     void updatemsgs();		//обновить список сообщений <get_messages>
     void updatestate();		//обновить состояние <get_state>
     void updatediskusage();	//обновить состояние <get_disk_usage>
     void updatestatistics();	//обновить статистику <get_statistics>
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
+    std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* name);
-    void  suspendtask(Item* result); //приостановить задачу
-    void  resumetask(Item* result); //продолжить задачу
+    void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
+//    void  resumetask(Item* result); //продолжить задачу
+    void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
+//    void  resumeproject(const char* name); //продолжить проект
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
@@ -45,7 +48,7 @@ class SrvList //список всех серверов
 {
   public:
     SrvList(Config* cfg);
-    ~SrvList();
+    virtual ~SrvList();
     //Srv* addserver(const char* shost, const char* sport) { return new Srv(shost, sport); }; //добавить сервер (вернет указаталь на сервер)
     void requestdata() {}; //опросить все сервера
     //Srv* findserver(const char* shost, const char* sport) { return servers.front(); }; //ЗАГЛУШКА здесь нужен поиск по аресу проту
