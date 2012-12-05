@@ -10,7 +10,7 @@ class NStaticText : public NView
 {
   public:
     NStaticText(NRect rect) : NView(rect) { content = new NColorString(0,""); align = 0; bgcolor = 0;};
-    ~NStaticText() { delete content; };
+    virtual ~NStaticText() { delete content; };
     void appendstring(int attr, const char* fmt, ...);
     void setstring(int attr, const char* fmt, ...);
     void setbgcolor(int colorpair) { bgcolor = colorpair; };

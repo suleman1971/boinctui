@@ -42,7 +42,7 @@ void NStaticText::refresh()
     for (it = content->parts.begin(); it != content->parts.end(); it++) //цикл по частям тек строки
     {
 	NColorStringPart* part = *it;
-	kLogPrintf("[%d] %s\n", part->attr, part->s.c_str());
+	//kLogPrintf("[%d] %s\n", part->attr, part->s.c_str());
 	wattrset(win,part->attr);
 	wprintw(win,"%s",part->s.c_str());
 	wattrset(win,0);
