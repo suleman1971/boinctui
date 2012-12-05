@@ -35,12 +35,18 @@ void NGroup::refresh()
 
 void NGroup::eventhandle(NEvent* ev)	//обработчик событий
 {
-    NView::eventhandle(ev); //предок
+    //если событие уже кем-то обработано, то просто выходим
+    if (ev->done)
+	return;
+    //посылаем событие всем своим подэлементам (последние вставленные
+    //получат первыми. Если один из подэл-тов обработал, то выходим
     std::list<NView*>::reverse_iterator rit;
     for(rit = items.rbegin(); rit != items.rend(); rit++) //отправить всем подэлементам
     {
 	(*rit)->eventhandle(ev);
 	if (ev->done)
-	    break; //прекращаем если событие обработано
+	    return; //прекращаем если событие обработано
     }
+    //раз подэл-ты не обработали пытаемся обработать самостоятельно
+    NView::eventhandle(ev); //предок
 }
