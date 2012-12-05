@@ -198,7 +198,11 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 		break;
 	    case 'S':
 	    case 's':
-		suspendresumetask();
+		suspendresumetask('S');
+		break;
+	    case 'R':
+	    case 'r':
+		suspendresumetask('R');
 		break;
 	    default:
 		ev->done = false; //нет реакции на этот код
@@ -209,7 +213,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 }
 
 
-void TaskWin::suspendresumetask()
+void TaskWin::suspendresumetask(char op)
 {
     char* name = (char*)getselectedobj();
     if (name == NULL)
@@ -217,8 +221,8 @@ void TaskWin::suspendresumetask()
     Item* result = srv->findresultbyname(name);
     if (result == NULL)
 	return;
-    if (result->findItem("suspended_via_gui") == NULL) //задача suspend via gui
-	srv->suspendtask(result);
-    else
-	srv->resumetask(result);
+    if ((op=='S')&&(result->findItem("suspended_via_gui") == NULL)) //задача НЕ suspend via gui
+	srv->optask(result,"suspend_result");
+    if ((op=='R')&&(result->findItem("suspended_via_gui") != NULL)) //задача suspend via gui
+	srv->optask(result,"resume_result");
 }

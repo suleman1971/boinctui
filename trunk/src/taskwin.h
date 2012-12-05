@@ -10,14 +10,14 @@ class TaskWin : public NSelectList
 {
   public:
     TaskWin(NRect rect):NSelectList(rect) { };
-    ~TaskWin();
+    virtual ~TaskWin();
     void	updatedata(); 	//обновить данные с серверa
     void	clearcontent();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     void* 	setserver(Srv* srv) { this->srv = srv; };
   protected:
     Srv*	srv; //текущий отображаемый сервер
-    void	suspendresumetask();
+    void	suspendresumetask(char op);
 };
 
 
