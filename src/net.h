@@ -10,7 +10,7 @@ class TConnect //информация о соединении с boinc серв�
 {
   public:
     TConnect(const char* shost, const char* sport) { this->shost = strdup(shost); this->sport = strdup(sport); hsock = -1; };
-    ~TConnect() { disconnect(); free(shost); free(sport); };
+    virtual ~TConnect() { disconnect(); free(shost); free(sport); };
     int   getsock() {return hsock;};
     void  sendreq(const char* fmt, va_list vl); //отправить запрос на сервер
     void  sendreq(const char* fmt, ...); //отправить запрос на сервер
