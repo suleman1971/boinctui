@@ -11,7 +11,7 @@ class Item //элемент дерева данных (например <disk_us
 {
   public:
     Item(const char* name)		{ this->name = name; parent = NULL; };
-    ~Item();
+    virtual ~Item();
     bool isnode() 			{ return !subitems.empty(); }; 	//true если имеет подэлементы
     void addsubitem(Item* item)		{ item->parent = this; subitems.push_back(item); }; 	//добавляет подэлемент
     void appendvalue(const char* svalue) { this->svalue = this->svalue + svalue; }; //дополняет строку значения
