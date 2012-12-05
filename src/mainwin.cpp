@@ -8,13 +8,14 @@ MainWin::MainWin(NRect rect/*, void* hconnect*/) : NGroup(rect)
 {
     //gsrvlist = new SrvList(cfg);
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, rect.begrow + 1, 1));
-    tablheader->setstring(COLOR_PAIR(3)|A_BOLD,"  #  state    done%%        project         Est.     task name %20s","");
+    tablheader->setstring(COLOR_PAIR(3)|A_BOLD,"  #  state    done%%  project               est.  task %20s","");
     wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 3, 1)/*, hconnect*/); //создаем окно процессов внутри wmain
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+4, 1)/*, hconnect*/); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1), NULL); //горизонтальная линия
     vline = new NVLine(NRect(getheight()-2, 1, 2 , getwidth()-INFPANWIDTH-2), NULL); //горизонтальная линия
 
     panel1 = new InfoPanel(NRect(getheight()-2,INFPANWIDTH,2,getwidth()-INFPANWIDTH-1)/*, hconnect*/);
+    caption = new NColorString(0,"");
     insert(tablheader);
     insert(wtask);
     insert(wmsg);
@@ -58,6 +59,16 @@ void MainWin::refresh()
 {
     wattron(win,A_BOLD);
     box(win, ACS_VLINE, ACS_HLINE);
+    //рисуем заголовок
+    wmove(win,0,(getwidth()/2)-(caption->getlen()+1)/2);
+    std::list<NColorStringPart*>::iterator it;
+    for (it = caption->parts.begin(); it != caption->parts.end(); it++) //цикл по частям тек строки
+    {
+	NColorStringPart* part = *it;
+	wattrset(win,part->attr);
+	wprintw(win,"%s",part->s.c_str());
+	wattrset(win,0);
+    }
     //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
     wattroff(win,A_BOLD);
     NGroup::refresh();
