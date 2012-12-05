@@ -8,6 +8,7 @@
 #include "cfgform.h"
 #include "cfg.h"
 #include "srvdata.h"
+#include "topmenu.h"
 
 
 class MainProg : public NProgram
@@ -18,13 +19,14 @@ class MainProg : public NProgram
     bool mainloop();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
-    NStaticText*	wtitle;
+    TopMenu*		menu;
     MainWin*		wmain;
     NStaticText*	wstatus;
     Config* cfg;
     CfgForm* cfgform; //окно конфигурации
     SrvList* gsrvlist; //глобальный список серверов
     bool	done; //флаг требования завершения
+    void setcaption();
 };
 
 

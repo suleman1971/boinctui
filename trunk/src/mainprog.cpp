@@ -9,36 +9,40 @@ MainProg::MainProg()
     done = false;
     cfg = new Config(".boinctui.cfg");
     gsrvlist = new SrvList(cfg);
-    //строка заголовка
-    wtitle 	= new NStaticText(NRect(1, getmaxx(stdscr), 0, 0));
-    insert(wtitle);
-    wtitle->setbgcolor(COLOR_PAIR(1));
-    //#ifdef DEBUG
-    //wtitle->appendstring(A_BOLD,"size=[%d,%d]", wtitle->getwidth(),wtitle->getheight());
-    //#else
-    wtitle->setstring(A_BOLD,"Host %s:%s", gsrvlist->getcursrv()->gethost(), gsrvlist->getcursrv()->getport());
-    wtitle->setalign(1);
-    //#endif
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно
     insert(wmain);
     wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
+    menu = new TopMenu();
+    menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
+    insert(menu);
+    setcaption();
     //статус строка
     wstatus 	= new NStaticText(NRect(1, getmaxx(stdscr), getmaxy(stdscr)-1, 0)); //создаем окно статуса
     insert(wstatus);
     wstatus->setbgcolor(COLOR_PAIR(1));
     wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," Q");
-    wstatus->appendstring(A_BOLD,"-Quit |");
+    wstatus->appendstring(A_BOLD,"uit |");
     wstatus->appendstring(A_BOLD| COLOR_PAIR(2), " PgUp/PgDn");
     wstatus->appendstring(A_BOLD,"-Scroll Msg |");
     wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," Up/Dn");
     wstatus->appendstring(A_BOLD,"-Select |");
     wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," S");
-    wstatus->appendstring(A_BOLD,"-Suspend/Resume |");
+    wstatus->appendstring(A_BOLD,"uspend |");
+    wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," R");
+    wstatus->appendstring(A_BOLD,"esume |");
     wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," N");
-    wstatus->appendstring(A_BOLD,"-Next Host |");
+    wstatus->appendstring(A_BOLD,"ext Host |");
     wstatus->appendstring(A_BOLD | COLOR_PAIR(2)," C");
-    wstatus->appendstring(A_BOLD,"-Config |");
+    wstatus->appendstring(A_BOLD,"onfig |");
+}
+
+
+void MainProg::setcaption()
+{
+    wmain->caption->clear();
+    wmain->caption->append(A_BOLD,"Host %s:%s",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
+    wmain->refresh();
 }
 
 
@@ -49,8 +53,7 @@ void MainProg::smartresize()
     struct winsize size;
     ioctl(fileno(stdout), TIOCGWINSZ, (char *) &size);
     resizeterm(size.ws_row, size.ws_col);
-
-    wtitle->resize(1, getmaxx(stdscr)); //ширина заголовка
+    menu->resize(1, getmaxx(stdscr)); //ширина верхнего меню
     wmain->resize(getmaxy(stdscr)-2, getmaxx(stdscr));
     wstatus->resize(1, getmaxx(stdscr)); //ширина статус строки
     wstatus->move(getmaxy(stdscr)-1,0); //позиция статус строки
@@ -60,7 +63,7 @@ void MainProg::smartresize()
 }
 
 
-void MainProg::eventhandle(NEvent* ev)	//обработчик событий
+void MainProg::eventhandle(NEvent* ev)	//обработчик событий КОРНЕВОЙ!
 {
     NProgram::eventhandle(ev);
     if (ev->done) //если событие не обработано обработать здесь
@@ -75,24 +78,25 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий
 		break;
 	    case 'n':
 	    case 'N':
+		menu->disable();
 		gsrvlist->nextserver();
 		wmain->setserver(gsrvlist->getcursrv());
-		wtitle->setstring(A_BOLD,"Host %s:%s",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
+		menu->setserver(gsrvlist->getcursrv());
+		setcaption();
 		break;
 	    case 'c':
 	    case 'C':
-	    {
 		if (cfgform == NULL)
 		{
+		    menu->disable();
 		    cfgform = new CfgForm(15,54,cfg);
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();
 		}
 		break;
-	    }
 	    case 27:
-	    {
+		menu->disable();
 		//деструктим форму
 		if (cfgform != NULL)
 		{
@@ -101,7 +105,12 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий
 		    cfgform = NULL;
 		}
 		break;
-	    }
+	    case KEY_F(9):
+		if (!menu->isenable())
+		    menu->enable();
+		else
+		    menu->disable();
+		break;
 	    default:
 		kLogPrintf("KEYCODE=%d\n", ev->keycode);
 		break;
@@ -111,6 +120,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий
     {
 	if (ev->cmdcode == 1) //событие при изменении конфига
 	{
+	    menu->disable();
 	    //деструктим форму
 	    if (cfgform != NULL)
 	    {
@@ -121,7 +131,8 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий
 	    //реакция на изменение конфига
 	    gsrvlist->refreshcfg();
 	    wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-	    wtitle->setstring(A_BOLD,"Host %s:%s", gsrvlist->getcursrv()->gethost(), gsrvlist->getcursrv()->getport());
+	    menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
+	    setcaption();
 	}
     }
 }
@@ -143,10 +154,9 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	{
 	    smartresize();
 	    refresh();
-	    wtitle->erase();
-	    wmain->erase();
+	    menu->refresh();
+	    //wmain->erase();
 	    wstatus->erase();
-	    wtitle->refresh();
 	    wmain->refresh();
 	    wstatus->refresh();
 	}
@@ -190,7 +200,6 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	}
 	update_panels();
 	doupdate(); //физически выполняет перерисовку
-
 	//разблокируем SIGWINCH
 	sigprocmask(SIG_UNBLOCK, &newset, 0); 
     }
