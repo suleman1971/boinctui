@@ -114,7 +114,7 @@ void NSelectList::selectordown()
 	selectedindex++;
 	needrefresh = true;
 	//проверяем не нужно ли скролить
-	if (startindex + getheight() - selectedindex < 4) //видимых строк ниже серлектора осталось 
+	if ((startindex + getheight() < content.size())&&(startindex + getheight() - selectedindex < 4)) //видимых строк ниже серлектора осталось 
 	{
 	    scrollto(1);
 	}
