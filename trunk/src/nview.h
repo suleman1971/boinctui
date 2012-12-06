@@ -8,6 +8,10 @@
 class NGroup;
 
 
+void initcolorpairs();
+int getcolorpair(int fcolor, int bcolor); //получить пару для комбинации цветов
+
+
 class NView //базовый визуальный класс
 {
   public:

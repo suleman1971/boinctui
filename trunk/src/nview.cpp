@@ -3,6 +3,31 @@
 #include "kclog.h"
 
 
+void initcolorpairs()
+{
+    int npair; //номер генерируемой пары
+    for ( int b = 0; b < COLORS; b++ ) //фон
+    {
+	for ( int f = 0; f < COLORS; f++ ) //текст
+	{
+	    npair = 1 + b * COLORS + f;
+	    if ( npair <= COLOR_PAIRS )
+		init_pair(npair, f, b);
+	}
+    }
+}
+
+
+int getcolorpair(int fcolor, int bcolor) //получить пару для комбинации цветов
+{
+    int npair = 1 + bcolor * COLORS + fcolor;
+    if ( npair <= COLOR_PAIRS)
+	return COLOR_PAIR(npair);
+    else
+	return COLOR_PAIR(0);
+}
+
+
 NView::NView(NRect rect)
 {
     this->rect = rect;

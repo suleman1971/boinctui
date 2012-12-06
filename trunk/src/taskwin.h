@@ -9,7 +9,7 @@
 class TaskWin : public NSelectList
 {
   public:
-    TaskWin(NRect rect):NSelectList(rect) { };
+    TaskWin(NRect rect):NSelectList(rect) { setselectorbgcolor(COLOR_CYAN); };
     virtual ~TaskWin();
     void	updatedata(); 	//обновить данные с серверa
     void	clearcontent();

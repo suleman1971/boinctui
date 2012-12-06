@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "net.h"
+#include <openssl/md5.h>
+#include "srvdata.h"
+
+
+Srv* connect1;
 
 
 int main()
 {
-    void* hconnect = openconnect("192.168.1.98","31416");
     const char* req0 = "<boinc_gui_rpc_request>\n<get_state/></boinc_gui_rpc_request>\n\003";
     const char* req1 = "<boinc_gui_rpc_request>\n<get_results>\n<active_only>1</active_only>\n</get_results></boinc_gui_rpc_request>\n\003";
     const char* req2 = "<boinc_gui_rpc_request>\n<get_simple_gui_info/></boinc_gui_rpc_request>\n\003";
@@ -28,8 +31,18 @@ int main()
     const char* req18= "<boinc_gui_rpc_request>\n<get_project_config_poll/>\n</boinc_gui_rpc_request>\n\003";
     const char* req19= "<boinc_gui_rpc_request>\n<lookup_account_poll/>\n</boinc_gui_rpc_request>\n\003";
 
-    void* hreq = sendreq(hconnect, req5);
-    char* result = waitresult(hconnect, hreq);
+//    void* hconnect = openconnect("192.168.1.98","31416");
+    connect1 = new Srv("192.168.1.98","31416","pass123");
+    connect1->login();
+
+    connect1->sendreq(req0);
+    char* result = connect1->waitresult();
     printf("%s\nlen=%d\n", result, strlen(result));
     free(result); //если раз-т больше не нужен
+/*
+    connect1->sendreq(req4);
+    result = connect1->waitresult();
+    printf("%s\nlen=%d\n", result, strlen(result));
+    free(result); //если раз-т больше не нужен
+*/
 }

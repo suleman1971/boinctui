@@ -14,6 +14,8 @@ void initcurses()
     keypad(stdscr,true); //разрешаем стрелки и т.п.
     timeout(250); //ожидание для getch() 250 милисекунд
     start_color();
+    initcolorpairs();
+/*
     init_pair(1,COLOR_WHITE,COLOR_GREEN); //цвет для строки заголовка и статус строки
     init_pair(2,COLOR_YELLOW,COLOR_GREEN);
     init_pair(3,COLOR_YELLOW,COLOR_BLACK);
@@ -22,6 +24,8 @@ void initcurses()
     init_pair(6,COLOR_BLACK,COLOR_BLACK);
     init_pair(7,COLOR_RED,COLOR_BLACK);
     init_pair(8,COLOR_WHITE,COLOR_CYAN);
+    init_pair(9,COLOR_WHITE,COLOR_RED);
+*/
 }
 
 

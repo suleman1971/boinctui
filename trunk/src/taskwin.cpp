@@ -155,18 +155,18 @@ void TaskWin::updatedata() //обновить данные с сервера
 		//цвет и атрибут
 		int attr = A_NORMAL;
 		if ((*it)->findItem("ready_to_report") != NULL)
-		    attr = COLOR_PAIR(6) | A_BOLD;
+		    attr = getcolorpair(COLOR_BLACK,COLOR_BLACK) | A_BOLD;
 		if ((*it)->findItem("active_task") != NULL)
 		    attr = A_BOLD;
 		if ( sstate == "Run")
-		    attr = COLOR_PAIR(4) | A_BOLD;
+		    attr = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
 		NColorString* cs = new NColorString(attr, " %2d  %-6s  %6s  %-20s ",i, sstate.c_str(), sdone, mbstrtrunc(sproject,20));
 		Item* estimated_cpu_time_remaining = (*it)->findItem("estimated_cpu_time_remaining");
 		if ( estimated_cpu_time_remaining != NULL )
 		{ 
 		    double dtime = estimated_cpu_time_remaining->getdvalue();
 		    if ( ( sstate == "Run" )&&( dtime < 3600) ) //меньше часа
-			cs->append(COLOR_PAIR(7) | A_BOLD,"%4s", getestimatetimestr(*it).c_str());
+			cs->append(getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD,"%4s", getestimatetimestr(*it).c_str());
 		    else
 			cs->append(attr,"%4s", getestimatetimestr(*it).c_str());
 		}

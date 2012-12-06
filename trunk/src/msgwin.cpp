@@ -32,9 +32,7 @@ void MsgWin::updatedata() //обновить данные с сервера
 	    Item* body = (*it)->findItem("body"); 	//текст сообщения
 	    Item* time = (*it)->findItem("time"); 	//время сообщения
 	    time_t t = time->getivalue(); 		//время в секундах от 1.1.1970
-	    //wattron(win,A_BOLD);
-	    addstring(COLOR_PAIR(5),"---> #%d %s", number->getivalue(),ctime(&t));
-	    //wattroff(win,A_BOLD);
+	    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"---> #%d %s", number->getivalue(),ctime(&t));
 	    addstring(0, "%s", body->getsvalue());
 	}
     }
