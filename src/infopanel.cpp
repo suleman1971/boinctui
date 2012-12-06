@@ -80,7 +80,6 @@ void InfoPanel::refresh()
     tm* ltime = localtime(&laststattime);
     char buf[128];
     strftime(buf, sizeof(buf),"%-e %b %-k:%M",ltime);
-    //wattrset(win,COLOR_PAIR(3));
     mvwprintw(win,17,0,"%-s", buf); //дата/время последней статистики
     //wattrset(win,0);
     mvwaddch(win,18,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f",lastdayuser);
@@ -95,7 +94,7 @@ void InfoPanel::refresh()
     {
 	if ( getheight()-(line+i*6) < 6 )
 	    break; //не выводим если осталось меньше 3х строк
-	wattrset(win,COLOR_PAIR(3));
+	wattrset(win,getcolorpair(COLOR_YELLOW,COLOR_BLACK));
 	mvwprintw(win,line+i*6,0,"%s\n",projnames[i].c_str());
 	wattrset(win,0);
 	mvwprintw(win,line+i*6+1,0,"user total%10.0f\n",projuser[i]);

@@ -41,7 +41,7 @@ TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0))
     menu_opts_off(menu, O_ROWMAJOR);
     menu_opts_off(menu, O_SHOWDESC);
     set_menu_mark(menu, "  ");
-    setbackground(COLOR_PAIR(1)|A_BOLD);
+    setbackground(getcolorpair(COLOR_WHITE,COLOR_GREEN)|A_BOLD);
     enableflag = true;
     disable();
     set_menu_win(menu, win);

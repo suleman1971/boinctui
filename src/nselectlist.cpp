@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nselectlist.h"
+#include "kclog.h"
 
 
 void NSelectList::addstring(void* userobj, int attr, const char* fmt, ...)
@@ -26,39 +27,40 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
     //выводим строки начиная со startindex
     for (int line = 0; line < getheight(); line++) //цикл по экранным строкам
     {
-	if (startindex+line < content.size())
+	if (startindex+line < content.size()) //цикл по строкам
 	{
-	    NColorString* cstring = content[startindex + line]; 
+	    NColorString* cstring = content[startindex + line];
 	    std::list<NColorStringPart*>::iterator it;
 	    wmove(win,line,0);
 	    for (it = cstring->parts.begin(); it != cstring->parts.end(); it++) //цикл по частям тек строки
 	    {
 		NColorStringPart* part = *it;
-		if (startindex + line != selectedindex)
+		if (startindex + line != selectedindex) //эта строка не выделена
 		    wattrset(win,part->attr); //включаем атрибут
 		else
-		    wattrset(win,A_REVERSE | part->attr); //включаем атрибут
+		{
+		    //получаем из атрибута цвета для текста и фона
+		    short f,b;
+		    f = b = 0;
+		    unsigned int a = 0;
+		    a = a | (part->attr & A_BOLD); //нужен-ли аттрибут
+		    pair_content(PAIR_NUMBER(part->attr),&f,&b); //цвета тек куска для пары с номером PAIR_NUMBER(part->attr)
+		    //kLogPrintf("part->attr=%X PAIR_NUMBER(%X) -> #%d f=%x b=%x attr=%x\n",part->attr, part->attr,PAIR_NUMBER(part->attr),f,b,a);
+		    //kLogPrintf("A_BOLD=%X\n",A_BOLD);
+		    wattrset(win, getcolorpair(f, selectorbgcolor) | a); //включаем новый цвет и атрибут
+		}
 		wprintw(win,"%s",part->s.c_str());
-		//wattrset(win,0); //отключаем атрибут
-	    }
+	    } //цикл частей одной строки
+	    wattrset(win,0); //отключаем атрибут
+	    //очищаем до конца строки
 	    if (startindex + line != selectedindex)
-	        wclrtoeol(win); //очищаем до конца строки
+	        wclrtoeol(win);
 	    else
 	    {
-		//забиваем пробелами чтобы был фон
-		int line,col;
-		getyx(win,line,col);
-		int l = getwidth()-col;
-		char* buf = (char*)malloc(l+1);
-		memset(buf,' ',l);
-		buf[l] = '\0';
-		//int a = winch(win) & A_ATTRIBUTES;
-		//wattrset(win,a | A_REVERSE); //включаем атрибут
-		wprintw(win,"%s",buf);
-		wattrset(win,0); //отключаем атрибут
-		free(buf);
+		wbkgdset(win,getcolorpair(COLOR_WHITE,selectorbgcolor));
+		wclrtoeol(win); //очищаем до конца строки
+		wbkgdset(win,0);
 	    }
-	    wattrset(win,0); //отключаем атрибут
 	}
 	else //очищаем нижнюю незанятую часть окна (если есть)
 	{

@@ -91,7 +91,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     {
 	//поле для хоста
 	fields[nf] = new_field(1, 15, nl,   5, 0, 0);
-	set_field_back(fields[nf],COLOR_PAIR(8) | A_BOLD);
+	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
         field_opts_off(fields[nf], O_AUTOSKIP);
 	//set_field_type(field[nf], TYPE_ALNUM, 0);
 	if (i < slist.size())
@@ -105,7 +105,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	nf++;
 	//поле для порта
 	fields[nf] = new_field(1, 5, nl, 17+5, 0, 0);
-	set_field_back(fields[nf],COLOR_PAIR(8) | A_BOLD);
+	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
 	set_field_type(fields[nf], TYPE_INTEGER, 0, 0, 65535);
         field_opts_off(fields[nf], O_AUTOSKIP);
 	if (i < slist.size())
@@ -117,7 +117,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	nf++;
 	//поле для пароля
 	fields[nf] = new_field(1, 20, nl, 29, 0, 0);
-	set_field_back(fields[nf],COLOR_PAIR(8) | A_BOLD);
+	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
 	field_opts_off(fields[nf], O_AUTOSKIP);
 	if (i < slist.size())
 	{

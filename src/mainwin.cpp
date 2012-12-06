@@ -8,7 +8,7 @@ MainWin::MainWin(NRect rect/*, void* hconnect*/) : NGroup(rect)
 {
     //gsrvlist = new SrvList(cfg);
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, rect.begrow + 1, 1));
-    tablheader->setstring(COLOR_PAIR(3)|A_BOLD,"  #  state    done%%  project               est.  task %20s","");
+    tablheader->setstring(getcolorpair(COLOR_YELLOW,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est.  task %20s","");
     wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 3, 1)/*, hconnect*/); //создаем окно процессов внутри wmain
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+4, 1)/*, hconnect*/); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1), NULL); //горизонтальная линия

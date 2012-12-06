@@ -44,7 +44,7 @@ void NMenu::refresh()
     if (getheight() == 1) //только для горизонтального меню
     {
 	//закрашиваем фоном правую часть строки
-	wattrset(win,bgattr/*COLOR_PAIR(1)*/);
+	wattrset(win,bgattr);
 	wmove(win,0,menu->width);
 	//clrtoeol();
 	int x,y;
