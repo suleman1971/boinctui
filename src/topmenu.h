@@ -66,6 +66,15 @@ class ProjectListSubMenu : public NMenu //выпадающие меню втор
 };
 
 
+class ActivitySubMenu : public NMenu //выпадающие меню второго уровня Activity
+{
+  public:
+    ActivitySubMenu(NRect rect, Srv* srv);
+  protected:
+    virtual bool action(); //вызывается при нажатии Enter
+    Srv*	srv; //текущий отображаемый сервер
+};
+
 class HelpSubMenu : public NMenu //выпадающие меню "Help"
 {
   public:
