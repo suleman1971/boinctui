@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <netdb.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,29 +12,25 @@
 #include "net.h"
 #include "kclog.h"
 
-/*
-class TReq //информация о запросе
-{
-  public:
-    TReq(const char* rawreq) {this->rawreq = rawreq;};
-  protected:
-    const char* rawreq; //xml строка запроса
-};
-*/
-
 
 void TConnect::createconnect(/*const char* shost, const char* sport*/)
 {
-    //this->shost = strdup(shost); 
-    //this->sport = strdup(sport); 
-
+    //this->shost = strdup(shost);
+    //this->sport = strdup(sport);
     struct sockaddr_in boincaddr;
-    unsigned short port = atoi(sport);
-    int	hsock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    //resolving
     memset(&boincaddr,0, sizeof(boincaddr));
     boincaddr.sin_family = AF_INET;
-    boincaddr.sin_addr.s_addr = inet_addr(shost);
-    boincaddr.sin_port = htons(port);
+    boincaddr.sin_port = htons(atoi(sport));
+    if (inet_aton(shost,&boincaddr.sin_addr) == 0) //в shost не ip адрес
+    {
+	struct hostent *hostp = gethostbyname(shost); //пытаемся отресолвить
+	if ( hostp == NULL )
+	    kLogPrintf("host %s lookup failed\n",shost);
+	else
+	    memcpy(&boincaddr.sin_addr, hostp->h_addr, sizeof(boincaddr.sin_addr));
+    }
+    int	hsock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     //connection
     if (connect(hsock, (struct sockaddr *) &boincaddr, sizeof(boincaddr)) < 0)
     {
