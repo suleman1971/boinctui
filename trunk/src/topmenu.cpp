@@ -6,6 +6,7 @@
 #define M_FILE 				"File"
 #define M_PROJECTS			"Projects"
 #define M_TASKS				"Tasks"
+#define M_ACTIVITY			"Activity"
 #define M_HELP				"Help"
 //Названия пунктов меню "File"
 #define M_NEXT_HOST			"Next BOINC host"
@@ -22,6 +23,10 @@
 #define M_SUSPEND_TASK			"Suspend task"
 #define M_RESUME_TASK			"Resume task"
 #define M_ABORT_TASK			"Abort task"
+//Названия пунктов меню "Activity"
+#define M_ACTIVITY_ALWAYS		"Run always"
+#define M_ACTIVITY_AUTO			"Run based on preferences"
+#define M_ACTIVITY_NEVER		"Suspend"
 //Названия пунктов меню "Help"
 #define M_ABOUT				"About"
 #define M_KEY_BINDINGS			"Key bindings"
@@ -31,12 +36,13 @@ TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0))
 {
     setserver(NULL);
     unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,5*sizeof(ITEM*));
+    mitems = (ITEM**)realloc(mitems,6*sizeof(ITEM*));
     mitems[0] = new_item(M_FILE,"");
     mitems[1] = new_item(M_PROJECTS,"");
     mitems[2] = new_item(M_TASKS,"");
-    mitems[3] = new_item(M_HELP,"");
-    mitems[4] = NULL; 
+    mitems[3] = new_item(M_ACTIVITY,"");
+    mitems[4] = new_item(M_HELP,"");
+    mitems[5] = NULL; 
     set_menu_items(menu, mitems);
     menu_opts_off(menu, O_ROWMAJOR);
     menu_opts_off(menu, O_SHOWDESC);
@@ -70,6 +76,11 @@ bool TopMenu::action() //открыть субменю
     if ( strcmp(item_name(current_item(menu)),M_TASKS) == 0 )
     {
 	insert(new TasksSubMenu(NRect(5,25,1, begincol)));
+	result = true;
+    }
+    if ( strcmp(item_name(current_item(menu)),M_ACTIVITY) == 0 )
+    {
+	insert(new ActivitySubMenu(NRect(5,25,1, begincol), srv));
 	result = true;
     }
     if ( strcmp(item_name(current_item(menu)),M_HELP) == 0 )
@@ -162,10 +173,7 @@ FileSubMenu::FileSubMenu(NRect rect) : NMenu(rect)
 
 bool FileSubMenu::action()
 {
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть подменю
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть осн меню
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
     if ( strcmp(item_name(current_item(menu)),M_NEXT_HOST) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
     if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
@@ -324,14 +332,58 @@ TasksSubMenu::TasksSubMenu(NRect rect) : NMenu(rect)
 
 bool TasksSubMenu::action()
 {
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть подменю
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть осн меню
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
     if ( strcmp(item_name(current_item(menu)),M_SUSPEND_TASK) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'S')); //создаем событие иммитирующее нажатие 'S'
     if ( strcmp(item_name(current_item(menu)),M_RESUME_TASK) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'R')); //создаем событие иммитирующее нажатие 'R'
+    return true;
+}
+
+
+//=============================================================================================
+
+
+ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
+{
+    unpost_menu(menu);
+    this->srv = srv;
+    if (srv != NULL)
+	srv->updateccstatus(); //обновить данные с boinc-а
+    if ((srv != NULL)&&(srv->ccstatusdom != NULL))
+    {
+	Item* task_mode = srv->ccstatusdom->findItem("task_mode");
+	mitems = (ITEM**)realloc(mitems,4*sizeof(ITEM*));
+	mitems[0] = new_item(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "*" : ""); //1 always
+	mitems[1] = new_item(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
+	mitems[2] = new_item(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	mitems[3] = NULL;
+	set_menu_items(menu, mitems);
+    }
+    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
+    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
+    setbackground(A_BOLD);
+    box(win,0,0); //рамка
+    set_menu_mark(menu, " ");
+    menu_opts_off(menu,O_SHOWMATCH);
+    set_menu_win(menu, win);
+    set_menu_format(menu, menu->nitems, 1);
+    post_menu(menu);
+}
+
+
+bool ActivitySubMenu::action()
+{
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть все меню
+    if (srv != NULL)
+    {
+	if ( strcmp(item_name(current_item(menu)),M_ACTIVITY_ALWAYS) == 0 )
+	    srv->opactivity("always");
+	if ( strcmp(item_name(current_item(menu)),M_ACTIVITY_AUTO) == 0 )
+	    srv->opactivity("auto");
+	if ( strcmp(item_name(current_item(menu)),M_ACTIVITY_NEVER) == 0 )
+	    srv->opactivity("never");
+    }
     return true;
 }
 

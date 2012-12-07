@@ -92,6 +92,7 @@ Srv::~Srv()
     if (msgdom != NULL) delete msgdom;
     if (statedom != NULL) delete statedom;
     if (dusagedom != NULL) delete dusagedom;
+    if (ccstatusdom != NULL) delete ccstatusdom;
     if (statisticsdom != NULL) delete statisticsdom;
     if (pwd != NULL) delete pwd;
 }
@@ -194,6 +195,14 @@ void Srv::updatestatistics()
 }
 
 
+void Srv::updateccstatus()	//обновить состояние <get_cc_status>
+{
+    if (ccstatusdom != NULL)
+	delete ccstatusdom; //очищаем предыдущий рез-т
+    ccstatusdom = req("<get_cc_status/>");
+}
+
+
 void Srv::updatediskusage()
 {
     if (dusagedom != NULL)
@@ -265,6 +274,14 @@ void Srv::suspendtask(Item* result) //приостановить задачу
     free(s); //результат не проверяем
 }
 */
+
+void Srv::opactivity(const char* op) //изменение режима активности BOINC сервера "always" "auto" "newer"
+{
+    sendreq("<boinc_gui_rpc_request>\n<set_run_mode><%s/><duration>0</duration></set_run_mode>\n</boinc_gui_rpc_request>\n\003",op);
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+
 
 void Srv::optask(Item* result, const char* op) //действия над задачей ("suspend_result",...)
 //void Srv::resumetask(Item* result) //возобновить задачу

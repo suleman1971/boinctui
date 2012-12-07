@@ -15,15 +15,17 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортир
 class Srv : public TConnect //описание соединения с сервером
 {
   public:
-    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
+    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = ccstatusdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
     virtual ~Srv();
     void updatemsgs();		//обновить список сообщений <get_messages>
     void updatestate();		//обновить состояние <get_state>
     void updatediskusage();	//обновить состояние <get_disk_usage>
+    void updateccstatus();	//обновить состояние <get_cc_status>
     void updatestatistics();	//обновить статистику <get_statistics>
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* name);
+    void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
 //    void  resumetask(Item* result); //продолжить задачу
     void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
@@ -32,6 +34,7 @@ class Srv : public TConnect //описание соединения с серв�
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
     Item*	statedom; 	//xml дерево состояний
+    Item*	ccstatusdom;	//xml дерево для <get_cc_status>
     Item*	dusagedom;	//xml дерево для <get_disk_usage>
     Item*	statisticsdom;	//xml дерево для <get_statistics>
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
