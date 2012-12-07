@@ -30,7 +30,7 @@ AC_CHECK_LIB(crypto ,  main,  , [AC_MSG_ERROR([Couldn't find crypto library])] )
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS( \
 [ \
-string.h stdlib.h stdio.h sys/stat.h unistd.h stdarg.h sys/ioctl.h arpa/inet.h locale.h malloc.h sys/socket.h signal.h \
+string.h stdlib.h stdio.h sys/stat.h unistd.h stdarg.h sys/ioctl.h arpa/inet.h locale.h malloc.h sys/socket.h netdb.h signal.h \
 algorithm string list vector queue stack sstream \
 expat.h curses.h form.h panel.h openssl/md5.h \
 ] ,  , [AC_MSG_ERROR([Couldn't find any headers])] )
