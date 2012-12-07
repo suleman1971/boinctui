@@ -32,8 +32,16 @@ void MsgWin::updatedata() //обновить данные с сервера
 	    Item* body = (*it)->findItem("body"); 	//текст сообщения
 	    Item* time = (*it)->findItem("time"); 	//время сообщения
 	    time_t t = time->getivalue(); 		//время в секундах от 1.1.1970
-	    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"---> #%d %s", number->getivalue(),ctime(&t));
-	    addstring(0, "%s", body->getsvalue());
+	    tm* ltime = localtime(&t);
+	    char tbuf[128];
+	    strftime(tbuf, sizeof(tbuf),"%-e %b %-k:%M",ltime);
+	    Item* project = (*it)->findItem("project");
+	    std::string sproject = "_no_";
+	    if (project != NULL)
+		sproject = project->getsvalue();
+	    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
+	    content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
+	    addstring(0, "%s", body->getsvalue()); //само сообщение
 	}
     }
     lastmsgno = srv->lastmsgno;
