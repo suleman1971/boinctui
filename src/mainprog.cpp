@@ -21,8 +21,6 @@ MainProg::MainProg()
     wstatus 	= new NStaticText(NRect(1, getmaxx(stdscr), getmaxy(stdscr)-1, 0)); //создаем окно статуса
     insert(wstatus);
     wstatus->setbgcolor(getcolorpair(COLOR_WHITE,COLOR_GREEN));
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," Q");
-    wstatus->appendstring(A_BOLD,"uit |");
     wstatus->appendstring(A_BOLD| getcolorpair(COLOR_YELLOW,COLOR_GREEN), " PgUp/PgDn");
     wstatus->appendstring(A_BOLD,"-Scroll Msg |");
     wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," Up/Dn");
@@ -31,10 +29,8 @@ MainProg::MainProg()
     wstatus->appendstring(A_BOLD,"uspend |");
     wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," R");
     wstatus->appendstring(A_BOLD,"esume |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," N");
-    wstatus->appendstring(A_BOLD,"ext Host |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," C");
-    wstatus->appendstring(A_BOLD,"onfig |");
+    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," F9");
+    wstatus->appendstring(A_BOLD," Menu |");
 }
 
 
