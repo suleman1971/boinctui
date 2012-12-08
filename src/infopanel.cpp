@@ -4,22 +4,6 @@
 #include "net.h"
 #include "resultparse.h"
 
-/*
-bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки задач true если дата stat1 > stat2
-{
-    Item* day1 = stat1->findItem("day");
-    Item* day2 = stat2->findItem("day");
-
-    if ( (day1 != NULL)&&(day2 != NULL) )
-    {
-	if (day1->getdvalue() > day2->getdvalue())
-	    return true;
-	else
-	    return false;
-    }
-    return false;
-}
-*/
 
 Item* findDay( std::vector<Item*>& days, time_t d ) //ищем в статистике день d если нет вернет NULL
 {
@@ -35,6 +19,17 @@ Item* findDay( std::vector<Item*>& days, time_t d ) //ищем в статист
     }
     return NULL;
 }
+
+
+std::string InfoPanel::getdayname(time_t ltime) //название дня "today" "yesterday" ""
+{
+    time_t now = time(NULL);
+    if ( now/(3600 * 24) == ltime/(3600 * 24) )
+	return "today";
+    if ( now/(3600 * 24) == 1+ltime/(3600 * 24) )
+	return "yesterday";
+}
+
 
 void InfoPanel::refresh()
 {
@@ -72,41 +67,88 @@ void InfoPanel::refresh()
     mvwprintw(win,12,0,"     Statistics     ");
     wattrset(win,0);
 
-    mvwprintw(win,13,0,"user total%10.0f",usertotal);
-    mvwprintw(win,14,0,"user avg  %10.0f",useravg);
-    mvwprintw(win,15,0,"host total%10.0f",hosttotal);
-    mvwprintw(win,16,0,"host avg  %10.0f",hostavg);
+    bool compact = true; //компактный вывод статистики если user=host
+    int line,col;
+    getyx(win,line,col);
+    if ( (!compact)||(usertotal != hosttotal) )
+    {
+	mvwprintw(win,line++,0,"user total%10.0f",usertotal);
+	mvwprintw(win,line++,0,"host total%10.0f",hosttotal);
+    }
+    else
+	mvwprintw(win,line++,0,"total     %10.0f",usertotal);
+    if ( (!compact)||(useravg != hostavg) )
+    {
+	mvwprintw(win,line++,0,"user avg  %10.0f",useravg);
+	mvwprintw(win,line++,0,"host avg  %10.0f",hostavg);
+    }
+    else
+	mvwprintw(win,line++,0,"average   %10.0f",useravg);
 
     tm* ltime = localtime(&laststattime);
     char buf[128];
-    strftime(buf, sizeof(buf),"%-e %b %-k:%M",ltime);
-    mvwprintw(win,17,0,"%-s", buf); //дата/время последней статистики
+    strftime(buf, sizeof(buf),/*"%-e %b %-k:%M"*/"%-e %b",ltime);
+    mvwprintw(win,line++,0,"%-s (%s)", buf, getdayname(laststattime).c_str()); //дата/время последней статистики
     //wattrset(win,0);
-    mvwaddch(win,18,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f",lastdayuser);
-    mvwaddch(win,19,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f",lastdayhost);
-
-    //по проектам
-    wprintw(win,"\n");
-    int i = 0;
-    int line,col;
-    getyx(win,line,col);
-    for (int i = 0; i < projnames.size(); i++) //цикл по названиям проектов
+    if ( (!compact)||(lastdayuser != lastdayhost) )
     {
-	if ( getheight()-(line+i*6) < 6 )
-	    break; //не выводим если осталось меньше 3х строк
-	wattrset(win,getcolorpair(COLOR_YELLOW,COLOR_BLACK));
-	mvwprintw(win,line+i*6,0,"%s\n",projnames[i].c_str());
-	wattrset(win,0);
-	mvwprintw(win,line+i*6+1,0,"user total%10.0f\n",projuser[i]);
-	mvwprintw(win,line+i*6+2,0,"host total%10.0f\n",projhost[i]);
-	ltime = localtime(&projectlaststattime[i]);
-	strftime(buf, sizeof(buf),"%-e %b %-k:%M",ltime);
-	mvwprintw(win,line+i*6+3,0,"%-s\n",buf);
-	mvwaddch(win,line+i*6+4,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",projectlastuser[i]);
-	mvwaddch(win,line+i*6+5,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",projectlasthost[i]);
+	mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f",lastdayuser);
+	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f",lastdayhost);
     }
-    wclrtobot(win); //чистим нижню часть окна
-    //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+    else
+    {
+	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f",lastdayhost);
+    }
+    //по проектам
+    mvwprintw(win, line++,0,"\n");
+    for (int i = 0; i < projects.size(); i++) //цикл по названиям проектов
+    {
+	//расчитываем нужное кол-во строк
+	int needlines = 2;
+	if (!projects[i].sstatus.empty())
+	    needlines++;
+	if ( (!compact)||(projects[i].user != projects[i].host) )
+	    needlines += 2;
+	else
+	    needlines++;
+	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
+	    needlines += 2;
+	else
+	    needlines++;
+	//проверяем сколько свободных строк осталось в окне
+	if ( ( getheight()-line ) < needlines )
+	    break; //не выводим если осталось мало строк
+	//вывод на экран
+	wattrset(win,getcolorpair(COLOR_YELLOW,COLOR_BLACK));
+	mvwprintw(win,line++,0,"%s\n",projects[i].name.c_str());
+	if (!projects[i].sstatus.empty())
+	{
+	    wattrset(win,getcolorpair(COLOR_RED,COLOR_BLACK));
+	    mvwprintw(win,line++,0,"%s\n",projects[i].sstatus.c_str());
+	}
+	wattrset(win,0);
+	if ( (!compact)||(projects[i].user != projects[i].host) )
+	{
+	    mvwprintw(win,line++,0,"user total%10.0f\n",projects[i].user);
+	    mvwprintw(win,line++,0,"host total%10.0f\n",projects[i].host);
+	}
+	else
+	    mvwprintw(win,line++,0,"total     %10.0f\n",projects[i].user);
+	ltime = localtime(&projects[i].laststattime);
+	strftime(buf, sizeof(buf),/*"%-e %b %-k:%M"*/"%-e %b",ltime);
+	mvwprintw(win,line++,0,"%-s (%s)\n",buf, getdayname(projects[i].laststattime).c_str());
+	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
+	{
+	    mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",projects[i].userlastday);
+	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",projects[i].hostlastday);
+	}
+	else
+	{
+	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",projects[i].userlastday);
+	}
+    }
+    if ( line < getheight() )
+	wclrtobot(win); //чистим нижню часть окна (если не это не последняя строка иначе сотрем символ в правом нижнем)
     NView::refresh();
 }
 
@@ -184,12 +226,8 @@ void InfoPanel::updatedata()
     double hosttotallastday = 0;
     double usertotalpredday = 0;
     double hosttotalpredday = 0;
-    projnames.clear();
-    projuser.clear();
-    projhost.clear();
-    projectlaststattime.clear();
-    projectlastuser.clear();
-    projectlasthost.clear();
+
+    projects.clear();
     Item* statistics = srv->statisticsdom->findItem("statistics");
     if (statistics!=NULL)
     {
@@ -197,7 +235,19 @@ void InfoPanel::updatedata()
 	std::vector<Item*>::iterator it;
 	for (it = project_statistics.begin(); it!=project_statistics.end(); it++) //цикл списка проектов
 	{
-	    projnames.push_back(srv->findProjectName(srv->statedom,((*it)->findItem("master_url")->getsvalue())));
+	    ProjectStat st; //заполнить эту структуру
+	    st.name = srv->findProjectName(srv->statedom,((*it)->findItem("master_url")->getsvalue()));
+	    st.sstatus = "";
+	    //строка статуса
+	    if (srv->statedom != NULL)
+	    {
+		Item* project = srv->findprojectbyname(st.name.c_str());
+		if (project != NULL)
+		{
+		    st.sstatus = st.sstatus + (project->findItem("suspended_via_gui")? "[Susp.] " : "");
+		    st.sstatus = st.sstatus + (project->findItem("dont_request_more_work") ? "[N.N.Tsk.] " : "");
+		}
+	    }
 	    std::vector<Item*> daily_statistics = (*it)->getItems("daily_statistics"); //все дни проекта в этом векторе
 	    std::sort(daily_statistics.begin(), daily_statistics.end(), daily_statisticsCmpAbove); //сортируем по убыванию дат
 	    if (!daily_statistics.empty())
@@ -229,27 +279,32 @@ void InfoPanel::updatedata()
 		{
 		    Item* predfrontday;
 		    predfrontday = daily_statistics[1];
-		    projectlastuser.push_back(frontday->findItem("user_total_credit")->getdvalue()-predfrontday->findItem("user_total_credit")->getdvalue());
-		    projectlasthost.push_back(frontday->findItem("host_total_credit")->getdvalue()-predfrontday->findItem("host_total_credit")->getdvalue());
+
+		    st.userlastday = frontday->findItem("user_total_credit")->getdvalue()-predfrontday->findItem("user_total_credit")->getdvalue();
+		    st.hostlastday = frontday->findItem("host_total_credit")->getdvalue()-predfrontday->findItem("host_total_credit")->getdvalue();
 		}
-		projectlaststattime.push_back(frontday->findItem("day")->getdvalue());
+		st.laststattime = frontday->findItem("day")->getdvalue();
 		usertotal = usertotal + frontday->findItem("user_total_credit")->getdvalue();
 		useravg = useravg + frontday->findItem("user_expavg_credit")->getdvalue();
 		hosttotal = hosttotal + frontday->findItem("host_total_credit")->getdvalue();
 		hostavg = hostavg + frontday->findItem("host_expavg_credit")->getdvalue();
-		projuser.push_back(frontday->findItem("user_total_credit")->getdvalue());
-		projhost.push_back(frontday->findItem("host_total_credit")->getdvalue());
+
+		st.user = frontday->findItem("user_total_credit")->getdvalue();
+		st.host = frontday->findItem("host_total_credit")->getdvalue();
 	    }
 	    else
 	    {
-		projuser.push_back(0);
-		projhost.push_back(0);
-		projectlaststattime.push_back(0);
-		projectlastuser.push_back(0);
-		projectlasthost.push_back(0);
+		st.user = 0;
+		st.host = 0;
+		st.laststattime = 0;
+		st.userlastday = 0;
+		st.hostlastday = 0;
 	    }
+	    projects.push_back(st); //вставляем статистику в вектор проектов
 	} //проекты
 	lastdayuser = usertotallastday - usertotalpredday;
 	lastdayhost = hosttotallastday - hosttotalpredday;
+	//сортируем проекты чтобы наиболее актуальные отображались первыми
+	std::sort(projects.begin(), projects.end(), ProjectStat::CmpAbove);
     }
 }
