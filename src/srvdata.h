@@ -24,7 +24,8 @@ class Srv : public TConnect //описание соединения с серв�
     void updatestatistics();	//обновить статистику <get_statistics>
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
-    Item* findresultbyname(const char* name);
+    Item* findresultbyname(const char* resultname);
+    Item* findprojectbyname(const char* projectname);
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
 //    void  resumetask(Item* result); //продолжить задачу
