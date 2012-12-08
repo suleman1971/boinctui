@@ -13,12 +13,12 @@
 #define M_CONFIG_HOSTS			"Configure host list"
 #define M_QUIT				"Quit boinctui"
 //Названия пунктов меню "Projects"
-#define M_UPDATE_PROJECT		"Update project..."
-#define M_SUSPEND_PROJECT		"Suspend project..."
-#define M_RESUME_PROJECT		"Resume project..."
-#define M_NO_NEW_TASKS_PROJECT		"No new tasks..."
-#define M_ALLOW_NEW_TASKS_PROJECT	"Allow new tasks..."
-#define M_RESET_PROJECT			"Reset project..."
+#define M_UPDATE_PROJECT		"Update project"
+#define M_SUSPEND_PROJECT		"Suspend project"
+#define M_RESUME_PROJECT		"Resume project"
+#define M_NO_NEW_TASKS_PROJECT		"No new tasks"
+#define M_ALLOW_NEW_TASKS_PROJECT	"Allow new tasks"
+#define M_RESET_PROJECT			"Reset project"
 //Названия пунктов меню "Tasks"
 #define M_SUSPEND_TASK			"Suspend task"
 #define M_RESUME_TASK			"Resume task"
@@ -232,12 +232,12 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     this->srv = srv;
     unpost_menu(menu);
     mitems = (ITEM**)realloc(mitems,7*sizeof(ITEM*));
-    mitems[0] = new_item(M_UPDATE_PROJECT,"");
-    mitems[1] = new_item(M_SUSPEND_PROJECT ,"");
-    mitems[2] = new_item(M_RESUME_PROJECT,"");
-    mitems[3] = new_item(M_NO_NEW_TASKS_PROJECT,"");
-    mitems[4] = new_item(M_ALLOW_NEW_TASKS_PROJECT,"");
-    mitems[5] = new_item(M_RESET_PROJECT,"");
+    mitems[0] = new_item(M_UPDATE_PROJECT,"...");
+    mitems[1] = new_item(M_SUSPEND_PROJECT ,"...");
+    mitems[2] = new_item(M_RESUME_PROJECT,"...");
+    mitems[3] = new_item(M_NO_NEW_TASKS_PROJECT,"...");
+    mitems[4] = new_item(M_ALLOW_NEW_TASKS_PROJECT,"...");
+    mitems[5] = new_item(M_RESET_PROJECT,"...");
     mitems[6] = NULL;
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
