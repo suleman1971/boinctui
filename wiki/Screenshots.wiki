@@ -5,7 +5,7 @@
 
 <p align=center> 
 <a href="https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s1004/boinctui-screen1.png">
-<img src="https://lh4.googleusercontent.com/-xIuNUO09s0g/ULhPJSXC-dI/AAAAAAAAAFA/TmVOaYDKIKQ/s1004/boinctui-screen1.png" width=600/>
+<img src="https://lh4.googleusercontent.com/-Ia-6mDBU4nY/UMdjF-wx__I/AAAAAAAAAFw/SJZOyo3NRZ8/s640/boinctui-mainwin.png" width=600/>
 <br/>
 View full size image
 </a>
@@ -16,9 +16,15 @@ View full size image
 == Configuration Form ==
 
 <p align=center> 
-<a href="https://lh6.googleusercontent.com/-QKh3tASNF-U/ULhPMtffU8I/AAAAAAAAAFI/N59T4yGOi7k/s1004/bionctui-screen2.png">
-<img src="https://lh6.googleusercontent.com/-QKh3tASNF-U/ULhPMtffU8I/AAAAAAAAAFI/N59T4yGOi7k/s1004/bionctui-screen2.png" width=600/>
+<img src="https://lh3.googleusercontent.com/-FxYpNIdpYnM/UMdjT8oAI3I/AAAAAAAAAGU/Af_ZDYL2GMM/s433/boinctui-configform.png"/>
 <br/>
-View full size image
-</a>
+</p>
+
+----
+
+== Project manipulation ==
+
+<p align=center> 
+<img src="https://lh4.googleusercontent.com/-5T8gfueDOlg/UMdja7ApHVI/AAAAAAAAAGo/TQyYrGvYFE4/s676/boinctui-projectsmenu.png"/>
+<br/>
 </p>
