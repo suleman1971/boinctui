@@ -166,6 +166,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 		    kLogPrintf("INSERT NEW HOST\n");
 		}
 		break;
+	    case KEY_ENTER:
 	    case '\n': //ENTER
 	    {
 		form_driver(frm, REQ_NEXT_FIELD); //костыль чтобы текущее поле не потеряло значение

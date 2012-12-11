@@ -9,6 +9,9 @@ MainProg::MainProg()
     done = false;
     cfg = new Config(".boinctui.cfg");
     gsrvlist = new SrvList(cfg);
+    cfgform = NULL;
+    about = NULL;
+    help = NULL;
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно
     insert(wmain);
@@ -37,7 +40,7 @@ MainProg::MainProg()
 void MainProg::setcaption()
 {
     wmain->caption->clear();
-    wmain->caption->append(A_BOLD,"Host %s:%s",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
+    wmain->caption->append(A_BOLD," Host %s:%s ",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
     wmain->refresh();
 }
 
@@ -55,6 +58,10 @@ void MainProg::smartresize()
     wstatus->move(getmaxy(stdscr)-1,0); //позиция статус строки
     if (cfgform != NULL)
 	cfgform->move(getmaxy(stdscr)/2-cfgform->getheight()/2,getmaxx(stdscr)/2-cfgform->getwidth()/2); //окно конфигурации (если есть)
+    if (about != NULL)
+	about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //окно About (если есть)
+    if (help != NULL)
+	help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //окно About (если есть)
     MainProg::needresize = false;
 }
 
@@ -114,22 +121,56 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
     }
     if (ev->type == NEvent::evPROG) //прграммные
     {
-	if (ev->cmdcode == 1) //событие при изменении конфига
+	switch(ev->cmdcode)
 	{
-	    menu->disable();
-	    //деструктим форму
-	    if (cfgform != NULL)
+	    case 1: //событие при изменении конфига
 	    {
-	        remove(cfgform);
-	        delete cfgform;
-	        cfgform = NULL;
+		menu->disable();
+		//деструктим форму
+		if (cfgform != NULL)
+		{
+		    remove(cfgform);
+		    delete cfgform;
+		    cfgform = NULL;
+		}
+		//реакция на изменение конфига
+		gsrvlist->refreshcfg();
+		wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
+		menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
+		setcaption();
+		break;
 	    }
-	    //реакция на изменение конфига
-	    gsrvlist->refreshcfg();
-	    wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-	    menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-	    setcaption();
-	}
+	    case 3: //событие About win
+	    {
+		if (about != NULL)
+		{
+		    remove(about);
+		    delete about;
+		    about = NULL;
+		}
+		else
+		{
+		    about = new AboutWin(2,40);
+		    insert(about);
+		}
+		break;
+	    }
+	    case 4: //событие KeyBinding win
+	    {
+		if (help != NULL)
+		{
+		    remove(help);
+		    delete help;
+		    help = NULL;
+		}
+		else
+		{
+		    help = new HelpWin(2,40);
+		    insert(help);
+		}
+		break;
+	    }
+	} //switch
     }
 }
 

@@ -72,14 +72,15 @@ std::string getresultstatestr(Item* result)
 }
 
 
-std::string getestimatetimestr(Item* result) //получить в виде строки прогнозируемое время завершения задачи
+//std::string getestimatetimestr(Item* result) //получить в виде строки прогнозируемое время завершения задачи
+std::string gethumanreadabletimestr(time_t time) //получить в виде строки прогнозируемое время завершения задачи
 {
-    Item* estimated_cpu_time_remaining = result->findItem("estimated_cpu_time_remaining");
+//    Item* estimated_cpu_time_remaining = result->findItem("estimated_cpu_time_remaining");
     std::stringstream s;
-    if ( estimated_cpu_time_remaining != NULL )
-    {
-	double dtime = estimated_cpu_time_remaining->getdvalue();
-	time_t time = dtime; //берем только целую часть
+//    if ( estimated_cpu_time_remaining != NULL )
+//    {
+//	double dtime = estimated_cpu_time_remaining->getdvalue();
+//	time_t time = dtime; //берем только целую часть
 	tm* t = gmtime(&time);
 	if ( t->tm_yday > 0 )
 	    s << t->tm_yday << "d";
@@ -96,8 +97,8 @@ std::string getestimatetimestr(Item* result) //получить в виде ст
 			s << "- ";
 //	s << t->tm_yday << "d" << t->tm_hour << "h" << t->tm_min << "m"<< t->tm_sec << "s";
 	return s.str();
-    }
-    return "inf";
+//    }
+//    return "inf";
 }
 
 
@@ -144,7 +145,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 	    {
 		char sdone[64];
 		if (!fraction_done) //для неактивных секция fraction_done отсутствует
-		    strcpy(sdone,"  --  ");
+		    strcpy(sdone,"   -  ");
 		else
 		    sprintf(sdone,"%6.2f",100*fraction_done->getdvalue());
 		//процент выполнения
@@ -159,18 +160,39 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ((*it)->findItem("active_task") != NULL)
 		    attr = A_BOLD;
 		if ( sstate == "Run")
-		    attr = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
+		    attr = getcolorpair(COLOR_YELLOW,COLOR_BLACK) | A_BOLD;
+		if ( sstate == "Upld")
+		    attr = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+		if ( sstate == "Dwnld")
+		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
 		NColorString* cs = new NColorString(attr, " %2d  %-6s  %6s  %-20s ",i, sstate.c_str(), sdone, mbstrtrunc(sproject,20));
+		//время эстимейт
 		Item* estimated_cpu_time_remaining = (*it)->findItem("estimated_cpu_time_remaining");
+		int attr2 = attr;
 		if ( estimated_cpu_time_remaining != NULL )
-		{ 
+		{
 		    double dtime = estimated_cpu_time_remaining->getdvalue();
 		    if ( ( sstate == "Run" )&&( dtime < 3600) ) //меньше часа
-			cs->append(getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD,"%4s", getestimatetimestr(*it).c_str());
-		    else
-			cs->append(attr,"%4s", getestimatetimestr(*it).c_str());
+			attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
+		    cs->append(attr2,"%4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
 		}
-		cs->append(attr,"   %s", name->getsvalue());
+		else
+		    cs->append(attr2,"%4s", "?");
+		//время дедлайн
+		Item* report_deadline = (*it)->findItem("report_deadline");
+		attr2 = attr;
+		if (report_deadline != NULL)
+		{
+		    double dtime = report_deadline->getdvalue();
+		    time_t beforedl = (time_t)dtime - time(NULL); //число секунд до дедлайна
+		    if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
+			attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+		    cs->append(attr2,"%4s", gethumanreadabletimestr(beforedl).c_str());
+		}
+		else
+		    cs->append(attr2,"%4s", "?");
+		//имя задачи
+		cs->append(attr,"   %s", name->getsvalue()); 
 		//addstring(strdup(name->getsvalue()), attr, " %2d  %-6s  %6s  %-20s  %4s  %s",i, sstate.c_str(), sdone, mbstrtrunc(sproject,20), getestimatetimestr(*it).c_str(), name->getsvalue());
 		addstring(strdup(name->getsvalue()),cs);
 		free(sproject);
@@ -198,11 +220,11 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 		break;
 	    case 'S':
 	    case 's':
-		suspendresumetask('S');
+		optask('S');
 		break;
 	    case 'R':
 	    case 'r':
-		suspendresumetask('R');
+		optask('R');
 		break;
 	    default:
 		ev->done = false; //нет реакции на этот код
@@ -210,10 +232,17 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	if (ev->done) //если обработали, то нужно перерисоваться
 	    refresh();
     }
+    if (ev->type == NEvent::evPROG) //прграммные
+    {
+	if (ev->cmdcode == 2) //событие "abort_result"
+	{
+	    optask('A');
+	}
+    }
 }
 
 
-void TaskWin::suspendresumetask(char op)
+void TaskWin::optask(char op)
 {
     char* name = (char*)getselectedobj();
     if (name == NULL)
@@ -225,4 +254,6 @@ void TaskWin::suspendresumetask(char op)
 	srv->optask(result,"suspend_result");
     if ((op=='R')&&(result->findItem("suspended_via_gui") != NULL)) //задача suspend via gui
 	srv->optask(result,"resume_result");
+    if (op=='A')
+	srv->optask(result,"abort_result");
 }

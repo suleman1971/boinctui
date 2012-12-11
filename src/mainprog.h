@@ -9,6 +9,8 @@
 #include "cfg.h"
 #include "srvdata.h"
 #include "topmenu.h"
+#include "about.h"
+#include "helpwin.h"
 
 
 class MainProg : public NProgram
@@ -22,6 +24,8 @@ class MainProg : public NProgram
     TopMenu*		menu;
     MainWin*		wmain;
     NStaticText*	wstatus;
+    AboutWin*		about;
+    HelpWin*		help;
     Config* cfg;
     CfgForm* cfgform; //окно конфигурации
     SrvList* gsrvlist; //глобальный список серверов

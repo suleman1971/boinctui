@@ -273,8 +273,11 @@ void Srv::optask(Item* result, const char* op) //действия над зад�
     Item* project_url = result->findItem("project_url");
     if ((name == NULL) || (project_url == NULL))
 	return;
-    if (result->findItem("active_task") == NULL)
-	return; //меняем состояние только для активных
+    if ((strcmp(op,"suspend_result")==0)||(strcmp(op,"resume_result")==0))
+    {
+	if (result->findItem("active_task") == NULL)
+	    return; //меняем состояние только для активных
+    }
     sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,project_url->getsvalue(),name->getsvalue(),op);
     char* s = waitresult();
     free(s); //результат не проверяем
