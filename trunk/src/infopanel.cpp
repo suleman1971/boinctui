@@ -28,6 +28,7 @@ std::string InfoPanel::getdayname(time_t ltime) //название дня "today
 	return "today";
     if ( now/(3600 * 24) == 1+ltime/(3600 * 24) )
 	return "yesterday";
+    return "";
 }
 
 
@@ -72,32 +73,31 @@ void InfoPanel::refresh()
     getyx(win,line,col);
     if ( (!compact)||(usertotal != hosttotal) )
     {
-	mvwprintw(win,line++,0,"user total%10.0f",usertotal);
-	mvwprintw(win,line++,0,"host total%10.0f",hosttotal);
+	mvwprintw(win,line++,0,"user total%10.0f\n",usertotal);
+	mvwprintw(win,line++,0,"host total%10.0f\n",hosttotal);
     }
     else
-	mvwprintw(win,line++,0,"total     %10.0f",usertotal);
+	mvwprintw(win,line++,0,"total     %10.0f\n",usertotal);
     if ( (!compact)||(useravg != hostavg) )
     {
-	mvwprintw(win,line++,0,"user avg  %10.0f",useravg);
-	mvwprintw(win,line++,0,"host avg  %10.0f",hostavg);
+	mvwprintw(win,line++,0,"user avg  %10.0f\n",useravg);
+	mvwprintw(win,line++,0,"host avg  %10.0f\n",hostavg);
     }
     else
-	mvwprintw(win,line++,0,"average   %10.0f",useravg);
-
+	mvwprintw(win,line++,0,"average   %10.0f\n",useravg);
     tm* ltime = localtime(&laststattime);
     char buf[128];
-    strftime(buf, sizeof(buf),/*"%-e %b %-k:%M"*/"%-e %b",ltime);
-    mvwprintw(win,line++,0,"%-s (%s)", buf, getdayname(laststattime).c_str()); //дата/время последней статистики
+    strftime(buf, sizeof(buf),"%-e %b",ltime); //"%-e %b %-k:%M"
+    mvwprintw(win,line++,0,"%-s %s\n", buf, getdayname(laststattime).c_str()); //дата/время последней статистики
     //wattrset(win,0);
     if ( (!compact)||(lastdayuser != lastdayhost) )
     {
-	mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f",lastdayuser);
-	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f",lastdayhost);
+	mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",lastdayuser);
+	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",lastdayhost);
     }
     else
     {
-	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f",lastdayhost);
+	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",lastdayhost);
     }
     //по проектам
     mvwprintw(win, line++,0,"\n");
@@ -135,8 +135,8 @@ void InfoPanel::refresh()
 	else
 	    mvwprintw(win,line++,0,"total     %10.0f\n",projects[i].user);
 	ltime = localtime(&projects[i].laststattime);
-	strftime(buf, sizeof(buf),/*"%-e %b %-k:%M"*/"%-e %b",ltime);
-	mvwprintw(win,line++,0,"%-s (%s)\n",buf, getdayname(projects[i].laststattime).c_str());
+	strftime(buf, sizeof(buf),"%-e %b",ltime); //"%-e %b %-k:%M"
+	mvwprintw(win,line++,0,"%-s %s\n",buf, getdayname(projects[i].laststattime).c_str());
 	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
 	{
 	    mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",projects[i].userlastday);

@@ -20,18 +20,26 @@ struct ProjectStat //статистика по проекту
 	//суммарная для юзера и хоста
 	double score1 = stat1.userlastday + stat1.hostlastday;
 	double score2 = stat2.userlastday + stat2.hostlastday;
+	if (stat1.laststattime == stat2.laststattime)
+	    return (score1 > score2); //даты равны -> больше тот у кого больше очков
+	else
+	    return (stat1.laststattime > stat2.laststattime); //больше тот у кого дата больше
+	/*
 	//оба с нулевыми (или оба с ненеулевыми) очками -> ставниваем по датам
 	if ( ((score1 == 0)&&(score2 == 0)) ||
 	     ((score1 > 0)&&(score2 > 0)) )
-	    if (stat1.laststattime > stat2.laststattime)
-		return true; //больше stat1 у него дата больше
-	    else
+	{
+	    if (stat1.laststattime == stat2.laststattime)
 	    {
 		//даты равны -> больше тот у кого больше очков
 		return (score1 > score2);
 	    }
+	    else //больше stat1 если у него дата больше
+		return (stat1.laststattime > stat2.laststattime);
+	}
 	// если stat1 с ненулевыми очками (stat2 соотв с нулевыми) -> stat1 больше
 	return (score1 > 0 );
+	*/
     };
 };
 

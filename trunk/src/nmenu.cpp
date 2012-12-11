@@ -76,6 +76,7 @@ void NMenu::eventhandle(NEvent* ev) 	//обработчик событий
 	menu_format(menu, &y, &x);
         switch(ev->keycode)
 	{
+	    case KEY_ENTER:
 	    case '\n':
 		action();
 		break;

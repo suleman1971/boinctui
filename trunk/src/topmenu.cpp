@@ -29,7 +29,7 @@
 #define M_ACTIVITY_NEVER		"Suspend"
 //Названия пунктов меню "Help"
 #define M_ABOUT				"About"
-#define M_KEY_BINDINGS			"Key bindings"
+#define M_KEY_BINDINGS			"Hot keys list"
 
 
 TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0))
@@ -108,6 +108,7 @@ void TopMenu::eventhandle(NEvent* ev) 	//обработчик событий
 	ev->done = true;
         switch(ev->keycode)
 	{
+	    case KEY_ENTER:
 	    case '\n':
 		if (!createsubmenu())
 		    ev->done = false; //пусть обрабатывает владелец
@@ -209,18 +210,11 @@ HelpSubMenu::HelpSubMenu(NRect rect) : NMenu(rect)
 
 bool HelpSubMenu::action()
 {
-/*
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть подменю
-    //создаем событие иммитирующее нажатие 'ESC'
-    putevent(new NEvent(NEvent::evKB, 27)); //закрыть осн меню
-    if ( strcmp(item_name(current_item(menu)),M_NEXT_HOST) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
-    if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
-    if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'Q')); //создаем событие иммитирующее нажатие 'Q'
-*/
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
+    if ( strcmp(item_name(current_item(menu)),M_ABOUT) == 0 )
+	putevent(new NEvent(NEvent::evPROG, 3)); //создаем событие с кодом 3 "окно About"
+    if ( strcmp(item_name(current_item(menu)),M_KEY_BINDINGS) == 0 )
+	putevent(new NEvent(NEvent::evPROG, 4)); //создаем событие с кодом 4 "окно Key Bindings"
     return true;
 }
 
@@ -337,6 +331,8 @@ bool TasksSubMenu::action()
 	putevent(new NEvent(NEvent::evKB, 'S')); //создаем событие иммитирующее нажатие 'S'
     if ( strcmp(item_name(current_item(menu)),M_RESUME_TASK) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'R')); //создаем событие иммитирующее нажатие 'R'
+    if ( strcmp(item_name(current_item(menu)),M_ABORT_TASK) == 0 )
+	putevent(new NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
     return true;
 }
 
