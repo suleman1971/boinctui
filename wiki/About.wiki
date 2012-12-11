@@ -11,7 +11,9 @@ Linux version.
   * Switch between several BOINC clients hosts via hot key
   * View task list (run, queue, suspend e.t.c state)
   * View message list
-  * Suspend/Resume tasks
+  * Suspend/Resume/Abort tasks
+  * Update/Suspend/Resume/Reset/No New Task/Allow New Task for projects
+  * Toggle activity state (Always suspend/Always resume/Run based on preferences)
   * Manage BOINC client on remote hosts via boinc_gui protocol
 
 === Requirements ===
