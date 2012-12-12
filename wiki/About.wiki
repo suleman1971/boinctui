@@ -3,7 +3,7 @@
 
 === Introduction ===
 
-Fullscreen text based manager for [http://boinc.berkeley.edu BOINC] client.
+Fullscreen text mode manager for [http://boinc.berkeley.edu BOINC] client.
 Linux version.
 
 === Main Features: ===
