@@ -1,0 +1,15 @@
+Source: boinctui
+Section: net
+Priority: optional
+Maintainer: Sergey Suslov <suleman1971@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.2
+Vcs-Svn: svn://boinctui.googlecode.com/svn/trunk/
+Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/
+Homepage: http://boinctui.googlecode.com
+
+Package: boinctui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: manager for Boinc client
+ boinctui is a fullscreen text based control toot for BOINC client
