@@ -16,6 +16,7 @@ class NGroup : public NView
     virtual void refresh();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     virtual void setneedrefresh();
+    virtual void move(int begrow, int begcol);
   protected:
     std::list<NView*> items; //список вложенных элементов
 };

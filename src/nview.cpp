@@ -43,6 +43,14 @@ NView::NView(NRect rect)
 }
 
 
+void NView::setowner(NGroup* owner)
+{
+    this->owner = owner;
+    //позиционировать относительно овнера
+    move(getbegrow(),getbegcol());
+}
+
+
 void NView::resize(int rows, int cols)
 {
     wresize(win, rows, cols);
@@ -67,12 +75,29 @@ void NView::refresh() //перерисовать
 }
 
 
+int NView::getabsbegrow() //получить начальную строку (на экране)
+{
+    if (owner == NULL)
+	return getbegrow();
+    else
+	return getbegrow() + owner->getabsbegrow();
+}
+
+
+int NView::getabsbegcol() //получить начальный столбец (на экране)
+{
+    if (owner == NULL)
+	return getbegcol();
+    else
+	return getbegcol() + owner->getabsbegcol();
+}
+
+
 void NView::move(int begrow, int begcol)
 {
     rect.begrow = begrow;
     rect.begcol = begcol;
-//    mvwin(win, begrow, begcol);
-    move_panel(pan, begrow, begcol);
+    move_panel(pan, getabsbegrow(), getabsbegcol());
 }
 
 

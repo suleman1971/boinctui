@@ -19,7 +19,7 @@ void NGroup::setneedrefresh()
     {
 	(*it)->setneedrefresh();
     }
-};
+}
 
 
 void NGroup::refresh()
@@ -29,6 +29,19 @@ void NGroup::refresh()
     for(it = items.begin(); it != items.end(); it++) //перерисовать все подэлементы
     {
 	(*it)->refresh();
+    }
+}
+
+
+void NGroup::move(int begrow, int begcol)
+{
+    //перемещаем само окно
+    NView::move(begrow, begcol); //предок
+    //перемещаем содержимое (относительно этого окна)
+    std::list<NView*>::iterator it;
+    for(it = items.begin(); it != items.end(); it++) //перместить все подэлементы
+    {
+	(*it)->move((*it)->getbegrow(),(*it)->getbegcol());
     }
 }
 
