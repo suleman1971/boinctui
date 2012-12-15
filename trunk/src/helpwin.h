@@ -11,7 +11,6 @@ class HelpWin : public NGroup
     HelpWin(int rows, int cols);
     ~HelpWin() { delete caption; };
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
-    void move(int begrow, int begcol);
   protected:
     char* caption; //строка заголовка
     NStaticText* text1;

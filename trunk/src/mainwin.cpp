@@ -4,17 +4,16 @@
 #define INFPANWIDTH  20 //ширина инф панели
 
 
-MainWin::MainWin(NRect rect/*, void* hconnect*/) : NGroup(rect)
+MainWin::MainWin(NRect rect) : NGroup(rect)
 {
-    //gsrvlist = new SrvList(cfg);
-    tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, rect.begrow + 1, 1));
+    tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
     tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task %20s","");
-    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 3, 1)/*, hconnect*/); //создаем окно процессов внутри wmain
-    wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+4, 1)/*, hconnect*/); //создаем окно евентов
-    hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1), NULL); //горизонтальная линия
-    vline = new NVLine(NRect(getheight()-2, 1, 2 , getwidth()-INFPANWIDTH-2), NULL); //горизонтальная линия
+    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
+    wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1)); //создаем окно евентов
+    hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+2, 1), NULL); //горизонтальная линия
+    vline = new NVLine(NRect(getheight()-2, 1, 1 , getwidth()-INFPANWIDTH-2), NULL); //вертикальная линия
 
-    panel1 = new InfoPanel(NRect(getheight()-2,INFPANWIDTH,2,getwidth()-INFPANWIDTH-1)/*, hconnect*/);
+    panel1 = new InfoPanel(NRect(getheight()-2,INFPANWIDTH,1,getwidth()-INFPANWIDTH-1));
     caption = new NColorString(0,"");
     insert(tablheader);
     insert(wtask);
@@ -28,24 +27,18 @@ MainWin::MainWin(NRect rect/*, void* hconnect*/) : NGroup(rect)
 void MainWin::resize(int rows, int cols)
 {
     NGroup::resize(rows, cols);
-    tablheader->resize(1, rect.cols-2-(INFPANWIDTH)-1);
+    tablheader->resize(1, getwidth()-2-(INFPANWIDTH)-1);
     wtask->resize(getheight()/2, getwidth()-2-(INFPANWIDTH)-1); //размер окна задач
     wmsg->resize(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1));
-    wmsg->move(wtask->getheight()+4, 1);
+    wmsg->move(wtask->getheight()+3, 1);
     hline->resize(1, getwidth()-2-(INFPANWIDTH+1)); //горизонтальная линия
-    hline->move(wtask->getheight()+3, 1);
+    hline->move(wtask->getheight()+2, 1);
     vline->resize(getheight()-2, 1);
-    vline->move(2 , getwidth()-INFPANWIDTH-2);
+    vline->move(1 , getwidth()-INFPANWIDTH-2);
     panel1->resize(getheight()-2,INFPANWIDTH);
-    panel1->move(2,getwidth()-INFPANWIDTH-1);
+    panel1->move(1,getwidth()-INFPANWIDTH-1);
 }
 
-/*
-void MainWin::move(int begrow, int begcol)
-{
-    NGroup::move(begrow, begcol);
-}
-*/
 
 void 	MainWin::setserver(Srv* srv) //установить отображаемый сервер
 {

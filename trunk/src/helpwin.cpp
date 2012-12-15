@@ -5,10 +5,10 @@
 HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/2-rows/2,getmaxx(stdscr)/2-cols/2))
 {
     caption = strdup(" Hot keys list ");
-    resize(15,60/*getwidth()*/);
+    resize(15,60);
     box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
-    text1 = new NStaticText(NRect(getheight()-2,getwidth()-2,rect.begrow+1,rect.begcol+1));
+    text1 = new NStaticText(NRect(getheight()-2,getwidth()-2,/*rect.begrow+*/1,/*rect.begcol+*/1));
     int attr1 = getcolorpair(COLOR_YELLOW, COLOR_BLACK) | A_BOLD;
     int attr2 = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
     text1->setstring(attr1,   "\n   Common Controls:\n");
@@ -23,15 +23,6 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     text1->appendstring(attr2,"       \"R\"           - Resume selected suspended task\n");
     text1->appendstring(attr2,"       \"Up\"/\"Dn\"     - Select task\n");
     insert(text1);
-    move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
-}
-
-
-
-void HelpWin::move(int begrow, int begcol)
-{
-    NGroup::move(begrow, begcol);
-    text1->move(rect.begrow+1, rect.begcol+1); //костыль!!!
 }
 
 

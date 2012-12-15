@@ -10,7 +10,6 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
 {
     caption = strdup(" BOINCTUI ");
     resize(10,getwidth());
-    move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
     box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
     char buf[1024];

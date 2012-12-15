@@ -266,8 +266,8 @@ bool ProjectsSubMenu::action()
     if ( strcmp(item_name(current_item(menu)),M_RESET_PROJECT) == 0 )
 	op = 'r';
     //создаем подменю
-    int begincol = getbegcol()+getwidth() - 2; //смещение на экране по горизонтали
-    int beginrow = 3 + item_index(current_item(menu)); //смещение на экране по вертикали
+    int begincol = /*getbegcol()+*/getwidth() - 2; //смещение на экране по горизонтали
+    int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
     insert(new ProjectListSubMenu(NRect(5,25,beginrow, begincol), srv, op));
     return true;
 }

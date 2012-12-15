@@ -152,6 +152,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		{
 		    about = new AboutWin(2,40);
 		    insert(about);
+		    about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //центрируем
 		}
 		break;
 	    }
@@ -167,6 +168,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		{
 		    help = new HelpWin(2,40);
 		    insert(help);
+		    help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //центрируем
 		}
 		break;
 	    }
