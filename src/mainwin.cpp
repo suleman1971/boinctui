@@ -50,7 +50,7 @@ void 	MainWin::setserver(Srv* srv) //установить отображаемы
 
 void MainWin::refresh()
 {
-    wattron(win,A_BOLD);
+    wattrset(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     box(win, ACS_VLINE, ACS_HLINE);
     //рисуем заголовок
     wmove(win,0,(getwidth()/2)-(caption->getlen()+1)/2);
@@ -60,10 +60,10 @@ void MainWin::refresh()
 	NColorStringPart* part = *it;
 	wattrset(win,part->attr);
 	wprintw(win,"%s",part->s.c_str());
-	wattrset(win,0);
+	//wattrset(win,0);
     }
     //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
-    wattroff(win,A_BOLD);
+    //wattroff(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     NGroup::refresh();
 }
 

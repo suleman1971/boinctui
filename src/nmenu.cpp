@@ -6,7 +6,8 @@ NMenu::NMenu(NRect rect) : NGroup(rect)
 {
     mitems = NULL;
     menu = new_menu(mitems);
-    setbackground(0);
+    setbackground(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    setforeground(getcolorpair(COLOR_BLACK,COLOR_WHITE));
     set_menu_win(menu, win);
     post_menu(menu);
 }

@@ -154,11 +154,11 @@ void TaskWin::updatedata() //обновить данные с сервера
 		std::string pname = srv->findProjectName(srv->statedom, (*it)->findItem("project_url")->getsvalue());//findProjectName(srv->statedom, *it);
 		char* sproject = strdup(pname.c_str());
 		//цвет и атрибут
-		int attr = A_NORMAL;
+		int attr = getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_NORMAL; //ставим цвет по умолчанию
 		if ((*it)->findItem("ready_to_report") != NULL)
 		    attr = getcolorpair(COLOR_BLACK,COLOR_BLACK) | A_BOLD;
 		if ((*it)->findItem("active_task") != NULL)
-		    attr = A_BOLD;
+		    attr =  getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD; //ставим цвет по умолчанию + A_BOLD;
 		if ( sstate == "Run")
 		    attr = getcolorpair(COLOR_YELLOW,COLOR_BLACK) | A_BOLD;
 		if ( sstate == "Upld")

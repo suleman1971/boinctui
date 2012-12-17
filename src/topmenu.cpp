@@ -162,7 +162,6 @@ FileSubMenu::FileSubMenu(NRect rect) : NMenu(rect)
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);
@@ -198,7 +197,6 @@ HelpSubMenu::HelpSubMenu(NRect rect) : NMenu(rect)
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);
@@ -236,7 +234,6 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);
@@ -314,7 +311,6 @@ TasksSubMenu::TasksSubMenu(NRect rect) : NMenu(rect)
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);
@@ -358,7 +354,6 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
     }
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);
@@ -421,7 +416,6 @@ ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(re
     set_menu_items(menu, mitems);
     resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
     set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    setbackground(A_BOLD);
     box(win,0,0); //рамка
     set_menu_mark(menu, " ");
     menu_opts_off(menu,O_SHOWMATCH);

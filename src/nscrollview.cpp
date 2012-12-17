@@ -42,7 +42,7 @@ void NScrollView::drawcontent() //отрисовывает буфер строк
 		NColorStringPart* part = *it;
 		wattrset(win,part->attr); //включаем атрибут
 		wprintw(win,"%s",part->s.c_str());
-		wattrset(win,0); //отключаем атрибут
+//		wattrset(win,0); //отключаем атрибут
 	    }
 	    wclrtoeol(win); //очищаем до конца строки
 	}

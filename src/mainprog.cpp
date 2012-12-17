@@ -24,23 +24,25 @@ MainProg::MainProg()
     wstatus 	= new NStaticText(NRect(1, getmaxx(stdscr), getmaxy(stdscr)-1, 0)); //создаем окно статуса
     insert(wstatus);
     wstatus->setbgcolor(getcolorpair(COLOR_WHITE,COLOR_GREEN));
-    wstatus->appendstring(A_BOLD| getcolorpair(COLOR_YELLOW,COLOR_GREEN), " PgUp/PgDn");
-    wstatus->appendstring(A_BOLD,"-Scroll Msg |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," Up/Dn");
-    wstatus->appendstring(A_BOLD,"-Select |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," S");
-    wstatus->appendstring(A_BOLD,"uspend |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," R");
-    wstatus->appendstring(A_BOLD,"esume |");
-    wstatus->appendstring(A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN)," F9");
-    wstatus->appendstring(A_BOLD," Menu |");
+    int attrYG = A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN);
+    int attrWG = A_BOLD | getcolorpair(COLOR_WHITE,COLOR_GREEN);
+    wstatus->appendstring(attrYG, " PgUp/PgDn");
+    wstatus->appendstring(attrWG, "-Scroll Msg |");
+    wstatus->appendstring(attrYG, " Up/Dn");
+    wstatus->appendstring(attrWG, "-Select |");
+    wstatus->appendstring(attrYG, " S");
+    wstatus->appendstring(attrWG, "uspend |");
+    wstatus->appendstring(attrYG, " R");
+    wstatus->appendstring(attrWG, "esume |");
+    wstatus->appendstring(attrYG, " F9");
+    wstatus->appendstring(attrWG, " Menu |");
 }
 
 
 void MainProg::setcaption()
 {
     wmain->caption->clear();
-    wmain->caption->append(A_BOLD," Host %s:%s ",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
+    wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
     wmain->refresh();
 }
 
