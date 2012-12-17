@@ -37,6 +37,7 @@ CfgForm::CfgForm(int rows, int cols, Config* cfg) : NForm(rows,cols)
 
 CfgForm::~CfgForm()
 {
+    unpost_form(frm);
     delfields();
 }
 
@@ -84,6 +85,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     fields[nf]   = new_field(1, 44, nl, 5, 0, 0);
     field_opts_off(fields[nf], O_ACTIVE); //статический текст
     set_field_buffer(fields[nf], 0, "host             port   pwd");
+    set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     nf++; nl = nl + 1;
     //поля для хостов
     //for (it = slist.begin(); it != slist.end(); it++, i++) //цикл по хостам
@@ -136,6 +138,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	set_field_buffer(fields[nf], 0, "Esc-Cancel   Enter-Accept");
     else
 	set_field_buffer(fields[nf], 0, "Esc-Cancel   Enter-Accept   Ins-Add host");
+    set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     nf++; nl = nl + 2;
     //финализация списка полей
     fields[nf] = NULL;

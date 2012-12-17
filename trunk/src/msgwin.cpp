@@ -41,7 +41,7 @@ void MsgWin::updatedata() //обновить данные с сервера
 		sproject = project->getsvalue();
 	    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
 	    content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
-	    addstring(0, "%s", body->getsvalue()); //само сообщение
+	    addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", body->getsvalue()); //само сообщение
 	}
     }
     lastmsgno = srv->lastmsgno;

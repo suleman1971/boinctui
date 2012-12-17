@@ -44,9 +44,10 @@ void InfoPanel::refresh()
 	NView::refresh();
 	return;
     }
-    wattrset(win,A_REVERSE);
+    wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
+    wattron(win, A_REVERSE);
     mvwprintw(win,0,0,"       Tasks        ");
-    wattrset(win,0);
+    wattroff(win, A_REVERSE);
 
     mvwprintw(win,1,0,"all              %3d",nalltasks);
     mvwprintw(win,2,0,"active           %3d",nactivetasks);
@@ -55,18 +56,18 @@ void InfoPanel::refresh()
     mvwprintw(win,5,0,"done             %3d",ndonetasks);
     mvwprintw(win,6,0,"other            %3d",nothertasks);
 
-    wattrset(win,A_REVERSE);
+    wattron(win,A_REVERSE);
     mvwprintw(win,7,0,"      Storage       ");
-    wattrset(win,0);
+    wattroff(win,A_REVERSE);
 
     mvwprintw(win,8,0, "total     %8.2fGb",dtotal/(1024*1024*1024));
     mvwprintw(win,9,0, "free      %8.2fGb",dfree/(1024*1024*1024));
     mvwprintw(win,10,0,"allowed   %8.2fGb",dallowed/(1024*1024*1024));
     mvwprintw(win,11,0,"boinc     %8.2fGb",dboinc/(1024*1024*1024));
 
-    wattrset(win,A_REVERSE);
+    wattron(win,A_REVERSE);
     mvwprintw(win,12,0,"     Statistics     ");
-    wattrset(win,0);
+    wattroff(win,A_REVERSE);
 
     bool compact = true; //компактный вывод статистики если user=host
     int line,col;
@@ -118,7 +119,7 @@ void InfoPanel::refresh()
 	//проверяем сколько свободных строк осталось в окне
 	if ( ( getheight()-line ) < needlines )
 	    break; //не выводим если осталось мало строк
-	//вывод на экран
+	//вывод на экран о проекте
 	wattrset(win,getcolorpair(COLOR_YELLOW,COLOR_BLACK));
 	mvwprintw(win,line++,0,"%s\n",projects[i].name.c_str());
 	if (!projects[i].sstatus.empty())
@@ -126,7 +127,7 @@ void InfoPanel::refresh()
 	    wattrset(win,getcolorpair(COLOR_RED,COLOR_BLACK));
 	    mvwprintw(win,line++,0,"%s\n",projects[i].sstatus.c_str());
 	}
-	wattrset(win,0);
+	wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
 	if ( (!compact)||(projects[i].user != projects[i].host) )
 	{
 	    mvwprintw(win,line++,0,"user total%10.0f\n",projects[i].user);

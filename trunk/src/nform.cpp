@@ -8,6 +8,8 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     scale_form(frm,&rows,&cols);
     set_form_win(frm, win);
     set_form_sub(frm, derwin(win, rows, cols, 2,2));
+    wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
+
 //    framewin = win;
 //    win = frm->sub;
 //post_form(frm);
