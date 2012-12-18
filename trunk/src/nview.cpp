@@ -42,7 +42,8 @@ NView::NView(NRect rect)
     #ifdef DEBUG
     refreshcount = 0; //счетчик обновлений
     #endif
-
+    wbkgdset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK)); //бакграунд
+    werase(win); //заполняем цветом фона
 }
 
 

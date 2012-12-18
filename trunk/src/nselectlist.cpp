@@ -51,7 +51,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 		}
 		wprintw(win,"%s",part->s.c_str());
 	    } //цикл частей одной строки
-	    wattrset(win,0); //отключаем атрибут
+	    //wattrset(win,0); //отключаем атрибут
 	    //очищаем до конца строки
 	    if (startindex + line != selectedindex)
 	        wclrtoeol(win);
@@ -59,7 +59,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 	    {
 		wbkgdset(win,getcolorpair(COLOR_WHITE,selectorbgcolor));
 		wclrtoeol(win); //очищаем до конца строки
-		wbkgdset(win,0);
+		wbkgdset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK));
 	    }
 	}
 	else //очищаем нижнюю незанятую часть окна (если есть)

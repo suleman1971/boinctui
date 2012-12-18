@@ -32,7 +32,7 @@ void NMenu::destroysubmenu() //закрыть субменю
 {
     while (!items.empty())
     {
-	delete items.front(); //кастинг поскольку в списке только NMenu*
+	delete items.front();
 	remove (items.front());
     }
 }
@@ -55,7 +55,7 @@ void NMenu::refresh()
 	    wprintw(win," ");
 	}
 	while (x < getwidth() - 1);
-	wattrset(win,0);
+	//wattrset(win,0);
     }
     NGroup::refresh();
 }

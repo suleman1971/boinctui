@@ -27,9 +27,9 @@ MainProg::MainProg()
     int attrYG = A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN);
     int attrWG = A_BOLD | getcolorpair(COLOR_WHITE,COLOR_GREEN);
     wstatus->appendstring(attrYG, " PgUp/PgDn");
-    wstatus->appendstring(attrWG, "-Scroll Msg |");
+    wstatus->appendstring(attrWG, " Scroll Msg |");
     wstatus->appendstring(attrYG, " Up/Dn");
-    wstatus->appendstring(attrWG, "-Select |");
+    wstatus->appendstring(attrWG, " Select |");
     wstatus->appendstring(attrYG, " S");
     wstatus->appendstring(attrWG, "uspend |");
     wstatus->appendstring(attrYG, " R");
