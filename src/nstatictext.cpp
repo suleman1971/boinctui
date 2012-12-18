@@ -45,8 +45,9 @@ void NStaticText::refresh()
 	//kLogPrintf("[%d] %s\n", part->attr, part->s.c_str());
 	wattrset(win,part->attr);
 	wprintw(win,"%s",part->s.c_str());
-	wattrset(win,0);
+	//wattrset(win,0);
     }
-    //wclrtoeol(win); //очищаем до конца строки
+    wbkgdset(win,bgcolor);
+    wclrtoeol(win); //очищаем до конца строки
     NView::refresh();
 }

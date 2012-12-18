@@ -12,7 +12,7 @@ class NMenu : public NGroup
     virtual ~NMenu();
     virtual void refresh();
     void 	 eventhandle(NEvent* ev); 	//обработчик событий
-    void	 setbackground(int attr) { set_menu_back(menu, attr); wattrset(win, attr); bgattr = attr; };
+    void	 setbackground(int attr) { set_menu_back(menu, attr); wattrset(win, attr);  bgattr = attr; wbkgdset(win,attr); };
     void	 setforeground(int attr) { set_menu_fore(menu, attr); fgattr = attr; };
     virtual bool createsubmenu() { return false; }; //открыть субменю
     virtual void destroysubmenu(); //закрыть субменю
