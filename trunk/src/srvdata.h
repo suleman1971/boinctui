@@ -27,10 +27,10 @@ class Srv : public TConnect //описание соединения с серв�
     Item* findresultbyname(const char* resultname);
     Item* findprojectbyname(const char* projectname);
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
+    void  opnetactivity(const char* op); //изменение режима активности сети "always" "auto" "newer"
     void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
-//    void  resumetask(Item* result); //продолжить задачу
     void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
-//    void  resumeproject(const char* name); //продолжить проект
+    void  runbenchmarks(); //запустить бенчмарк
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера

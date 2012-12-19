@@ -11,6 +11,7 @@
 //Названия пунктов меню "File"
 #define M_NEXT_HOST			"Next BOINC host"
 #define M_CONFIG_HOSTS			"Configure host list"
+#define M_RUN_BENCHMARKS		"Run CPU benchmarks"
 #define M_QUIT				"Quit boinctui"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
@@ -27,32 +28,26 @@
 #define M_ACTIVITY_ALWAYS		"Run always"
 #define M_ACTIVITY_AUTO			"Run based on preferences"
 #define M_ACTIVITY_NEVER		"Suspend"
+#define M_NET_ACTIVITY_ALWAYS		"Network activity always available"
+#define M_NET_ACTIVITY_AUTO		"Network activity based on preferences"
+#define M_NET_ACTIVITY_NEVER		"Network activity suspend"
 //Названия пунктов меню "Help"
 #define M_ABOUT				"About"
 #define M_KEY_BINDINGS			"Hot keys list"
 
 
-TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0))
+TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0),true)
 {
     setserver(NULL);
-    unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,6*sizeof(ITEM*));
-    mitems[0] = new_item(M_FILE,"");
-    mitems[1] = new_item(M_PROJECTS,"");
-    mitems[2] = new_item(M_TASKS,"");
-    mitems[3] = new_item(M_ACTIVITY,"");
-    mitems[4] = new_item(M_HELP,"");
-    mitems[5] = NULL; 
-    set_menu_items(menu, mitems);
-    menu_opts_off(menu, O_ROWMAJOR);
-    menu_opts_off(menu, O_SHOWDESC);
-    set_menu_mark(menu, "  ");
+    additem(M_FILE,"");
+    additem(M_PROJECTS,"");
+    additem(M_TASKS,"");
+    additem(M_ACTIVITY,"");
+    additem(M_HELP,"");
+    additem(NULL,NULL);
     setbackground(getcolorpair(COLOR_WHITE,COLOR_GREEN)|A_BOLD);
     enableflag = true;
     disable();
-    set_menu_win(menu, win);
-    set_menu_format(menu, 1, menu->nitems);
-    post_menu(menu);
 }
 
 
@@ -153,21 +148,11 @@ void TopMenu::eventhandle(NEvent* ev) 	//обработчик событий
 
 FileSubMenu::FileSubMenu(NRect rect) : NMenu(rect)
 {
-    unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,4*sizeof(ITEM*));
-    mitems[0] = new_item(M_NEXT_HOST,"  N");
-    mitems[1] = new_item(M_CONFIG_HOSTS,"  C");
-    mitems[2] = new_item(M_QUIT,"  Q");
-    mitems[3] = NULL;
-    set_menu_items(menu, mitems);
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
+    additem(M_NEXT_HOST,"  N");
+    additem(M_CONFIG_HOSTS,"  C");
+    additem(M_RUN_BENCHMARKS,"");
+    additem(M_QUIT,"  Q");
+    additem(NULL,NULL);
 }
 
 
@@ -178,6 +163,8 @@ bool FileSubMenu::action()
 	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
     if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
+    if ( strcmp(item_name(current_item(menu)),M_RUN_BENCHMARKS) == 0 )
+	putevent(new NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
     if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'Q')); //создаем событие иммитирующее нажатие 'Q'
     return true;
@@ -189,20 +176,9 @@ bool FileSubMenu::action()
 
 HelpSubMenu::HelpSubMenu(NRect rect) : NMenu(rect)
 {
-    unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,3*sizeof(ITEM*));
-    mitems[0] = new_item(M_ABOUT,"");
-    mitems[1] = new_item(M_KEY_BINDINGS,"");
-    mitems[2] = NULL;
-    set_menu_items(menu, mitems);
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
+    additem(M_ABOUT,"");
+    additem(M_KEY_BINDINGS,"");
+    additem(NULL,NULL);
 }
 
 
@@ -222,24 +198,13 @@ bool HelpSubMenu::action()
 ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 {
     this->srv = srv;
-    unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,7*sizeof(ITEM*));
-    mitems[0] = new_item(M_UPDATE_PROJECT,"...");
-    mitems[1] = new_item(M_SUSPEND_PROJECT ,"...");
-    mitems[2] = new_item(M_RESUME_PROJECT,"...");
-    mitems[3] = new_item(M_NO_NEW_TASKS_PROJECT,"...");
-    mitems[4] = new_item(M_ALLOW_NEW_TASKS_PROJECT,"...");
-    mitems[5] = new_item(M_RESET_PROJECT,"...");
-    mitems[6] = NULL;
-    set_menu_items(menu, mitems);
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
+    additem(M_UPDATE_PROJECT,"...");
+    additem(M_SUSPEND_PROJECT ,"...");
+    additem(M_RESUME_PROJECT,"...");
+    additem(M_NO_NEW_TASKS_PROJECT,"...");
+    additem(M_ALLOW_NEW_TASKS_PROJECT,"...");
+    additem(M_RESET_PROJECT,"...");
+    additem(NULL,NULL);
 }
 
 
@@ -302,21 +267,10 @@ void ProjectsSubMenu::eventhandle(NEvent* ev) 	//обработчик событ
 
 TasksSubMenu::TasksSubMenu(NRect rect) : NMenu(rect)
 {
-    unpost_menu(menu);
-    mitems = (ITEM**)realloc(mitems,4*sizeof(ITEM*));
-    mitems[0] = new_item(M_SUSPEND_TASK,"  S");
-    mitems[1] = new_item(M_RESUME_TASK ,"  R");
-    mitems[2] = new_item(M_ABORT_TASK  ,"");
-    mitems[3] = NULL;
-    set_menu_items(menu, mitems);
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
+    additem(M_SUSPEND_TASK,"  S");
+    additem(M_RESUME_TASK ,"  R");
+    additem(M_ABORT_TASK  ,"");
+    additem(NULL,NULL);
 }
 
 
@@ -345,21 +299,15 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
     if ((srv != NULL)&&(srv->ccstatusdom != NULL))
     {
 	Item* task_mode = srv->ccstatusdom->findItem("task_mode");
-	mitems = (ITEM**)realloc(mitems,4*sizeof(ITEM*));
-	mitems[0] = new_item(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "*" : ""); //1 always
-	mitems[1] = new_item(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
-	mitems[2] = new_item(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
-	mitems[3] = NULL;
-	set_menu_items(menu, mitems);
+	additem(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "*" : ""); //1 always
+	additem(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
+	additem(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	Item* network_mode = srv->ccstatusdom->findItem("network_mode");
+	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "*" : ""); //1 always
+	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
+	additem(M_NET_ACTIVITY_NEVER,((network_mode!=NULL)&&(network_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
     }
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
+    additem(NULL,NULL);
 }
 
 
@@ -374,6 +322,12 @@ bool ActivitySubMenu::action()
 	    srv->opactivity("auto");
 	if ( strcmp(item_name(current_item(menu)),M_ACTIVITY_NEVER) == 0 )
 	    srv->opactivity("never");
+	if ( strcmp(item_name(current_item(menu)),M_NET_ACTIVITY_ALWAYS) == 0 )
+	    srv->opnetactivity("always");
+	if ( strcmp(item_name(current_item(menu)),M_NET_ACTIVITY_AUTO) == 0 )
+	    srv->opnetactivity("auto");
+	if ( strcmp(item_name(current_item(menu)),M_NET_ACTIVITY_NEVER) == 0 )
+	    srv->opnetactivity("never");
     }
     return true;
 }
@@ -384,7 +338,6 @@ bool ActivitySubMenu::action()
 
 ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(rect)
 {
-    unpost_menu(menu);
     this->srv = srv;
     this->op = op;
     if ((srv != NULL)&&(srv->statedom != NULL))
@@ -394,48 +347,22 @@ ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(re
 	if (client_state != NULL)
 	{
 	    std::vector<Item*> projects = client_state->getItems("project");
-	    mitems = (ITEM**)realloc(mitems,(projects.size()+1)*sizeof(ITEM*));
 	    for (int i = 0; i < projects.size(); i++)
 	    {
 		Item* project_name = projects[i]->findItem("project_name");
 		if (project_name != NULL)
 		{
-		    projectnames.push_back(strdup(project_name->getsvalue())); //сохраняем копии названий проектов
 		    std::string status = ""; //строка состояния
 		    if (projects[i]->findItem("suspended_via_gui") != NULL)
 			status = status + "[suspended via gui]";
 		    if (projects[i]->findItem("dont_request_more_work") != NULL)
 			status = status + "[dont request more work]";
-		    projectstatus.push_back(strdup(status.c_str()));
-		    mitems[i] = new_item(projectnames.back(),projectstatus.back());
+		    additem(project_name->getsvalue(),status.c_str());
 		}
 	    }
-	    mitems[projects.size()] = NULL;
 	}
     }
-    set_menu_items(menu, mitems);
-    resize(menu->nitems+2, menu->width+3); //изменяем размер под кол-во эл-тов
-    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-    box(win,0,0); //рамка
-    set_menu_mark(menu, " ");
-    menu_opts_off(menu,O_SHOWMATCH);
-    set_menu_win(menu, win);
-    set_menu_format(menu, menu->nitems, 1);
-    post_menu(menu);
-}
-
-
-ProjectListSubMenu::~ProjectListSubMenu()
-{
-    std::list<char*>::iterator it;
-    for (it = projectnames.begin(); it != projectnames.end(); it++)
-    {
-	delete (*it);
-    }
-    for (it = projectstatus.begin(); it != projectstatus.end(); it++)
-    {
-	delete (*it);
-    }
+    additem(NULL,NULL);
 }
 
 

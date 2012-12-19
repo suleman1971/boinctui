@@ -1,23 +1,36 @@
+#include <string.h>
 #include "nmenu.h"
 #include "kclog.h"
 
 
-NMenu::NMenu(NRect rect) : NGroup(rect)
+NMenu::NMenu(NRect rect, bool horis) : NGroup(rect)
 {
     mitems = NULL;
+    ishoris = horis;
     menu = new_menu(mitems);
     setbackground(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     setforeground(getcolorpair(COLOR_BLACK,COLOR_WHITE));
     set_menu_win(menu, win);
-    post_menu(menu);
+    postmenu();
 }
 
 
 NMenu::~NMenu()
 {
     kLogPrintf("NMenu::~NMenu()\n");
-    unpost_menu(menu);
+    unpostmenu();
     free_menu(menu);
+    //освобождаем строки
+    std::list<char*>::iterator it;
+    for (it = itemnames.begin(); it != itemnames.end(); it++)
+    {
+	delete (*it);
+    }
+    for (it = itemcomments.begin(); it != itemcomments.end(); it++)
+    {
+	delete (*it);
+    }
+    //массив эл-тов
     if (mitems != NULL)
     {
 	int i = 0;
@@ -34,6 +47,42 @@ void NMenu::destroysubmenu() //закрыть субменю
     {
 	delete items.front();
 	remove (items.front());
+    }
+}
+
+
+void NMenu::additem(const char* name, const char* comment) //добавить эл-т в меню
+{
+    unpostmenu();
+    mitems = (ITEM**)realloc(mitems,(itemnames.size()+1)*sizeof(ITEM*));
+    if (name == NULL) //финализация списка
+    {
+	mitems[itemnames.size()] = NULL;
+	set_menu_items(menu, mitems);
+	set_menu_mark(menu, " ");
+	if ( !ishoris ) //для вертикальных есть рамка
+	{
+	    set_menu_format(menu, itemnames.size(), 1);
+	    resize(itemnames.size()+2,menu->width+3); //изменяем размер под кол-во эл-тов
+	    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
+	    box(win,0,0); //рамка
+	}
+	else //горизонтальное
+	{
+	    set_menu_format(menu, 1, itemnames.size());
+	    menu_opts_off(menu, O_ROWMAJOR);
+	    menu_opts_off(menu, O_SHOWDESC);
+	    set_menu_mark(menu, "  ");
+	}
+	//set_menu_win(menu, win);
+	menu_opts_off(menu,O_SHOWMATCH);
+	postmenu();
+    }
+    else
+    {
+	itemnames.push_back(strdup(name));
+	itemcomments.push_back(strdup(comment));
+	mitems[itemnames.size()-1] = new_item(itemnames.back(),itemcomments.back());
     }
 }
 

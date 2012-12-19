@@ -267,6 +267,14 @@ void Srv::opactivity(const char* op) //изменение режима акти�
 }
 
 
+void Srv::opnetactivity(const char* op) //изменение режима активности сети "always" "auto" "newer"
+{
+    sendreq("<boinc_gui_rpc_request>\n<set_network_mode><%s/><duration>0</duration></set_network_mode>\n</boinc_gui_rpc_request>\n\003",op);
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+
+
 void Srv::optask(Item* result, const char* op) //действия над задачей ("suspend_result",...)
 {
     Item* name = result->findItem("name");
@@ -290,6 +298,14 @@ void  Srv::opproject(const char* name, const char* op) //действия над
 	return;
     std::string url = findProjectUrl(statedom,name);
     sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,url.c_str(),op);
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+
+
+void Srv::runbenchmarks() //запустить бенчмарк
+{
+    sendreq("<boinc_gui_rpc_request>\n<run_benchmarks/>\n</boinc_gui_rpc_request>\n\003");
     char* s = waitresult();
     free(s); //результат не проверяем
 }
