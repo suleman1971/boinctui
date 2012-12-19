@@ -1,3 +1,19 @@
+boinctui (1.1.0-0) unstable; urgency=low
+
+  * bugfixes:
+    - any color combinations are invisible on any terminals
+    - incorrect visualization on any white background terminals
+
+  * implemented network activity operations:
+    - run always.
+    - run based on preferences.
+    - suspend always.
+
+  * implemented "Run benchmarks"
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Wed, 19 Dec 2012 19:49:00 +0400
+
+
 boinctui (1.0.0-0) unstable; urgency=low
 
   * implemented project operations:
@@ -18,7 +34,7 @@ boinctui (1.0.0-0) unstable; urgency=low
 
   * color schem optimization.
 
- -- Sergey Suslov <suleman1971@gmail.com>  Sat, 11 Dec 2012 12:42:00 +0400
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 11 Dec 2012 12:42:00 +0400
 
 boinctui (0.0.1-0) unstable; urgency=low
 
