@@ -55,12 +55,9 @@ class ProjectListSubMenu : public NMenu //выпадающие меню втор
 {
   public:
     ProjectListSubMenu(NRect rect, Srv* srv, char op);
-    ~ProjectListSubMenu();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
     virtual bool action(); //вызывается при нажатии Enter
-    std::list<char*> projectnames;
-    std::list<char*> projectstatus;
     Srv*	srv; //текущий отображаемый сервер
     char	op;  //выполняемая операция 'S','R',e.t.c.
 };

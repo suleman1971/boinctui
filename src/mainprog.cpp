@@ -174,6 +174,14 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		}
 		break;
 	    }
+	    case 5: //запустить бенчмарк
+	    {
+		Srv* srv = gsrvlist->getcursrv();
+		if (srv != NULL)
+		    srv->runbenchmarks();
+		break;
+	    }
+
 	} //switch
     }
 }
