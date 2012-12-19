@@ -1,6 +1,6 @@
 Name:		boinctui
-Version:	1.0.0
-Release:	1%{?dist}
+Version:	1.1.0
+Release:	0%{?dist}
 Summary:	curses based manager for Boinc client
 Group:		Applications/Communications
 License:	GPL-3.0+
