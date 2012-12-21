@@ -184,7 +184,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if (report_deadline != NULL)
 		{
 		    double dtime = report_deadline->getdvalue();
-		    time_t beforedl = (time_t)dtime - time(NULL); //число секунд до дедлайна
+		    double beforedl = dtime - time(NULL); //число секунд до дедлайна
 		    if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
 			attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
 		    cs->append(attr2,"%4s", gethumanreadabletimestr(beforedl).c_str());
