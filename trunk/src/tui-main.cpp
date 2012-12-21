@@ -4,9 +4,12 @@
 #include "kclog.h"
 #include "mainprog.h"
 
+std::string locale;
+
 
 void initcurses()
 {
+    locale = setlocale(LC_ALL, NULL);
     setlocale(LC_ALL, "");
     initscr();
     noecho();
@@ -15,17 +18,6 @@ void initcurses()
     timeout(250); //ожидание для getch() 250 милисекунд
     start_color();
     initcolorpairs();
-/*
-    init_pair(1,COLOR_WHITE,COLOR_GREEN); //цвет для строки заголовка и статус строки
-    init_pair(2,COLOR_YELLOW,COLOR_GREEN);
-    init_pair(3,COLOR_YELLOW,COLOR_BLACK);
-    init_pair(4,COLOR_MAGENTA,COLOR_BLACK);
-    init_pair(5,COLOR_CYAN,COLOR_BLACK);
-    init_pair(6,COLOR_BLACK,COLOR_BLACK);
-    init_pair(7,COLOR_RED,COLOR_BLACK);
-    init_pair(8,COLOR_WHITE,COLOR_CYAN);
-    init_pair(9,COLOR_WHITE,COLOR_RED);
-*/
 }
 
 
@@ -34,6 +26,7 @@ void donecurses()
     clear();
     refresh();
     endwin();
+    setlocale(LC_ALL, locale.c_str());
 }
 
 
