@@ -52,9 +52,11 @@ Item* Item::findItem(const char* name)	//ищет в поддереве (на в
 
 double Item::getdvalue()		//получить значение double
 {
-    double result;
-    svalue.c_str();
+    double result = 0.0;
+    std::string numlocale = setlocale(LC_NUMERIC, NULL);
+    setlocale(LC_NUMERIC, "C"); //чтобы работала sscanf с числами вида 1.234 а не 1,234
     sscanf(svalue.c_str(), "%lf", &result);
+    setlocale(LC_NUMERIC, numlocale.c_str());
     return result;
 }
 
