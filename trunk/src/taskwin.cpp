@@ -165,7 +165,20 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    attr = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
 		if ( sstate == "Dwnld")
 		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
-		NColorString* cs = new NColorString(attr, " %2d  %-6s  %6s  %-20s ",i, sstate.c_str(), sdone, mbstrtrunc(sproject,20));
+		NColorString* cs = new NColorString(attr, "");
+		cs->append(attr, " %2d  %-6s", i, sstate.c_str());
+		//процент выполнения имя проекта и подвсетка для GPU задач
+		int attrgpu = attr;
+		Item* plan_class = (*it)->findItem("plan_class");
+		if (plan_class != NULL)
+		{
+		    if ((strstr(plan_class->getsvalue(),"ati") != NULL )||(strstr(plan_class->getsvalue(),"opencl") != NULL))
+			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
+		    if (strstr(plan_class->getsvalue(),"cuda") != NULL )
+			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
+		}
+		cs->append(attrgpu, "  %6s", sdone);
+		cs->append(attr, "  %-20s ", mbstrtrunc(sproject,20));
 		//время эстимейт
 		Item* estimated_cpu_time_remaining = (*it)->findItem("estimated_cpu_time_remaining");
 		int attr2 = attr;

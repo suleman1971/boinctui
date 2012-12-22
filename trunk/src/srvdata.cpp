@@ -275,6 +275,14 @@ void Srv::opnetactivity(const char* op) //изменение режима акт
 }
 
 
+void Srv::opgpuactivity(const char* op) //изменение режима активности GPU "always" "auto" "newer"
+{
+    sendreq("<boinc_gui_rpc_request>\n<set_gpu_mode><%s/><duration>0</duration></set_gpu_mode>\n</boinc_gui_rpc_request>\n\003",op);
+    char* s = waitresult();
+    free(s); //результат не проверяем
+}
+
+
 void Srv::optask(Item* result, const char* op) //действия над задачей ("suspend_result",...)
 {
     Item* name = result->findItem("name");
