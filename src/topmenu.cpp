@@ -28,6 +28,9 @@
 #define M_ACTIVITY_ALWAYS		"Run always"
 #define M_ACTIVITY_AUTO			"Run based on preferences"
 #define M_ACTIVITY_NEVER		"Suspend"
+#define M_GPU_ACTIVITY_ALWAYS		"GPU run always"
+#define M_GPU_ACTIVITY_AUTO		"GPU run based on preferences"
+#define M_GPU_ACTIVITY_NEVER		"GPU suspend"
 #define M_NET_ACTIVITY_ALWAYS		"Network activity always available"
 #define M_NET_ACTIVITY_AUTO		"Network activity based on preferences"
 #define M_NET_ACTIVITY_NEVER		"Network activity suspend"
@@ -302,6 +305,19 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	additem(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "*" : ""); //1 always
 	additem(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
 	additem(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	srv->updatestate();
+	if (srv->statedom != NULL)
+	{
+	    Item* have_ati = srv->statedom->findItem("have_ati");
+	    Item* have_cuda = srv->statedom->findItem("have_cuda");
+	    if ( (have_cuda != NULL)||(have_ati !=NULL) )
+	    {
+		Item* gpu_mode =  srv->ccstatusdom->findItem("gpu_mode");
+		additem(M_GPU_ACTIVITY_ALWAYS, ((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 1)) ? "*" : ""); //1 always
+		additem(M_GPU_ACTIVITY_AUTO,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
+		additem(M_GPU_ACTIVITY_NEVER,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	    }
+	}
 	Item* network_mode = srv->ccstatusdom->findItem("network_mode");
 	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "*" : ""); //1 always
 	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
@@ -322,6 +338,12 @@ bool ActivitySubMenu::action()
 	    srv->opactivity("auto");
 	if ( strcmp(item_name(current_item(menu)),M_ACTIVITY_NEVER) == 0 )
 	    srv->opactivity("never");
+	if ( strcmp(item_name(current_item(menu)),M_GPU_ACTIVITY_ALWAYS) == 0 )
+	    srv->opgpuactivity("always");
+	if ( strcmp(item_name(current_item(menu)),M_GPU_ACTIVITY_AUTO) == 0 )
+	    srv->opgpuactivity("auto");
+	if ( strcmp(item_name(current_item(menu)),M_GPU_ACTIVITY_NEVER) == 0 )
+	    srv->opgpuactivity("never");
 	if ( strcmp(item_name(current_item(menu)),M_NET_ACTIVITY_ALWAYS) == 0 )
 	    srv->opnetactivity("always");
 	if ( strcmp(item_name(current_item(menu)),M_NET_ACTIVITY_AUTO) == 0 )

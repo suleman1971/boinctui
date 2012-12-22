@@ -28,6 +28,7 @@ class Srv : public TConnect //описание соединения с серв�
     Item* findprojectbyname(const char* projectname);
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  opnetactivity(const char* op); //изменение режима активности сети "always" "auto" "newer"
+    void  opgpuactivity(const char* op); //изменение режима активности GPU "always" "auto" "newer"
     void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
     void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
     void  runbenchmarks(); //запустить бенчмарк
