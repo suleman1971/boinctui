@@ -175,8 +175,10 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    if ((strstr(plan_class->getsvalue(),"ati") != NULL )||(strstr(plan_class->getsvalue(),"opencl") != NULL))
 			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
 		    if (strstr(plan_class->getsvalue(),"cuda") != NULL )
-			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
+			attrgpu = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
 		}
+		if (( sstate != "Run" )&&( sstate != "Done"))
+		    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
 		cs->append(attrgpu, "  %6s", sdone);
 		cs->append(attr, "  %-20s ", mbstrtrunc(sproject,20));
 		//время эстимейт
@@ -185,9 +187,12 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ( estimated_cpu_time_remaining != NULL )
 		{
 		    double dtime = estimated_cpu_time_remaining->getdvalue();
-		    if ( ( sstate == "Run" )&&( dtime < 3600) ) //меньше часа
+		    if ( ( sstate == "Run" )&&( dtime < 3600)&&( dtime >= 0 ) ) //меньше часа
 			attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
-		    cs->append(attr2,"%4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
+		    if ( dtime >= 0)
+			cs->append(attr2,"%4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
+		    else
+			cs->append(attr2,"%4s", "?"); //естимейт отрицательный (BOINC bug?)
 		}
 		else
 		    cs->append(attr2,"%4s", "?");
