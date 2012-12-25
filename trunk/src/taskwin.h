@@ -14,7 +14,7 @@ class TaskWin : public NSelectList
     void	updatedata(); 	//обновить данные с серверa
     void	clearcontent();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
-    void* 	setserver(Srv* srv) { this->srv = srv; startindex = 0; selectedindex = -1; };
+    void* 	setserver(Srv* srv) { this->srv = srv; startindex = 0; clearcontent(); selectedindex = -1; };
   protected:
     Srv*	srv; //текущий отображаемый сервер
     void	optask(char op);
