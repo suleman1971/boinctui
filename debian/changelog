@@ -1,3 +1,20 @@
+boinctui (1.2.0-0) unstable; urgency=low
+
+  * bugfixes:
+    - percent done was always 0% on same locale setting
+    - workaround for negative estimate time
+
+  * Percent done for GPU tasks are color highlight (green for CUDA tasks, magenta for OpenCL)
+
+  * implemented GPU activity operations:
+    - run GPU always.
+    - run GPU based on preferences.
+    - suspend GPU always.
+
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 25 Dec 2012 12:32:00 +0400
+
+
 boinctui (1.1.0-0) unstable; urgency=low
 
   * bugfixes:
