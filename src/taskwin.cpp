@@ -187,7 +187,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ( estimated_cpu_time_remaining != NULL )
 		{
 		    double dtime = estimated_cpu_time_remaining->getdvalue();
-		    if ( ( sstate == "Run" )&&( dtime < 3600)&&( dtime >= 0 ) ) //меньше часа
+		    if ( ( sstate == "Run" )&&( dtime < 600)&&( dtime >= 0 ) ) //осталось [0-600[ сек
 			attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
 		    if ( dtime >= 0)
 			cs->append(attr2,"%4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
