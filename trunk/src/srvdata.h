@@ -15,13 +15,14 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортир
 class Srv : public TConnect //описание соединения с сервером
 {
   public:
-    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = ccstatusdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
+    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
     virtual ~Srv();
     void updatemsgs();		//обновить список сообщений <get_messages>
     void updatestate();		//обновить состояние <get_state>
     void updatediskusage();	//обновить состояние <get_disk_usage>
     void updateccstatus();	//обновить состояние <get_cc_status>
     void updatestatistics();	//обновить статистику <get_statistics>
+    void updateallprojects();	//обновить статистику <get_all_projects_list>
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* resultname);
@@ -39,6 +40,7 @@ class Srv : public TConnect //описание соединения с серв�
     Item*	ccstatusdom;	//xml дерево для <get_cc_status>
     Item*	dusagedom;	//xml дерево для <get_disk_usage>
     Item*	statisticsdom;	//xml дерево для <get_statistics>
+    Item*	allprojectsdom;	//xml дерево для <get_all_projects_list>
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
     bool  login(); 		//авторизоваться на сервере
     virtual void  createconnect();
