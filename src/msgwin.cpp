@@ -31,17 +31,20 @@ void MsgWin::updatedata() //обновить данные с сервера
 		continue; //пропускаем старые (уже добавленные ранее) сообщения
 	    Item* body = (*it)->findItem("body"); 	//текст сообщения
 	    Item* time = (*it)->findItem("time"); 	//время сообщения
-	    time_t t = time->getivalue(); 		//время в секундах от 1.1.1970
-	    tm* ltime = localtime(&t);
-	    char tbuf[128];
-	    strftime(tbuf, sizeof(tbuf),"%-e %b %-k:%M",ltime);
-	    Item* project = (*it)->findItem("project");
-	    std::string sproject = "_no_";
-	    if (project != NULL)
-		sproject = project->getsvalue();
-	    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
-	    content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
-	    addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", body->getsvalue()); //само сообщение
+	    if ((body != NULL)&&(time != NULL))
+	    {
+		time_t t = time->getivalue(); 		//время в секундах от 1.1.1970
+		tm* ltime = localtime(&t);
+		char tbuf[128];
+		strftime(tbuf, sizeof(tbuf),"%-e %b %-k:%M",ltime);
+		Item* project = (*it)->findItem("project");
+		std::string sproject = "_no_";
+		if (project != NULL)
+		    sproject = project->getsvalue();
+		addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
+		content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
+		addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", body->getsvalue()); //само сообщение
+	    }
 	}
     }
     lastmsgno = srv->lastmsgno;

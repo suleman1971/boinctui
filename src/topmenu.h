@@ -63,6 +63,29 @@ class ProjectListSubMenu : public NMenu //выпадающие меню втор
 };
 
 
+class ProjectAllListSubMenu : public NMenu //выпадающие меню второго уровня Список ВСЕХ проектов
+{
+  public:
+    ProjectAllListSubMenu(NRect rect, Srv* srv);
+    virtual void eventhandle(NEvent* ev); 	//обработчик событий
+  protected:
+    virtual bool action(); //вызывается при нажатии Enter
+    Srv*	srv; //текущий отображаемый сервер
+};
+
+
+class ProjectUserExistSubMenu : public NMenu //выпадающие меню третего New/Exist user
+{
+  public:
+    ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname);
+    virtual void eventhandle(NEvent* ev); 	//обработчик событий
+  protected:
+    virtual bool action(); //вызывается при нажатии Enter
+    Srv*	srv; //текущий отображаемый сервер
+    std::string	prjname; //имя выбранного проекта
+};
+
+
 class ActivitySubMenu : public NMenu //выпадающие меню второго уровня Activity
 {
   public:

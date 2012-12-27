@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stack>
 #include "resultparse.h"
+#include "kclog.h"
 
 
 std::stack<Item*> curitem; //на верху стека указатель на текущий заполняемый эл-т а голова это вершина дерева
@@ -56,7 +57,7 @@ Item* xmlparse(const char* xml, int len) //xml строка с xml len ее ра
     int retcode = XML_Parse(parser, xml, len, XML_TRUE); //собственно парсинг
     if (retcode == XML_STATUS_ERROR)
     {
-	printf("XML Error: %s\n", XML_ErrorString(XML_GetErrorCode(parser)));
+	kLogPrintf("XML Error: %s\n", XML_ErrorString(XML_GetErrorCode(parser)));
     }
     XML_ParserFree(parser);
     while (!curitem.empty())
@@ -67,7 +68,7 @@ Item* xmlparse(const char* xml, int len) //xml строка с xml len ее ра
 
 void callbackStartElement(void* userdata, const char* name, const char** atts)
 {
-    //printf("\t+ %s\n",name);
+    kLogPrintf("\t+ %s\n",name);
     //аттрибуты тегов типа <header length=\"4\">
     //length=4 это атрибут (в boinc таких тегов нет?)
     /*
@@ -91,7 +92,7 @@ void callbackStartElement(void* userdata, const char* name, const char** atts)
 
 void callbackEndElement(void* userdata, const char* name)
 {
-    //printf("\t- %s\n",name);
+    kLogPrintf("\t- %s\n",name);
     //удаляем текущий эл-т из стека (текущим становится его родитель)
     curitem.pop();
 }
@@ -103,7 +104,7 @@ void callbackData(void *userdata, const char *content, int len)
     strncpy(tmp, content, len);
     tmp[len] = '\0';
     //data = (void *) tmp;
-    //printf("\ncallbackData()-->[%s]<-- len=%d\n",tmp,len);
+    kLogPrintf("\ncallbackData()-->[%s]<-- len=%d\n",tmp,len);
     //заносим значение в текущий эл-т
     bool empty = true;
     for (int i = 0; i < strlen(tmp); i++)

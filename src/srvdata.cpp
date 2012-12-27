@@ -98,7 +98,6 @@ Srv::~Srv()
 }
 
 
-//Item* Srv::req(const char* op) //выполнить запрос (вернет дерево или NULL)
 Item* Srv::req(const char* fmt, ...) //выполнить запрос (вернет дерево или NULL)
 {
     if (hsock == -1)
@@ -107,24 +106,35 @@ Item* Srv::req(const char* fmt, ...) //выполнить запрос (верн
 	return NULL;
     // === посылаем запрос ===
     char req[1024];
-//    snprintf(r,sizeof(r),"<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
     strcpy(req, "<boinc_gui_rpc_request>\n");
     strcat(req, fmt);
     strcat(req, "\n</boinc_gui_rpc_request>\n\003");
     va_list	args;
     va_start(args, fmt);
-//    sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003", fmt, args);
     sendreq(req, args);
     va_end(args);
-    //sendreq("<boinc_gui_rpc_request>\n%s\n</boinc_gui_rpc_request>\n\003",op);
     char* result = waitresult();
     if (result != NULL) //получен ответ
     {
+	// === отрезаем теги <boinc_gui_rpc_reply> </boinc_gui_rpc_reply>
+	const char* teg1 = "<boinc_gui_rpc_reply>";
+	const char* teg2 = "</boinc_gui_rpc_reply>";
+	char* b = strstr(result,teg1);
+	char* e = strstr(result,teg2);
+	if (( b == NULL)||( e == NULL))
+	{
+	    free(result);
+	    return NULL;
+	}
+	*e = '\0';
+	b = b + strlen(teg1);
+	while ( (*b != '\0')&&(*b != '<') )
+	    b++; //отрезаем лидирующие переводы строки и т.д.
 	// === костыль ТОЛЬКО для <get_messages>
-	if (strstr(/*op*/fmt, "<get_messages>") != NULL)
-	    result =  (char*)stripinvalidtag(result, strlen(result)); //убираем кривые теги
+	if (strstr(fmt, "<get_messages>") != NULL)
+	    b =  (char*)stripinvalidtag(b, strlen(b)); //убираем кривые теги
 	// === разбираем ответ ===
-	Item* dom = xmlparse(result, strlen(result)); //парсим xml
+	Item* dom = xmlparse(b, strlen(b)); //парсим xml
 	free(result); //рез-т в тесктовом виде больше не нужен
 	return dom;
     }
@@ -256,6 +266,14 @@ void Srv::updatemsgs() //обновить сообщения
     else
 	msgdom = domtree;
     lastmsgno = curseqno;
+}
+
+
+void Srv::updateallprojects()
+{
+    if (allprojectsdom != NULL)
+	delete allprojectsdom; //очищаем предыдущий рез-т
+    allprojectsdom = req("<get_all_projects_list/>");
 }
 
 

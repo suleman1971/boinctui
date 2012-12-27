@@ -20,6 +20,11 @@
 #define M_NO_NEW_TASKS_PROJECT		"No new tasks"
 #define M_ALLOW_NEW_TASKS_PROJECT	"Allow new tasks"
 #define M_RESET_PROJECT			"Reset project"
+#define M_ADD_PROJECT			"Add project"
+#define M_CONNECT_MANAGER		"Connect to account maneger"
+//Названия пунктов меню "Add project/User Exist"
+#define M_PROJECT_USER_EXIST		"Existing User"
+#define M_PROJECT_NEW_USER		"Suspend project"
 //Названия пунктов меню "Tasks"
 #define M_SUSPEND_TASK			"Suspend task"
 #define M_RESUME_TASK			"Resume task"
@@ -207,6 +212,10 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     additem(M_NO_NEW_TASKS_PROJECT,"...");
     additem(M_ALLOW_NEW_TASKS_PROJECT,"...");
     additem(M_RESET_PROJECT,"...");
+    #ifdef EXPERIMENTAL
+    additem(M_ADD_PROJECT,"...");
+    additem(M_CONNECT_MANAGER,"...");
+    #endif
     additem(NULL,NULL);
 }
 
@@ -230,10 +239,17 @@ bool ProjectsSubMenu::action()
 	op = 'A';
     if ( strcmp(item_name(current_item(menu)),M_RESET_PROJECT) == 0 )
 	op = 'r';
-    //создаем подменю
-    int begincol = /*getbegcol()+*/getwidth() - 2; //смещение на экране по горизонтали
+    //создаем подменю для подключенных проектов
+    int begincol = 2/*getwidth() - 2*/; //смещение на экране по горизонтали
     int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
-    insert(new ProjectListSubMenu(NRect(5,25,beginrow, begincol), srv, op));
+    if (op != '?')
+	insert(new ProjectListSubMenu(NRect(5,25,beginrow, begincol), srv, op));
+    if ( strcmp(item_name(current_item(menu)), M_ADD_PROJECT) == 0 ) //подключиться к новому проекту
+	insert(new ProjectAllListSubMenu(NRect(5,25,beginrow, begincol), srv));
+    if ( strcmp(item_name(current_item(menu)), M_CONNECT_MANAGER) == 0 ) //подключить менеджер
+    {
+
+    }
     return true;
 }
 
@@ -445,3 +461,134 @@ void ProjectListSubMenu::eventhandle(NEvent* ev) 	//обработчик соб�
 	    refresh();
     }
 }
+
+//=============================================================================================
+
+
+ProjectAllListSubMenu::ProjectAllListSubMenu(NRect rect, Srv* srv) : NMenu(rect)
+{
+    this->srv = srv;
+    if (srv != NULL)
+    {
+	srv->updateallprojects();
+	if ( srv->allprojectsdom != NULL)
+	{
+	    Item* projects = srv->allprojectsdom->findItem("projects");
+	    if (projects != NULL)
+	    {
+		std::vector<Item*> projlist = projects->getItems("project");
+		for (int i = 0; i < projlist.size(); i++)
+		{
+		    Item* name = projlist[i]->findItem("name");
+		    Item* general_area = projlist[i]->findItem("general_area");
+		    if (name != NULL)
+		    {
+			std::string status = ""; //строка тематика проекта
+			if (general_area != NULL)
+			    status = general_area->getsvalue();
+			status.resize(20);
+			additem(name->getsvalue(),status.c_str());
+		    }
+		}
+	    }
+	}
+    }
+    additem(NULL,NULL);
+}
+
+
+bool ProjectAllListSubMenu::action()
+{
+    if (srv != NULL)
+    {
+	const char* prjname = item_name(current_item(menu));
+	//создаем подменю для выбора новый/существующий пользователь
+	int begincol = getwidth() - 2; //смещение на экране по горизонтали
+	int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
+	insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname));
+    }
+}
+
+
+void ProjectAllListSubMenu::eventhandle(NEvent* ev) 	//обработчик событий
+{
+    if ( ev->done )
+	return;
+    NMenu::eventhandle(ev); //предок
+    if ( ev->done )
+	return;
+    if ( ev->type == NEvent::evKB )
+    {
+	ev->done = true;
+        switch(ev->keycode)
+	{
+	    case KEY_RIGHT: //блокируем стрелку вправо
+		break;
+	    case KEY_LEFT:
+		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
+		break;
+	    case 27:
+		if ( !items.empty() )
+		    destroysubmenu();
+		else
+		    ev->done = false; //пусть обрабатывает владелец
+		break;
+	    default:
+		ev->done = false; //нет реакции на этот код
+	} //switch
+	if (ev->done) //если обработали, то нужно перерисоваться
+	    refresh();
+    }
+}
+
+//=============================================================================================
+
+
+ProjectUserExistSubMenu::ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname) : NMenu(rect)
+{
+    this->srv = srv;
+    this->prjname = prjname;
+
+    additem(M_PROJECT_USER_EXIST,"");
+    additem(M_PROJECT_NEW_USER,"");
+    additem(NULL,NULL);
+}
+
+
+bool ProjectUserExistSubMenu::action()
+{
+    if (srv != NULL)
+    {
+/*
+*/
+    }
+    //создаем событие закрывающее меню
+    putevent(new NEvent(NEvent::evKB, KEY_F(9)));
+}
+
+
+void ProjectUserExistSubMenu::eventhandle(NEvent* ev) 	//обработчик событий
+{
+    if ( ev->done )
+	return;
+    NMenu::eventhandle(ev); //предок
+    if ( ev->done )
+	return;
+    if ( ev->type == NEvent::evKB )
+    {
+	ev->done = true;
+        switch(ev->keycode)
+	{
+	    case KEY_RIGHT: //блокируем стрелку вправо
+		break;
+	    case KEY_LEFT:
+		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
+		break;
+	    default:
+		ev->done = false; //нет реакции на этот код
+	} //switch
+	if (ev->done) //если обработали, то нужно перерисоваться
+	    refresh();
+    }
+}
+
