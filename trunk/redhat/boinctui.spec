@@ -12,8 +12,8 @@ Source0:	boinctui_%{version}-0.tar.gz
 #Requires:	libcurses libexpat
 
 %description
-boinctui is a fullscreen text based control toot for BOINC client.
-based on surses library
+boinctui is a fullscreen text based control tool for BOINC client.
+based on curses library
 
 %prep
 #echo ----- %{SOURCE0}
