@@ -12,4 +12,4 @@ Package: boinctui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: manager for Boinc client
- boinctui is a fullscreen text based control toot for BOINC client
+ boinctui is a fullscreen text based control tool for BOINC client
