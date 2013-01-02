@@ -1,65 +1,18 @@
 #include "cfgform.h"
 #include "mbstring.h"
 #include "kclog.h"
-
-
-char* rtrim(char* s) //удалить завершающие пробелы в строке
-{
-    if (s == NULL)
-	return NULL;
-    if (strlen(s) == 0)
-	return s;
-    char* p = s + strlen(s) - 1;
-    while ( p >= s)
-    {
-        if (*p == ' ')
-	    *p = 0;
-	else
-	    break;
-	p--;
-    }
-    return s;
-}
+#include "tuievent.h"
 
 
 CfgForm::CfgForm(int rows, int cols, Config* cfg) : NForm(rows,cols)
 {
     this->cfg = cfg;
     fields = NULL;
-//    text1 = new NStaticText(NRect(1, 44, rect.begrow + 2, rect.begcol + 5));
-//    text1->setstring(A_BOLD,"host             port   pwd");
-//    insert(text1);
     genfields(false);
     set_form_fields(frm, fields);
     post_form(frm);
 }
 
-
-CfgForm::~CfgForm()
-{
-    unpost_form(frm);
-    delfields();
-}
-
-
-void CfgForm::delfields()
-{
-    if (fields != NULL)
-    {
-	int n = field_count(frm);
-	for (int i = 0; i < n; i++)
-	    free_field(fields[i]);
-	free(fields);
-	set_form_fields(frm, NULL);
-    }
-}
-/*
-void CfgForm::refresh()
-{
-    NForm::refresh();
-//    mvwprintw(win,0,0,"AAAAAA");
-}
-*/
 
 void CfgForm::genfields(bool extfields) //создаст массив полей (extfields если нужно добавить хост)
 {
@@ -178,7 +131,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 		cfg->save(); //сохранить на диск
 		//gsrvlist->refreshcfg();
 		//ev->keycode = 27; //костыль чтобы осн программа сдестркутила форму конфига
-		NEvent* event = new NEvent(NEvent::evPROG, 1); //создаем програмное событие
+		NEvent* event = new TuiEvent(evCFGCH);//NEvent(NEvent::evPROG, 1); //создаем програмное событие
 		putevent(event);
 		break;
 	    }

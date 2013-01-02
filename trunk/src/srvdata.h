@@ -15,7 +15,7 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортир
 class Srv : public TConnect //описание соединения с сервером
 {
   public:
-    Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport) { msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = NULL; this->pwd = strdup(pwd); lastmsgno = 0; };
+    Srv(const char* shost, const char* sport, const char* pwd);
     virtual ~Srv();
     void updatemsgs();		//обновить список сообщений <get_messages>
     void updatestate();		//обновить состояние <get_state>
@@ -26,13 +26,15 @@ class Srv : public TConnect //описание соединения с серв�
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* resultname);
-    Item* findprojectbyname(const char* projectname);
+    Item* findprojectbyname(const char* projectname); //ищет в getstate
+    Item* findprojectbynamefromall(const char* projectname); //ищет в allprojectsdom
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  opnetactivity(const char* op); //изменение режима активности сети "always" "auto" "newer"
     void  opgpuactivity(const char* op); //изменение режима активности GPU "always" "auto" "newer"
     void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
     void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
     void  runbenchmarks(); //запустить бенчмарк
+    bool  projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg); //подключить проект
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
@@ -46,8 +48,10 @@ class Srv : public TConnect //описание соединения с серв�
     virtual void  createconnect();
   protected:
     void updatedata();		//обновить данные с сервера
+    time_t gettimeelapsed(time_t t); //вернет соличество секунд между t и тек. временем
     char* pwd;
-    //Item* req(const char* op);  //выполнить запрос (вернет дерево или NULL)
+    time_t	diskusagetstamp; //время последнего запроса <get_disk_usage>
+    time_t	statisticststamp; //время последнего запроса <get_statistics>
 };
 
 

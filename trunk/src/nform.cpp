@@ -4,6 +4,8 @@
 
 NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
 {
+    fields = NULL;
+    fieldcount = 0;
     frm = new_form(NULL);
     scale_form(frm,&rows,&cols);
     set_form_win(frm, win);
@@ -26,9 +28,32 @@ NForm::~NForm()
 //    win = framewin; //востанавливаем для правильной деструкции
     unpost_form(frm);
     free_form(frm);
+    delfields();
     if (title != NULL)
 	free(title);
     curs_set(0); //курсор
+}
+
+
+FIELD* NForm::addfield(FIELD* field)
+{
+    fields = (FIELD**)realloc(fields, (fieldcount+1)*sizeof(FIELD*)); //выделяем память под массив полей
+    fields[fieldcount] = field;
+    fieldcount++;
+    return field;
+}
+
+
+void NForm::delfields()
+{
+    if (fields != NULL)
+    {
+	int n = field_count(frm);
+	for (int i = 0; i < n; i++)
+	    free_field(fields[i]);
+	free(fields);
+	//set_form_fields(frm, NULL);
+    }
 }
 
 

@@ -37,7 +37,7 @@ void NStaticText::refresh()
     }
     if (align == 2) //правое
     {
-	wmove(win,0,getwidth()-content->getlen()+1);
+	wmove(win,0,getwidth()-content->getlen()/*+1*/);
     }
     for (it = content->parts.begin(); it != content->parts.end(); it++) //цикл по частям тек строки
     {

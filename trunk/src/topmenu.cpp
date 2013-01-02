@@ -1,6 +1,8 @@
 #include <string.h>
 #include "topmenu.h"
+#include "tuievent.h"
 #include "kclog.h"
+
 
 //Названия пунктов верхнего меню
 #define M_FILE 				"File"
@@ -23,8 +25,8 @@
 #define M_ADD_PROJECT			"Add project"
 #define M_CONNECT_MANAGER		"Connect to account maneger"
 //Названия пунктов меню "Add project/User Exist"
-#define M_PROJECT_USER_EXIST		"Existing User"
-#define M_PROJECT_NEW_USER		"Suspend project"
+#define M_PROJECT_USER_EXIST		"Existing user"
+#define M_PROJECT_NEW_USER		"Create new user account"
 //Названия пунктов меню "Tasks"
 #define M_SUSPEND_TASK			"Suspend task"
 #define M_RESUME_TASK			"Resume task"
@@ -172,7 +174,7 @@ bool FileSubMenu::action()
     if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
     if ( strcmp(item_name(current_item(menu)),M_RUN_BENCHMARKS) == 0 )
-	putevent(new NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
+	putevent(new TuiEvent(evBENCHMARK)); //NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
     if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'Q')); //создаем событие иммитирующее нажатие 'Q'
     return true;
@@ -194,9 +196,9 @@ bool HelpSubMenu::action()
 {
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
     if ( strcmp(item_name(current_item(menu)),M_ABOUT) == 0 )
-	putevent(new NEvent(NEvent::evPROG, 3)); //создаем событие с кодом 3 "окно About"
+	putevent(new TuiEvent(evABOUT)); //NEvent(NEvent::evPROG, 3)); //создаем событие с кодом 3 "окно About"
     if ( strcmp(item_name(current_item(menu)),M_KEY_BINDINGS) == 0 )
-	putevent(new NEvent(NEvent::evPROG, 4)); //создаем событие с кодом 4 "окно Key Bindings"
+	putevent(new TuiEvent(evKEYBIND));//NEvent(NEvent::evPROG, 4)); //создаем событие с кодом 4 "окно Key Bindings"
     return true;
 }
 
@@ -301,7 +303,7 @@ bool TasksSubMenu::action()
     if ( strcmp(item_name(current_item(menu)),M_RESUME_TASK) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'R')); //создаем событие иммитирующее нажатие 'R'
     if ( strcmp(item_name(current_item(menu)),M_ABORT_TASK) == 0 )
-	putevent(new NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
+	putevent(new TuiEvent(evABORTRES)); //NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
     return true;
 }
 
@@ -504,7 +506,7 @@ bool ProjectAllListSubMenu::action()
 	const char* prjname = item_name(current_item(menu));
 	//создаем подменю для выбора новый/существующий пользователь
 	int begincol = getwidth() - 2; //смещение на экране по горизонтали
-	int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
+	int beginrow = 2 + item_index(current_item(menu)) - top_row(menu); //смещение на экране по вертикали
 	insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname));
     }
 }
@@ -557,13 +559,13 @@ ProjectUserExistSubMenu::ProjectUserExistSubMenu(NRect rect, Srv* srv, const cha
 
 bool ProjectUserExistSubMenu::action()
 {
-    if (srv != NULL)
-    {
-/*
-*/
-    }
     //создаем событие закрывающее меню
     putevent(new NEvent(NEvent::evKB, KEY_F(9)));
+    if (srv != NULL)
+    {
+	//insert(new AddProjectForm(30,50,srv,prjname.c_str()));
+	putevent(new TuiEvent(srv, prjname.c_str(), true));
+    }
 }
 
 

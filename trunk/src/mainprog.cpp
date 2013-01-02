@@ -2,6 +2,7 @@
 #include <signal.h>
 #include "kclog.h"
 #include "mainprog.h"
+#include "tuievent.h"
 
 
 MainProg::MainProg()
@@ -12,6 +13,7 @@ MainProg::MainProg()
     cfgform = NULL;
     about = NULL;
     help = NULL;
+    addform = NULL;
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно
     insert(wmain);
@@ -64,6 +66,8 @@ void MainProg::smartresize()
 	about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //окно About (если есть)
     if (help != NULL)
 	help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //окно About (если есть)
+    if (addform != NULL)
+	addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //окно Add Project (если есть)
     MainProg::needresize = false;
 }
 
@@ -125,7 +129,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
     {
 	switch(ev->cmdcode)
 	{
-	    case 1: //событие при изменении конфига
+	    case evCFGCH: //событие при изменении конфига
 	    {
 		menu->disable();
 		//деструктим форму
@@ -142,7 +146,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		setcaption();
 		break;
 	    }
-	    case 3: //событие About win
+	    case evABOUT: //событие About win
 	    {
 		if (about != NULL)
 		{
@@ -158,7 +162,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		}
 		break;
 	    }
-	    case 4: //событие KeyBinding win
+	    case evKEYBIND: //событие KeyBinding win
 	    {
 		if (help != NULL)
 		{
@@ -174,14 +178,34 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		}
 		break;
 	    }
-	    case 5: //запустить бенчмарк
+	    case evBENCHMARK: //запустить бенчмарк
 	    {
 		Srv* srv = gsrvlist->getcursrv();
 		if (srv != NULL)
 		    srv->runbenchmarks();
 		break;
 	    }
-
+	    case evADDPROJECT: //добавить проект
+	    {
+		if (addform != NULL)
+		{
+		    remove(addform);
+		    delete addform;
+		    addform = NULL;
+		}
+		else
+		{
+		    TuiEvent* ev1 = (TuiEvent*)ev;
+		    Srv* srv = gsrvlist->getcursrv();
+		    if (ev1->srv != NULL)
+		    {
+			addform = new AddProjectForm(30,65,ev1->srv,ev1->prjname.c_str(),ev1->userexist);
+			insert(addform);
+			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
+		    }
+		}
+		break;
+	    }
 	} //switch
     }
 }

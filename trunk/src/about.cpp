@@ -1,5 +1,6 @@
 #include <string.h>
 #include "about.h"
+#include "tuievent.h"
 
 //стрингификатор
 #define XSTR(S)		STR(S)
@@ -35,7 +36,7 @@ void AboutWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    case KEY_ENTER:
 	    case ' ':
 	    case '\n':
-		putevent(new NEvent(NEvent::evPROG, 3)); //создаем событие с кодом 3 "окно About"
+		putevent(new TuiEvent(evABOUT)); //NEvent(NEvent::evPROG, 3)); //создаем событие с кодом 3 "окно About"
 		break;
 	} //switch
 	if (ev->done) //если обработали, то нужно перерисоваться

@@ -1,5 +1,6 @@
 #include <string.h>
 #include "helpwin.h"
+#include "tuievent.h"
 
 
 HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/2-rows/2,getmaxx(stdscr)/2-cols/2))
@@ -41,7 +42,7 @@ void HelpWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    case KEY_ENTER:
 	    case ' ':
 	    case '\n':
-		putevent(new NEvent(NEvent::evPROG, 4)); //создаем событие с кодом 4 "окно Help"
+		putevent(new TuiEvent(evKEYBIND)); //NEvent(NEvent::evPROG, 4)); //создаем событие с кодом 4 "окно Help"
 		break;
 	} //switch
 	if (ev->done) //если обработали, то нужно перерисоваться

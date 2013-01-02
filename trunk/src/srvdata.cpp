@@ -6,6 +6,9 @@
 #include "resultparse.h"
 #include "kclog.h"
 
+#define		DISKUSAGE_TIME_INTERVAL		60	//интервал в секундах между запросами <get_disk_usage>
+#define		STATISTICS_TIME_INTERVAL	300	//интервал в секундах между запросами <get_statistics>
+
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки статистики true если дата stat1 > stat2
 {
@@ -85,6 +88,15 @@ void SrvList::nextserver() //переключиться на след серве
 }
 
 //=============================================================================================
+
+
+Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport)
+{
+    msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = NULL;
+    this->pwd = strdup(pwd);
+    lastmsgno = 0;
+    diskusagetstamp = 0;
+};
 
 
 Srv::~Srv()
@@ -199,9 +211,12 @@ void Srv::updatedata() //обновить данные с сервера
 
 void Srv::updatestatistics()
 {
+    if (gettimeelapsed(statisticststamp) < STATISTICS_TIME_INTERVAL)
+	return; //если прошло мало времени игнорируем вызов
     if (statisticsdom != NULL)
 	delete statisticsdom; //очищаем предыдущий рез-т
     statisticsdom = req("<get_statistics/>");
+    statisticststamp = time(NULL);
 }
 
 
@@ -215,9 +230,12 @@ void Srv::updateccstatus()	//обновить состояние <get_cc_status>
 
 void Srv::updatediskusage()
 {
+    if (gettimeelapsed(diskusagetstamp) < DISKUSAGE_TIME_INTERVAL)
+	return; //если прошло мало времени игнорируем вызов
     if (dusagedom != NULL)
 	delete dusagedom; //очищаем предыдущий рез-т
     dusagedom = req("<get_disk_usage/>");
+    diskusagetstamp = time(NULL);
 }
 
 
@@ -252,7 +270,7 @@ void Srv::updatemsgs() //обновить сообщения
 	msgno = lastmsgno; //запрашиваем начиная с последнего отображенного
     else
 	msgno = 0; //начинаем с первого
-    sprintf(req2,"<get_messages>\n<seqno>%d</seqno>\n",msgno);
+    snprintf(req2,sizeof(req2),"<get_messages>\n<seqno>%d</seqno>\n",msgno);
     Item* domtree = req(req2);
     if (domtree == NULL)
 	return;
@@ -334,6 +352,64 @@ void Srv::runbenchmarks() //запустить бенчмарк
     sendreq("<boinc_gui_rpc_request>\n<run_benchmarks/>\n</boinc_gui_rpc_request>\n\003");
     char* s = waitresult();
     free(s); //результат не проверяем
+}
+
+
+bool Srv::projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg) //подключить проект
+{
+    const int ERR_IN_PROGRESS = -204;
+
+    //расчитать хэш md5 от email+pass
+    unsigned char md5digest[MD5_DIGEST_LENGTH];
+    MD5_CTX c;
+    MD5_Init(&c);
+    MD5_Update(&c, pass , strlen(pass));
+    MD5_Update(&c, email, strlen(email));
+    MD5_Final(md5digest,&c);
+    char shash[1024]; //строковое представление хэша
+    for (int i=0;i<MD5_DIGEST_LENGTH;i++)
+	sprintf(shash+i*2,"%02x",md5digest[i]);
+    //формируем запрос для получения authenticator
+    char sreq[1024];
+    snprintf(sreq,sizeof(sreq),"<lookup_account>\n<url>%s</url>\n<email_addr>%s</email_addr>\n<passwd_hash>%s</passwd_hash>\n</lookup_account>\n",url,email,shash);
+    Item* res = req(sreq);
+    if (res == NULL)
+	return false;
+    kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    free(res);
+    int count = 30; //не больше 30 запросов
+    snprintf(sreq,sizeof(sreq),"<lookup_account_poll/>");
+    Item* authenticator = NULL;
+    do
+    {
+	res = req(sreq);
+	if (res == NULL)
+	    return false;
+	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+	Item* error_num = res->findItem("error_num");
+	if ((error_num != 0)&&(error_num->getivalue() != ERR_IN_PROGRESS))
+	{
+	    Item* error_msg = res->findItem("error_msg");
+	    if (error_msg != NULL)
+		errmsg = error_msg->getsvalue(); //возврат строки ошибки
+	    return false;
+	}
+	authenticator = res->findItem("authenticator");
+	free(res);
+	sleep(1); //ждем 1 сек
+    }
+    while((count--)&&(authenticator == NULL));
+    if (authenticator == NULL)
+	return false;
+    //формируем запрос для подключения к проекту
+    snprintf(sreq,sizeof(sreq),"<project_attach>\n<project_url>%s</project_url>\n<authenticator>%s</authenticator>\n<project_name>%s</project_name>\n</project_attach>\n",url,authenticator->getsvalue(),prjname);
+    res = req(sreq);
+    if (res == NULL)
+	return false;
+    kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    bool result = (res->findItem("success") != NULL);
+    free(res);
+    return result;
 }
 
 
@@ -423,6 +499,30 @@ Item* Srv::findprojectbyname(const char* projectname)
 }
 
 
+Item* Srv::findprojectbynamefromall(const char* projectname) //ищет в allprojectsdom
+{
+    
+    if (allprojectsdom == NULL)
+	return NULL;
+    if (projectname == NULL)
+	return NULL;
+    Item* projects = allprojectsdom->findItem("projects");
+    if (projects == NULL)
+	return NULL;
+    std::vector<Item*> projectlist = projects->getItems("project"); //список проектов
+    std::vector<Item*>::iterator it;
+    for (it = projectlist.begin(); it!=projectlist.end(); it++)
+    {
+	Item* name = (*it)->findItem("name");
+	if ( strcmp(projectname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
+	{
+	    return (*it);
+	}
+    }
+    return NULL;
+}
+
+
 time_t	Srv::getlaststattime() //вернет время последней имеющейся статистики
 {
     time_t result = 0;
@@ -449,3 +549,8 @@ time_t	Srv::getlaststattime() //вернет время последней им�
     return result;
 }
 
+
+time_t Srv::gettimeelapsed(time_t t) //вернет соличество секунд между t и тек. временем
+{
+    return (time(NULL) - t);
+}
