@@ -11,6 +11,7 @@
 #include "topmenu.h"
 #include "about.h"
 #include "helpwin.h"
+#include "addprojectform.h"
 
 
 class MainProg : public NProgram
@@ -26,6 +27,7 @@ class MainProg : public NProgram
     NStaticText*	wstatus;
     AboutWin*		about;
     HelpWin*		help;
+    AddProjectForm*	addform; //форма добавления проекта
     Config* cfg;
     CfgForm* cfgform; //окно конфигурации
     SrvList* gsrvlist; //глобальный список серверов

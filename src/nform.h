@@ -16,9 +16,13 @@ class NForm : public NGroup
     virtual void refresh();
     virtual void settitle(const char* title) { this->title = strdup(title); };
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
+    virtual FIELD* addfield(FIELD* field);
+    int 	getfieldcount() { return fieldcount; };
+    virtual void delfields(); //удаляет все поля
   protected:
     char* title;	//заголовок
-//    FIELD *field[3];
+    FIELD**	fields;
+    int		fieldcount; //число полей включая NULL
     FORM* frm; 		//форма ncurses
 //    WINDOW* framewin; //исходное окно  (рамка)
 };

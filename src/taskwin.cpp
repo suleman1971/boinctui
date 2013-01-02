@@ -5,6 +5,7 @@
 #include "net.h"
 #include "resultparse.h"
 #include "mbstring.h"
+#include "tuievent.h"
 
 
 bool resultCmpLess( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
@@ -34,7 +35,12 @@ std::string getresultstatestr(Item* result)
 //    Item* ready_to_report = result->findItem("ready_to_report");
     Item* active_task_state = result->findItem("active_task_state");
     if (result->findItem("ready_to_report") != NULL) //расчет завершен
-	return "Done";
+    {
+	if (state->getivalue() == 3)
+	    return "DoneEr"; //была завершена с ошибкой
+	else
+	    return "Done";
+    }
     if (result->findItem("suspended_via_gui") != NULL) //задача suspend via gui
 	return "GSusp.";
     switch(state->getivalue())
@@ -166,7 +172,11 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ( sstate == "Dwnld")
 		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
 		NColorString* cs = new NColorString(attr, "");
-		cs->append(attr, " %2d  %-6s", i, sstate.c_str());
+		int stateattr = attr;
+		if ( sstate == "DoneEr")
+		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK);
+		cs->append(attr, " %2d  ", i);
+		cs->append(stateattr, "%-6s", sstate.c_str());
 		//процент выполнения имя проекта и подвсетка для GPU задач
 		int attrgpu = attr;
 		Item* plan_class = (*it)->findItem("plan_class");
@@ -252,7 +262,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     }
     if (ev->type == NEvent::evPROG) //прграммные
     {
-	if (ev->cmdcode == 2) //событие "abort_result"
+	if (ev->cmdcode == evABORTRES) //событие "abort_result"
 	{
 	    optask('A');
 	}

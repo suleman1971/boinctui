@@ -20,6 +20,7 @@ NColorString::NColorString(int attr, const char* fmt, ...)
     va_end(args);
 }
 
+
 NColorString::NColorString(int attr, const char* fmt, va_list vl)
 {
     vappend(attr,fmt,vl);

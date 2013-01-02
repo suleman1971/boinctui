@@ -41,3 +41,21 @@ char* mbstrtrunc(char* s, int slen) //обрезать до длины slen си
     return s;
 }
 
+
+char* rtrim(char* s) //удалить завершающие пробелы в строке
+{
+    if (s == NULL)
+	return NULL;
+    if (strlen(s) == 0)
+	return s;
+    char* p = s + strlen(s) - 1;
+    while ( p >= s)
+    {
+        if (*p == ' ')
+	    *p = 0;
+	else
+	    break;
+	p--;
+    }
+    return s;
+}
