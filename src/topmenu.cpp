@@ -22,8 +22,9 @@
 #define M_NO_NEW_TASKS_PROJECT		"No new tasks"
 #define M_ALLOW_NEW_TASKS_PROJECT	"Allow new tasks"
 #define M_RESET_PROJECT			"Reset project"
+#define M_DETACH_PROJECT		"Detach project"
 #define M_ADD_PROJECT			"Add project"
-#define M_CONNECT_MANAGER		"Connect to account maneger"
+#define M_CONNECT_MANAGER		"Connect to account manager"
 //Названия пунктов меню "Add project/User Exist"
 #define M_PROJECT_USER_EXIST		"Existing user"
 #define M_PROJECT_NEW_USER		"Create new user account"
@@ -208,15 +209,16 @@ bool HelpSubMenu::action()
 ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 {
     this->srv = srv;
-    additem(M_UPDATE_PROJECT,"...");
-    additem(M_SUSPEND_PROJECT ,"...");
-    additem(M_RESUME_PROJECT,"...");
-    additem(M_NO_NEW_TASKS_PROJECT,"...");
-    additem(M_ALLOW_NEW_TASKS_PROJECT,"...");
-    additem(M_RESET_PROJECT,"...");
+    additem(M_UPDATE_PROJECT,"");
+    additem(M_SUSPEND_PROJECT ,"");
+    additem(M_RESUME_PROJECT,"");
+    additem(M_NO_NEW_TASKS_PROJECT,"");
+    additem(M_ALLOW_NEW_TASKS_PROJECT,"");
+    additem(M_RESET_PROJECT,"");
     #ifdef EXPERIMENTAL
-    additem(M_ADD_PROJECT,"...");
-    additem(M_CONNECT_MANAGER,"...");
+    additem(M_DETACH_PROJECT,"");
+    additem(M_ADD_PROJECT,"");
+    additem(M_CONNECT_MANAGER,"");
     #endif
     additem(NULL,NULL);
 }
@@ -241,6 +243,8 @@ bool ProjectsSubMenu::action()
 	op = 'A';
     if ( strcmp(item_name(current_item(menu)),M_RESET_PROJECT) == 0 )
 	op = 'r';
+    if ( strcmp(item_name(current_item(menu)),M_DETACH_PROJECT) == 0 )
+	op = 'd';
     //создаем подменю для подключенных проектов
     int begincol = 2/*getwidth() - 2*/; //смещение на экране по горизонтали
     int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
@@ -424,6 +428,9 @@ bool ProjectListSubMenu::action()
 	    case 'r': //Reset project
 		srv->opproject(item_name(current_item(menu)),"project_reset");
 		break;
+	    case 'd': //Detach project
+		srv->opproject(item_name(current_item(menu)),"project_detach");
+		break;
 	    case 'N': //No New Task project
 		srv->opproject(item_name(current_item(menu)),"project_nomorework");
 		break;
@@ -563,8 +570,10 @@ bool ProjectUserExistSubMenu::action()
     putevent(new NEvent(NEvent::evKB, KEY_F(9)));
     if (srv != NULL)
     {
-	//insert(new AddProjectForm(30,50,srv,prjname.c_str()));
-	putevent(new TuiEvent(srv, prjname.c_str(), true));
+	if ( strcmp(item_name(current_item(menu)),M_PROJECT_USER_EXIST) == 0 )
+	    putevent(new TuiEvent(srv, prjname.c_str(), true));
+	if ( strcmp(item_name(current_item(menu)),M_PROJECT_NEW_USER) == 0 )
+	    putevent(new TuiEvent(srv, prjname.c_str(), false));
     }
 }
 

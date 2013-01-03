@@ -19,6 +19,8 @@ class AddProjectForm : public NForm
     int		emailfield;
     int		passwfield;
     int		errmsgfield;
+    int		usernamefield;
+    int		teamfield;
     Srv*	srv;
     std::string projname;	//имя подключаемого проекта
     std::string projurl;	//url подключаемого проекта
