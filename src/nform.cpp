@@ -11,7 +11,6 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     set_form_win(frm, win);
     set_form_sub(frm, derwin(win, rows, cols, 2,2));
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
-
 //    framewin = win;
 //    win = frm->sub;
 //post_form(frm);
@@ -32,6 +31,13 @@ NForm::~NForm()
     if (title != NULL)
 	free(title);
     curs_set(0); //курсор
+}
+
+
+void NForm::settitle(const char* title)
+{
+    this->title = (char*)malloc(strlen(title)+3);
+    snprintf(this->title, strlen(title)+3," %s ",title);
 }
 
 

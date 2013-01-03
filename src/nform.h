@@ -14,7 +14,7 @@ class NForm : public NGroup
     virtual ~NForm();
     //int eventloop();
     virtual void refresh();
-    virtual void settitle(const char* title) { this->title = strdup(title); };
+    virtual void settitle(const char* title);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     virtual FIELD* addfield(FIELD* field);
     int 	getfieldcount() { return fieldcount; };
