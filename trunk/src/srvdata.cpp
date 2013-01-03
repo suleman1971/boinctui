@@ -9,6 +9,9 @@
 #define		DISKUSAGE_TIME_INTERVAL		60	//интервал в секундах между запросами <get_disk_usage>
 #define		STATISTICS_TIME_INTERVAL	300	//интервал в секундах между запросами <get_statistics>
 
+const int ERR_IN_PROGRESS = -204;
+
+
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки статистики true если дата stat1 > stat2
 {
@@ -355,11 +358,68 @@ void Srv::runbenchmarks() //запустить бенчмарк
 }
 
 
+bool Srv::createaccount(const char* url, const char* email, const char* pass, const char* username, const char* teamname, std::string& errmsg) //создать аккаунт
+{
+    kLogPrintf("createaccount(url=%s, email=%s, pass=%s, username=%s, teamname=%s)\n", url, email, pass, username, teamname);
+
+    //расчитать хэш md5 от pass+email
+    unsigned char md5digest[MD5_DIGEST_LENGTH];
+    MD5_CTX c;
+    MD5_Init(&c);
+    MD5_Update(&c, pass , strlen(pass));
+    MD5_Update(&c, email, strlen(email));
+    MD5_Final(md5digest,&c);
+    char shash[1024]; //строковое представление хэша
+    for (int i=0;i<MD5_DIGEST_LENGTH;i++)
+	sprintf(shash+i*2,"%02x",md5digest[i]);
+    //формируем запрос для создания аккаунта
+    char sreq[1024];
+    snprintf(sreq,sizeof(sreq),
+        "<create_account>\n"
+        "   <url>%s</url>\n"
+        "   <email_addr>%s</email_addr>\n"
+        "   <passwd_hash>%s</passwd_hash>\n"
+        "   <user_name>%s</user_name>\n"
+        "   <team_name>%s</team_name>\n"
+        "</create_account>\n",
+	url,email,shash,username,teamname);
+    Item* res = req(sreq);
+    if (res == NULL)
+	return false;
+    kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    free(res);
+
+    int count = 30; //не больше 30 запросов
+    snprintf(sreq,sizeof(sreq),"<create_account_poll/>");
+    bool done = false;
+    do
+    {
+	res = req(sreq);
+	if (res == NULL)
+	    return false;
+	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+	Item* error_num = res->findItem("error_num");
+	if ((error_num != 0)&&(error_num->getivalue() != ERR_IN_PROGRESS))
+	{
+	    Item* error_msg = res->findItem("error_msg");
+	    if (error_msg != NULL)
+	    	errmsg = error_msg->getsvalue(); //возврат строки ошибки
+	    return false;
+	}
+	if (res->findItem("authenticator") != NULL)
+	    done = true;
+	free(res);
+	sleep(1); //ждем 1 сек
+    }
+    while((count--)&&(!done));
+    return true;
+}
+
+
 bool Srv::projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg) //подключить проект
 {
-    const int ERR_IN_PROGRESS = -204;
 
-    //расчитать хэш md5 от email+pass
+    //расчитать хэш md5 от pass+email
     unsigned char md5digest[MD5_DIGEST_LENGTH];
     MD5_CTX c;
     MD5_Init(&c);
@@ -379,7 +439,8 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
     free(res);
     int count = 30; //не больше 30 запросов
     snprintf(sreq,sizeof(sreq),"<lookup_account_poll/>");
-    Item* authenticator = NULL;
+    std::string sauthenticator;
+    bool done = false;
     do
     {
 	res = req(sreq);
@@ -394,15 +455,20 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
 		errmsg = error_msg->getsvalue(); //возврат строки ошибки
 	    return false;
 	}
-	authenticator = res->findItem("authenticator");
+	Item* authenticator  = res->findItem("authenticator");
+	if (authenticator != NULL)
+	{
+	    sauthenticator = authenticator->getsvalue();
+	    done = true;
+	}
 	free(res);
 	sleep(1); //ждем 1 сек
     }
-    while((count--)&&(authenticator == NULL));
-    if (authenticator == NULL)
+    while((count--)&&(!done));
+    if (!done)
 	return false;
     //формируем запрос для подключения к проекту
-    snprintf(sreq,sizeof(sreq),"<project_attach>\n<project_url>%s</project_url>\n<authenticator>%s</authenticator>\n<project_name>%s</project_name>\n</project_attach>\n",url,authenticator->getsvalue(),prjname);
+    snprintf(sreq,sizeof(sreq),"<project_attach>\n<project_url>%s</project_url>\n<authenticator>%s</authenticator>\n<project_name>%s</project_name>\n</project_attach>\n",url,sauthenticator.c_str(),prjname);
     res = req(sreq);
     if (res == NULL)
 	return false;

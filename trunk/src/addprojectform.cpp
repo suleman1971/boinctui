@@ -130,26 +130,48 @@ void AddProjectForm::genfields(int& line, Item* project) //создаст мас
 	    }
 	}
     }
-    if (userexist)
+    //email
+    line++;
+    f = addfield(new_field(1, 10, line, 2 , 0, 0));
+    set_field_buffer(f, 0, "email");
+    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    field_opts_off(f, O_ACTIVE); //статический текст
+    emailfield = getfieldcount();
+    f = addfield(new_field(1, 40, line++, 15, 0, 0));
+    field_opts_off(f, O_AUTOSKIP);
+    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+    //password
+    line++;
+    f = addfield(new_field(1, 10, line, 2 , 0, 0));
+    set_field_buffer(f, 0, "password");
+    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    field_opts_off(f, O_ACTIVE); //статический текст
+    passwfield = getfieldcount();
+    f = addfield(new_field(1, 40, line++, 15, 0, 0));
+    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+    field_opts_off(f, O_AUTOSKIP);
+    if (!userexist)
     {
+	//user name
 	line++;
 	f = addfield(new_field(1, 10, line, 2 , 0, 0));
-	set_field_buffer(f, 0, "email");
+	set_field_buffer(f, 0, "username");
 	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
 	field_opts_off(f, O_ACTIVE); //статический текст
-	emailfield = getfieldcount();
+	usernamefield = getfieldcount();
 	f = addfield(new_field(1, 40, line++, 15, 0, 0));
-        field_opts_off(f, O_AUTOSKIP);
+	field_opts_off(f, O_AUTOSKIP);
 	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+	//team name
 	line++;
 	f = addfield(new_field(1, 10, line, 2 , 0, 0));
-	set_field_buffer(f, 0, "password");
+	set_field_buffer(f, 0, "teamname");
 	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
 	field_opts_off(f, O_ACTIVE); //статический текст
-	passwfield = getfieldcount();
+	teamfield = getfieldcount();
 	f = addfield(new_field(1, 40, line++, 15, 0, 0));
 	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-        field_opts_off(f, O_AUTOSKIP);
+	field_opts_off(f, O_AUTOSKIP);
     }
     //подсказки
     line++;
@@ -181,11 +203,17 @@ void AddProjectForm::eventhandle(NEvent* ev) 	//обработчик событ�
 		if (srv!=NULL)
 		{
 		    std::string errmsg;
-		    bool success = srv->projectattach(projurl.c_str(), projname.c_str(), email, passw, errmsg); //подключить проект
-		    if (success)
+		    bool success = true;
+		    if (!userexist) //если аккаунта еще нет то создаем
 		    {
-			putevent(new TuiEvent(evADDPROJECT)); //создаем событие чтобы закрыть форму
+			char* username = strlowcase(rtrim(field_buffer(fields[usernamefield],0)));
+			char* teamname = rtrim(field_buffer(fields[teamfield],0));
+			success = srv->createaccount(projurl.c_str(),email,passw, username, teamname, errmsg);
 		    }
+		    if (success)
+			success = srv->projectattach(projurl.c_str(), projname.c_str(), email, passw, errmsg); //подключить проект
+		    if (success)
+			putevent(new TuiEvent(evADDPROJECT)); //создаем событие чтобы закрыть форму
 		    else
 		    {
 			//СООБЩЕНИЕ ОБ ОШИБКЕ
@@ -195,8 +223,6 @@ void AddProjectForm::eventhandle(NEvent* ev) 	//обработчик событ�
 			this->refresh();
 		    }
 		}
-		//NEvent* event = new NEvent(NEvent::evPROG, 1); //создаем програмное событие
-		//putevent(event);
 		break;
 	    }
 	    case 27:
