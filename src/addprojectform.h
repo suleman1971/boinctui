@@ -15,7 +15,6 @@ class AddProjectForm : public NForm
     void genfields(int& line, Item* project); //создаст массив полей
     virtual void eventhandle(NEvent* ev);	//обработчик событий
   protected:
-    void	updatecfg(); //сохраняет данные из формы в cfg
     int		emailfield;
     int		passwfield;
     int		errmsgfield;

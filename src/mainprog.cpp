@@ -199,9 +199,30 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			addform = new AddProjectForm(30,65,ev1->srv,ev1->prjname.c_str(),ev1->userexist);
+			addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
 			insert(addform);
 			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
+		    }
+		}
+		break;
+	    }
+	    case evADDACCMGR: //добавить акк менеджер
+	    {
+		if (addmgrform != NULL)
+		{
+		    remove(addmgrform);
+		    delete addmgrform;
+		    addmgrform = NULL;
+		}
+		else
+		{
+		    TuiEvent* ev1 = (TuiEvent*)ev;
+		    Srv* srv = gsrvlist->getcursrv();
+		    if (ev1->srv != NULL)
+		    {
+			addmgrform = new AddAccMgrForm(30,65,ev1->srv,ev1->sdata1.c_str());
+			insert(addmgrform);
+			addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //центрируем
 		    }
 		}
 		break;

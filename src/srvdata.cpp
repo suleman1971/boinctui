@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <stdarg.h>
 #include <openssl/md5.h>
+#include <unistd.h>
 #include "srvdata.h"
 #include "resultparse.h"
 #include "kclog.h"
@@ -567,7 +568,6 @@ Item* Srv::findprojectbyname(const char* projectname)
 
 Item* Srv::findprojectbynamefromall(const char* projectname) //ищет в allprojectsdom
 {
-    
     if (allprojectsdom == NULL)
 	return NULL;
     if (projectname == NULL)
@@ -581,6 +581,29 @@ Item* Srv::findprojectbynamefromall(const char* projectname) //ищет в allpr
     {
 	Item* name = (*it)->findItem("name");
 	if ( strcmp(projectname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
+	{
+	    return (*it);
+	}
+    }
+    return NULL;
+}
+
+
+Item* Srv::findaccountmanager(const char* mgrname) //ищет менеджер по имени
+{
+    if (allprojectsdom == NULL)
+	return NULL;
+    if (mgrname == NULL)
+	return NULL;
+    Item* projects = allprojectsdom->findItem("projects");
+    if (projects == NULL)
+	return NULL;
+    std::vector<Item*> mgrlist = projects->getItems("account_manager"); //список менеджеров
+    std::vector<Item*>::iterator it;
+    for (it = mgrlist.begin(); it!=mgrlist.end(); it++)
+    {
+	Item* name = (*it)->findItem("name");
+	if ( strcmp(mgrname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
 	{
 	    return (*it);
 	}

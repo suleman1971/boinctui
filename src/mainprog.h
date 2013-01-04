@@ -12,6 +12,7 @@
 #include "about.h"
 #include "helpwin.h"
 #include "addprojectform.h"
+#include "addmgrform.h"
 
 
 class MainProg : public NProgram
@@ -28,6 +29,7 @@ class MainProg : public NProgram
     AboutWin*		about;
     HelpWin*		help;
     AddProjectForm*	addform; //форма добавления проекта
+    AddAccMgrForm*	addmgrform; //форма аккаунт менеджера
     Config* cfg;
     CfgForm* cfgform; //окно конфигурации
     SrvList* gsrvlist; //глобальный список серверов
