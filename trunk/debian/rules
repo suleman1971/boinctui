@@ -12,4 +12,6 @@
 %: 
 	autoconf
 	dh $@ 
-
+override_dh_clean:
+	dh_clean
+	rm -rf .obj Makefile configure
