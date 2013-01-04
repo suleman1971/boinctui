@@ -253,9 +253,7 @@ bool ProjectsSubMenu::action()
     if ( strcmp(item_name(current_item(menu)), M_ADD_PROJECT) == 0 ) //подключиться к новому проекту
 	insert(new ProjectAllListSubMenu(NRect(5,25,beginrow, begincol), srv));
     if ( strcmp(item_name(current_item(menu)), M_CONNECT_MANAGER) == 0 ) //подключить менеджер
-    {
-
-    }
+	insert(new ProjectAccMgrSubMenu(NRect(5,25,beginrow, begincol), srv));
     return true;
 }
 
@@ -520,6 +518,74 @@ bool ProjectAllListSubMenu::action()
 
 
 void ProjectAllListSubMenu::eventhandle(NEvent* ev) 	//обработчик событий
+{
+    if ( ev->done )
+	return;
+    NMenu::eventhandle(ev); //предок
+    if ( ev->done )
+	return;
+    if ( ev->type == NEvent::evKB )
+    {
+	ev->done = true;
+        switch(ev->keycode)
+	{
+	    case KEY_RIGHT: //блокируем стрелку вправо
+		break;
+	    case KEY_LEFT:
+		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
+		break;
+	    case 27:
+		if ( !items.empty() )
+		    destroysubmenu();
+		else
+		    ev->done = false; //пусть обрабатывает владелец
+		break;
+	    default:
+		ev->done = false; //нет реакции на этот код
+	} //switch
+	if (ev->done) //если обработали, то нужно перерисоваться
+	    refresh();
+    }
+}
+
+
+//=============================================================================================
+
+
+ProjectAccMgrSubMenu::ProjectAccMgrSubMenu(NRect rect, Srv* srv) : NMenu(rect)
+{
+    this->srv = srv;
+    if (srv != NULL)
+    {
+	srv->updateallprojects();
+	if ( srv->allprojectsdom != NULL)
+	{
+	    Item* projects = srv->allprojectsdom->findItem("projects");
+	    if (projects != NULL)
+	    {
+		std::vector<Item*> mgrlist = projects->getItems("account_manager");
+		for (int i = 0; i < mgrlist.size(); i++)
+		{
+		    Item* name = mgrlist[i]->findItem("name");
+		    if (name != NULL)
+			additem(name->getsvalue(),"");
+		}
+	    }
+	}
+    }
+    additem(NULL,NULL);
+}
+
+
+bool ProjectAccMgrSubMenu::action()
+{
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //создаем событие закрывающее меню
+    if (srv != NULL)
+	putevent(new TuiEvent(srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
+}
+
+
+void ProjectAccMgrSubMenu::eventhandle(NEvent* ev) 	//обработчик событий
 {
     if ( ev->done )
 	return;
