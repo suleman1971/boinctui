@@ -68,6 +68,8 @@ void MainProg::smartresize()
 	help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //окно About (если есть)
     if (addform != NULL)
 	addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //окно Add Project (если есть)
+    if (addmgrform != NULL)
+	addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //окно Add Account Manager (если есть)
     MainProg::needresize = false;
 }
 

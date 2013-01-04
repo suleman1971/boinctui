@@ -4,24 +4,9 @@
 #include "kclog.h"
 #include "tuievent.h"
 
-/*
-char* strupcase(char* s) //в верхний регистр
-{
-    char	*p;
-    for (p = s; *p != '\0'; p++)
-    *p = (char) toupper(*p);
-    return s;
-}
 
+char* strlowcase(char* s); //в нижний регистр
 
-char* strlowcase(char* s) //в нижний регистр
-{
-    char	*p;
-    for (p = s; *p != '\0'; p++)
-    *p = (char) tolower(*p);
-    return s;
-}
-*/
 
 AddAccMgrForm::AddAccMgrForm(int rows, int cols,  Srv* srv, const char* mgrname) : NForm(rows,cols)
 {
@@ -121,25 +106,16 @@ void AddAccMgrForm::eventhandle(NEvent* ev) 	//обработчик событи
 	    case KEY_ENTER:
 	    case '\n': //ENTER
 	    {
-/*
 		form_driver(frm, REQ_NEXT_FIELD); //костыль чтобы текущее поле не потеряло значение
-		char* email = strlowcase(rtrim(field_buffer(fields[emailfield],0)));
+		char* username = strlowcase(rtrim(field_buffer(fields[usernamefield],0)));
 		char* passw = rtrim(field_buffer(fields[passwfield],0));
-		kLogPrintf("AddProjectForm OK name=[%s] url=[%s] email=[%s]\n passw=[%s]\n", projname.c_str(), projurl.c_str(), email, passw);
+		kLogPrintf("AddAccMgrForm OK username=[%s] passw=[%s]\n", username, passw);
 		if (srv!=NULL)
 		{
 		    std::string errmsg;
-		    bool success = true;
-		    if (!userexist) //если аккаунта еще нет то создаем
-		    {
-			char* username = strlowcase(rtrim(field_buffer(fields[usernamefield],0)));
-			char* teamname = rtrim(field_buffer(fields[teamfield],0));
-			success = srv->createaccount(projurl.c_str(),email,passw, username, teamname, errmsg);
-		    }
+		    bool success = srv->accountmanager(mgrurl.c_str(),username, passw, errmsg);
 		    if (success)
-			success = srv->projectattach(projurl.c_str(), projname.c_str(), email, passw, errmsg); //подключить проект
-		    if (success)
-			putevent(new TuiEvent(evADDPROJECT)); //создаем событие чтобы закрыть форму
+			putevent(new TuiEvent(evADDACCMGR)); //создаем событие чтобы закрыть форму
 		    else
 		    {
 			//СООБЩЕНИЕ ОБ ОШИБКЕ
@@ -149,7 +125,6 @@ void AddAccMgrForm::eventhandle(NEvent* ev) 	//обработчик событи
 			this->refresh();
 		    }
 		}
-*/
 		break;
 	    }
 	    case 27:

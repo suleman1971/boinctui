@@ -37,6 +37,7 @@ class Srv : public TConnect //описание соединения с серв�
     void  runbenchmarks(); //запустить бенчмарк
     bool  projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg); //подключить проект
     bool  createaccount(const char* url, const char* email, const char* pass, const char* username, const char* teamname, std::string& errmsg); //создать аккаунт
+    bool  accountmanager(const char* url, const char* username, const char* pass, std::string& errmsg); //подключить аккаунт менеджер
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
