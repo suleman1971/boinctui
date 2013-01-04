@@ -11,5 +11,6 @@ Homepage: http://boinctui.googlecode.com
 Package: boinctui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: boinc-client
 Description: manager for Boinc client
  boinctui is a fullscreen text based control tool for BOINC client
