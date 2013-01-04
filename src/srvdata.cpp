@@ -480,6 +480,13 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
 }
 
 
+bool Srv::accountmanager(const char* url, const char* username, const char* pass, std::string& errmsg) //подключить аккаунт менеджер
+{
+    errmsg = "NOT IMPLEMENTED YET";
+    return false;
+}
+
+
 std::string Srv::findProjectName(Item* tree, const char* url) //найти в дереве tree имя проекта с заданным url
 {
     Item* client_state = tree->findItem("client_state");
