@@ -2,7 +2,7 @@ Source: boinctui
 Section: net
 Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, libncursesw5-dev, libssl-dev, libexpat1-dev
 Standards-Version: 3.9.2
 Vcs-Svn: svn://boinctui.googlecode.com/svn/trunk/
 Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/
