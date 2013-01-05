@@ -113,7 +113,7 @@ void AddAccMgrForm::eventhandle(NEvent* ev) 	//обработчик событи
 		if (srv!=NULL)
 		{
 		    std::string errmsg;
-		    bool success = srv->accountmanager(mgrurl.c_str(),username, passw, errmsg);
+		    bool success = srv->accountmanager(mgrurl.c_str(),username, passw, false, errmsg);
 		    if (success)
 			putevent(new TuiEvent(evADDACCMGR)); //создаем событие чтобы закрыть форму
 		    else

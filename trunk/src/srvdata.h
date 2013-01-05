@@ -23,6 +23,7 @@ class Srv : public TConnect //описание соединения с серв�
     void updateccstatus();	//обновить состояние <get_cc_status>
     void updatestatistics();	//обновить статистику <get_statistics>
     void updateallprojects();	//обновить статистику <get_all_projects_list>
+    void updateacctmgrinfo();//обновить статистику <acct_mgr_info>
     std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* resultname);
@@ -37,7 +38,8 @@ class Srv : public TConnect //описание соединения с серв�
     void  runbenchmarks(); //запустить бенчмарк
     bool  projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg); //подключить проект
     bool  createaccount(const char* url, const char* email, const char* pass, const char* username, const char* teamname, std::string& errmsg); //создать аккаунт
-    bool  accountmanager(const char* url, const char* username, const char* pass, std::string& errmsg); //подключить аккаунт менеджер
+    bool  accountmanager(const char* url, const char* username, const char* pass, bool useconfigfile, std::string& errmsg); //подключить аккаунт менеджер
+    bool  getprojectconfig(const char* url, std::string& errmsg); //получить c сервера файл конфигурации
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
     Item*	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
@@ -46,6 +48,7 @@ class Srv : public TConnect //описание соединения с серв�
     Item*	dusagedom;	//xml дерево для <get_disk_usage>
     Item*	statisticsdom;	//xml дерево для <get_statistics>
     Item*	allprojectsdom;	//xml дерево для <get_all_projects_list>
+    Item*	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
     bool  login(); 		//авторизоваться на сервере
     virtual void  createconnect();
