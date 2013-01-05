@@ -10,7 +10,8 @@
 #define		DISKUSAGE_TIME_INTERVAL		60	//интервал в секундах между запросами <get_disk_usage>
 #define		STATISTICS_TIME_INTERVAL	300	//интервал в секундах между запросами <get_statistics>
 
-const int ERR_IN_PROGRESS = -204;
+const int ERR_IN_PROGRESS 	= -204;
+const int BOINC_SUCCESS		= 0;
 
 
 
@@ -96,7 +97,7 @@ void SrvList::nextserver() //переключиться на след серве
 
 Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport)
 {
-    msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = NULL;
+    msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = acctmgrinfodom = NULL;
     this->pwd = strdup(pwd);
     lastmsgno = 0;
     diskusagetstamp = 0;
@@ -110,6 +111,9 @@ Srv::~Srv()
     if (dusagedom != NULL) delete dusagedom;
     if (ccstatusdom != NULL) delete ccstatusdom;
     if (statisticsdom != NULL) delete statisticsdom;
+    if (allprojectsdom != NULL) delete allprojectsdom;
+    if (ccstatusdom != NULL) delete ccstatusdom;
+    if (acctmgrinfodom != NULL) delete acctmgrinfodom;
     if (pwd != NULL) delete pwd;
 }
 
@@ -299,6 +303,14 @@ void Srv::updateallprojects()
 }
 
 
+void Srv::updateacctmgrinfo()//обновить статистику <acct_mgr_info>
+{
+    if (acctmgrinfodom != NULL)
+	delete acctmgrinfodom; //очищаем предыдущий рез-т
+    acctmgrinfodom = req("<acct_mgr_info/>");
+}
+
+
 void Srv::opactivity(const char* op) //изменение режима активности BOINC сервера "always" "auto" "newer"
 {
     sendreq("<boinc_gui_rpc_request>\n<set_run_mode><%s/><duration>0</duration></set_run_mode>\n</boinc_gui_rpc_request>\n\003",op);
@@ -340,7 +352,7 @@ void Srv::optask(Item* result, const char* op) //действия над зад�
 }
 
 
-void  Srv::opproject(const char* name, const char* op) //действия над проектом ("project_suspend","project_resume",...)
+void Srv::opproject(const char* name, const char* op) //действия над проектом ("project_suspend","project_resume",...)
 {
     if (statedom == NULL)
 	return;
@@ -356,6 +368,53 @@ void Srv::runbenchmarks() //запустить бенчмарк
     sendreq("<boinc_gui_rpc_request>\n<run_benchmarks/>\n</boinc_gui_rpc_request>\n\003");
     char* s = waitresult();
     free(s); //результат не проверяем
+}
+
+
+bool Srv::getprojectconfig(const char* url, std::string& errmsg) //получить c сервера файл конфигурации
+{
+    //запрос на начало передачи
+    Item* res = req("<get_project_config>\n<url>%s</url></get_project_config>\n", url);
+    if (res == NULL)
+	return false;
+    kLogPrintf("request=\n ?\n\n answer=\n%s\n", res->toxmlstring().c_str());
+    free(res);
+    //ждем завершения
+    bool done = false;
+    int count = 30; //не больше 30 запросов
+    do
+    {
+	res = req("<get_project_config_poll/>");
+	if (res == NULL)
+	    return false;
+	kLogPrintf("request=\n ?\n\n answer=\n%s\n", res->toxmlstring().c_str());
+	Item* error_num = res->findItem("error_num");
+	if (error_num != NULL)
+	{
+	    int errnum = error_num->getivalue();
+	    if (errnum == ERR_IN_PROGRESS) //ждать?
+	        sleep(1); //ERR_IN_PROGRESS ждем 1 сек
+	    else
+	    {
+	        free(res);
+	        break;
+	    }
+	}
+	else
+	{
+	    Item* project_config = res->findItem("project_config");
+	    if (project_config != NULL)
+		done = true;
+	    else
+	    {
+		free(res);
+		break;
+	    }
+	}
+	free(res);
+    }
+    while((count--)&&(!done));
+    return done;
 }
 
 
@@ -389,7 +448,7 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
 	return false;
     kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
     free(res);
-
+    //ждем завершения
     int count = 30; //не больше 30 запросов
     snprintf(sreq,sizeof(sreq),"<create_account_poll/>");
     bool done = false;
@@ -400,7 +459,7 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
 	    return false;
 	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
 	Item* error_num = res->findItem("error_num");
-	if ((error_num != 0)&&(error_num->getivalue() != ERR_IN_PROGRESS))
+	if ((error_num != NULL)&&(error_num->getivalue() != ERR_IN_PROGRESS))
 	{
 	    Item* error_msg = res->findItem("error_msg");
 	    if (error_msg != NULL)
@@ -419,7 +478,6 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
 
 bool Srv::projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg) //подключить проект
 {
-
     //расчитать хэш md5 от pass+email
     unsigned char md5digest[MD5_DIGEST_LENGTH];
     MD5_CTX c;
@@ -449,7 +507,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
 	    return false;
 	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
 	Item* error_num = res->findItem("error_num");
-	if ((error_num != 0)&&(error_num->getivalue() != ERR_IN_PROGRESS))
+	if ((error_num != NULL)&&(error_num->getivalue() != ERR_IN_PROGRESS))
 	{
 	    Item* error_msg = res->findItem("error_msg");
 	    if (error_msg != NULL)
@@ -480,10 +538,60 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
 }
 
 
-bool Srv::accountmanager(const char* url, const char* username, const char* pass, std::string& errmsg) //подключить аккаунт менеджер
+bool Srv::accountmanager(const char* url, const char* username, const char* pass, bool useconfigfile, std::string& errmsg) //подключить аккаунт менеджер
 {
-    errmsg = "NOT IMPLEMENTED YET";
-    return false;
+    if (strlen(url) >= 0)
+    {
+	//получить конфиг (не знаю зачем!!!)
+	if (!getprojectconfig(url,errmsg))
+	{
+	    errmsg = "Can't get config";
+	    return false;
+	}
+    }
+    char sreq[1024];
+    //формируем запрос
+    if (useconfigfile)
+	snprintf(sreq,sizeof(sreq),"<acct_mgr_rpc>\n<use_config_file/>\n</acct_mgr_rpc>\n");
+    else
+	snprintf(sreq,sizeof(sreq),"<acct_mgr_rpc>\n<url>%s</url>\n<name>%s</name>\n<password>%s</password>\n</acct_mgr_rpc>\n",url,username,pass);
+    Item* res = req(sreq);
+    if (res == NULL)
+	return false;
+    kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    //ждем завершения
+    snprintf(sreq,sizeof(sreq),"<acct_mgr_rpc_poll/>");
+    bool done = false;
+    int count = 30; //не больше 30 запросов
+    do
+    {
+	res = req(sreq);
+	if (res == NULL)
+	    return false;
+	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+	Item* error_num = res->findItem("error_num");
+	if (error_num != NULL)
+	{
+	    int errnum = error_num->getivalue();
+	    if (errnum == BOINC_SUCCESS) //успешно
+		done = true;
+	    else
+		if (errnum != ERR_IN_PROGRESS) //ошибка выходим
+		{
+		    Item* message = res->findItem("message");
+		    if (message != NULL)
+	    		errmsg = message->getsvalue(); //возврат строки ошибки
+		    free(res);
+		    return false;
+		}
+		else
+		    sleep(1); //ERR_IN_PROGRESS ждем 1 сек
+	}
+	free(res);
+    }
+    while((count--)&&(!done));
+    kLogPrintf("RET %b\n",done);
+    return done;
 }
 
 

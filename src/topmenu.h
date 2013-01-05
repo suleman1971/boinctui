@@ -30,6 +30,7 @@ class ProjectsSubMenu : public NMenu //выпадающие меню "Projects"
   protected:
     virtual bool action(); //вызывается при нажатии Enter
     Srv*	srv; //текущий отображаемый сервер
+    std::string	accmgrurl; //url акк менеджера если есть
 };
 
 

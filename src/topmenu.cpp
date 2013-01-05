@@ -25,6 +25,8 @@
 #define M_DETACH_PROJECT		"Detach project"
 #define M_ADD_PROJECT			"Add project"
 #define M_CONNECT_MANAGER		"Connect to account manager"
+#define M_SYNCHRONIZE_MANAGER		"Synchronize with manager"
+#define M_DISCONNECT_MANAGER		"Stop using account manager"
 //Названия пунктов меню "Add project/User Exist"
 #define M_PROJECT_USER_EXIST		"Existing user"
 #define M_PROJECT_NEW_USER		"Create new user account"
@@ -206,9 +208,24 @@ bool HelpSubMenu::action()
 
 //=============================================================================================
 
+
 ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 {
     this->srv = srv;
+    std::string acctmgrname = "";
+    if (srv != NULL)
+    {
+	srv->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
+	if (srv->acctmgrinfodom != NULL)
+	{
+	    Item* acct_mgr_name = srv->acctmgrinfodom->findItem("acct_mgr_name");
+	    if (acct_mgr_name != NULL)
+		acctmgrname = acct_mgr_name->getsvalue();
+	    Item* acct_mgr_url = srv->acctmgrinfodom->findItem("acct_mgr_url");
+	    if (acct_mgr_url != NULL)
+		accmgrurl = acct_mgr_url->getsvalue();
+	}
+    }
     additem(M_UPDATE_PROJECT,"");
     additem(M_SUSPEND_PROJECT ,"");
     additem(M_RESUME_PROJECT,"");
@@ -218,7 +235,13 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     #ifdef EXPERIMENTAL
     additem(M_DETACH_PROJECT,"");
     additem(M_ADD_PROJECT,"");
-    additem(M_CONNECT_MANAGER,"");
+    if (acctmgrname.empty())
+	additem(M_CONNECT_MANAGER,"");
+    else
+    {
+	additem(M_SYNCHRONIZE_MANAGER,acctmgrname.c_str());
+	additem(M_DISCONNECT_MANAGER,acctmgrname.c_str());
+    }
     #endif
     additem(NULL,NULL);
 }
@@ -254,6 +277,21 @@ bool ProjectsSubMenu::action()
 	insert(new ProjectAllListSubMenu(NRect(5,25,beginrow, begincol), srv));
     if ( strcmp(item_name(current_item(menu)), M_CONNECT_MANAGER) == 0 ) //подключить менеджер
 	insert(new ProjectAccMgrSubMenu(NRect(5,25,beginrow, begincol), srv));
+    if ( strcmp(item_name(current_item(menu)), M_DISCONNECT_MANAGER) == 0 ) //отключить менеджер
+    {
+	putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
+	std::string errmsg;
+	if (srv != NULL)
+	    srv->accountmanager("","","",false,errmsg);
+    }
+    if ( strcmp(item_name(current_item(menu)), M_SYNCHRONIZE_MANAGER) == 0 ) //синхронизироваться с менеджером
+    {
+	putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
+	std::string errmsg;
+	if (srv != NULL)
+	    srv->accountmanager(accmgrurl.c_str(),"","",true,errmsg);
+    }
+
     return true;
 }
 
