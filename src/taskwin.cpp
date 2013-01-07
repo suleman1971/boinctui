@@ -6,6 +6,7 @@
 #include "resultparse.h"
 #include "mbstring.h"
 #include "tuievent.h"
+#include "kclog.h"
 
 
 bool resultCmpLess( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
@@ -108,9 +109,50 @@ std::string gethumanreadabletimestr(time_t time) //получить в виде 
 }
 
 
+TaskWin::TaskWin(NRect rect, Config* cfg) : NSelectList(rect) 
+{
+    setselectorbgcolor(COLOR_CYAN);
+    columnmask = ~0;
+    //читаем маску из конфига если ее нет то создаем
+    if (cfg != NULL)
+    {
+	Item* rootcfg = cfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
+	    if (column_view_mask == NULL) //создать
+	    {
+		column_view_mask = new Item("column_view_mask");
+		column_view_mask->setivalue(columnmask);
+		rootcfg->addsubitem(column_view_mask);
+	    }
+	    columnmask = column_view_mask->getivalue();
+	}
+    }
+    this->cfg = cfg;
+};
+
+
 TaskWin::~TaskWin()
 {
+    kLogPrintf("TaskWin::~TaskWin()\n");
     clearcontent();
+}
+
+
+void TaskWin::savemasktoconfig() //сохранить маску в дереве конфига
+{
+    //пишем в конфиг маску
+    if (cfg != NULL)
+    {
+	Item* rootcfg = cfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
+	    if (column_view_mask != NULL)
+		column_view_mask->setivalue(columnmask);
+	}
+    }
 }
 
 
@@ -149,18 +191,11 @@ void TaskWin::updatedata() //обновить данные с сервера
 	    Item* fraction_done = (*it)->findItem("fraction_done");
 	    if (name)
 	    {
-		char sdone[64];
-		if (!fraction_done) //для неактивных секция fraction_done отсутствует
-		    strcpy(sdone,"   -  ");
-		else
-		    sprintf(sdone,"%6.2f",100*fraction_done->getdvalue());
-		//процент выполнения
-		std::string sstate = getresultstatestr(*it);
-		//имя проекта
-		std::string pname = srv->findProjectName(srv->statedom, (*it)->findItem("project_url")->getsvalue());//findProjectName(srv->statedom, *it);
-		char* sproject = strdup(pname.c_str());
-		//цвет и атрибут
+		int column = 0;
 		int attr = getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_NORMAL; //ставим цвет по умолчанию
+		NColorString* cs = new NColorString(attr, "");
+		std::string sstate = getresultstatestr(*it); //состояние задачи
+		//цвет и атрибут в зависимости от состояния задачи
 		if ((*it)->findItem("ready_to_report") != NULL)
 		    attr = getcolorpair(COLOR_BLACK,COLOR_BLACK) | A_BOLD;
 		if ((*it)->findItem("active_task") != NULL)
@@ -171,13 +206,21 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    attr = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
 		if ( sstate == "Dwnld")
 		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
-		NColorString* cs = new NColorString(attr, "");
 		int stateattr = attr;
 		if ( sstate == "DoneEr")
 		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK);
-		cs->append(attr, " %2d  ", i);
-		cs->append(stateattr, "%-6s", sstate.c_str());
-		//процент выполнения имя проекта и подвсетка для GPU задач
+		//колонка 0 номер задачи
+		if(iscolvisible(column++))
+		    cs->append(attr, " %2d  ", i);
+		//колонка 1 состояние
+		char sdone[64];
+		if (!fraction_done) //для неактивных секция fraction_done отсутствует
+		    strcpy(sdone,"   -  ");
+		else
+		    sprintf(sdone,"%6.2f",100*fraction_done->getdvalue());
+		if (iscolvisible(column++))
+		    cs->append(stateattr, "%-6s", sstate.c_str());
+		//колонка 2 процент выполнения имя проекта и подвсетка для GPU задач
 		int attrgpu = attr;
 		Item* plan_class = (*it)->findItem("plan_class");
 		if (plan_class != NULL)
@@ -189,39 +232,51 @@ void TaskWin::updatedata() //обновить данные с сервера
 		}
 		if (( sstate != "Run" )&&( sstate != "Done"))
 		    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
-		cs->append(attrgpu, "  %6s", sdone);
-		cs->append(attr, "  %-20s ", mbstrtrunc(sproject,20));
-		//время эстимейт
-		Item* estimated_cpu_time_remaining = (*it)->findItem("estimated_cpu_time_remaining");
-		int attr2 = attr;
-		if ( estimated_cpu_time_remaining != NULL )
+		if(iscolvisible(column++))
+		    cs->append(attrgpu, "  %6s", sdone);
+		//колонка 3 имя проекта
+		std::string pname = srv->findProjectName(srv->statedom, (*it)->findItem("project_url")->getsvalue());//findProjectName(srv->statedom, *it);
+		char* sproject = strdup(pname.c_str());
+		if(iscolvisible(column++))
+		    cs->append(attr, "  %-20s", mbstrtrunc(sproject,20));
+		//колонка 4 время эстимейт
+		if(iscolvisible(column++))
 		{
-		    double dtime = estimated_cpu_time_remaining->getdvalue();
-		    if ( ( sstate == "Run" )&&( dtime < 600)&&( dtime >= 0 ) ) //осталось [0-600[ сек
-			attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
-		    if ( dtime >= 0)
-			cs->append(attr2,"%4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
+		    Item* estimated_cpu_time_remaining = (*it)->findItem("estimated_cpu_time_remaining");
+		    int attr2 = attr;
+		    if ( estimated_cpu_time_remaining != NULL )
+		    {
+			double dtime = estimated_cpu_time_remaining->getdvalue();
+			if ( ( sstate == "Run" )&&( dtime < 600)&&( dtime >= 0 ) ) //осталось [0-600[ сек
+			    attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
+			if ( dtime >= 0)
+			    cs->append(attr2," %4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
+			else
+			    cs->append(attr2," %4s", "?"); //естимейт отрицательный (BOINC bug?)
+		    }
 		    else
-			cs->append(attr2,"%4s", "?"); //естимейт отрицательный (BOINC bug?)
+			cs->append(attr2," %4s", "?");
 		}
-		else
-		    cs->append(attr2,"%4s", "?");
-		//время дедлайн
-		Item* report_deadline = (*it)->findItem("report_deadline");
-		attr2 = attr;
-		if (report_deadline != NULL)
+		//колонка 5 время дедлайн
+		if(iscolvisible(column++))
 		{
-		    double dtime = report_deadline->getdvalue();
-		    double beforedl = dtime - time(NULL); //число секунд до дедлайна
-		    if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
-			attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
-		    cs->append(attr2,"%4s", gethumanreadabletimestr(beforedl).c_str());
+		    Item* report_deadline = (*it)->findItem("report_deadline");
+		    int attr2 = attr;
+		    if (report_deadline != NULL)
+		    {
+			double dtime = report_deadline->getdvalue();
+			double beforedl = dtime - time(NULL); //число секунд до дедлайна
+			if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
+			    attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+			cs->append(attr2," %4s", gethumanreadabletimestr(beforedl).c_str());
+		    }
+		    else
+			cs->append(attr2," %4s", "?");
 		}
-		else
-		    cs->append(attr2,"%4s", "?");
-		//имя задачи
-		cs->append(attr,"   %s", name->getsvalue()); 
-		//addstring(strdup(name->getsvalue()), attr, " %2d  %-6s  %6s  %-20s  %4s  %s",i, sstate.c_str(), sdone, mbstrtrunc(sproject,20), getestimatetimestr(*it).c_str(), name->getsvalue());
+		//колонка 6 имя задачи
+		if(iscolvisible(column++))
+		    cs->append(attr,"  %s", name->getsvalue()); 
+		//добавляем сформированную строку и поле данных с именем задачи (для селектора)
 		addstring(strdup(name->getsvalue()),cs);
 		free(sproject);
 	    }
@@ -265,6 +320,14 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	if (ev->cmdcode == evABORTRES) //событие "abort_result"
 	{
 	    optask('A');
+	}
+	if (ev->cmdcode == evCOLVIEWCH) //событие изменения видимости колонки
+	{
+	    TuiEvent* ev1 = (TuiEvent*) ev;
+	    if (iscolvisible(ev1->idata1))
+		coldisable(ev1->idata1);
+	    else
+		colenable(ev1->idata1);
 	}
     }
 }

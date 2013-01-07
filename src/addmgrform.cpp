@@ -128,7 +128,7 @@ void AddAccMgrForm::eventhandle(NEvent* ev) 	//обработчик событи
 		break;
 	    }
 	    case 27:
-		putevent(new TuiEvent(srv, mgrname.c_str())); //код закрытия окна
+		putevent(new TuiEvent(evADDACCMGR, srv, mgrname.c_str())); //код закрытия окна
 		break;
 	    default:
 		kLogPrintf("AddAccMgrForm::KEYCODE=%d\n", ev->keycode);
