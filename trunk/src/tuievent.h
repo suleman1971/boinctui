@@ -13,6 +13,7 @@ enum TuiEventType
     evKEYBIND,		//открыть/закрыть откно Key Bindings
     evBENCHMARK,	//run benchmark
     evADDPROJECT,	//форма добавить проект
+    evCOLVIEWCH,	//переключение видимости колонки
     evADDACCMGR		//форма акк менеджера
 };
 
@@ -21,20 +22,26 @@ class TuiEvent : public NEvent //класс программных событи�
 {
   public:
     TuiEvent(TuiEventType type) : NEvent(evPROG, type)	{};
-    TuiEvent(Srv* srv, const char* prjname, bool userexist) : NEvent(evPROG, evADDPROJECT) //событие для добавления проекта
+    TuiEvent(TuiEventType type, Srv* srv, const char* prjname, bool userexist) : NEvent(evPROG, type) //событие для добавления проекта
     {
 	this->srv = srv;
 	this->sdata1 = prjname;
 	this->bdata1 = userexist;
     };
-    TuiEvent(Srv* srv, const char* mgrname) : NEvent(evPROG, evADDACCMGR) //событие для подключения к менеджеру
+    TuiEvent(TuiEventType type, Srv* srv, const char* mgrname) : NEvent(evPROG, type) //событие для подключения к менеджеру
     {
 	this->srv = srv;
 	this->sdata1 = mgrname;
     };
+    TuiEvent(TuiEventType type ,int ncolumn, bool enable) : NEvent(evPROG, type) //событие переключения видимости колонки
+    {
+	this->idata1 = ncolumn;
+	this->bdata1 = enable;
+    };
     Srv*		srv;
     std::string		sdata1; //произвольная строка
     bool		bdata1; //произаольная bool переменная
+    int			idata1; //произвольное целое
 };
 
 

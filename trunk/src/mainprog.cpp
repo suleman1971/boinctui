@@ -15,10 +15,10 @@ MainProg::MainProg()
     help = NULL;
     addform = NULL;
     //основное окно
-    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно
+    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0), cfg); //создаем основное окно
     insert(wmain);
     wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-    menu = new TopMenu();
+    menu = new TopMenu(cfg);
     menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
     insert(menu);
     setcaption();
@@ -38,6 +38,14 @@ MainProg::MainProg()
     wstatus->appendstring(attrWG, "esume |");
     wstatus->appendstring(attrYG, " F9");
     wstatus->appendstring(attrWG, " Menu |");
+}
+
+
+MainProg::~MainProg()
+{
+//    delete gsrvlist;
+	cfg->save();
+//    delete cfg;
 }
 
 

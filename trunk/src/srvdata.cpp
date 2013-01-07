@@ -540,7 +540,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
 
 bool Srv::accountmanager(const char* url, const char* username, const char* pass, bool useconfigfile, std::string& errmsg) //подключить аккаунт менеджер
 {
-    if (strlen(url) >= 0)
+    if (strlen(url) > 0)
     {
 	//получить конфиг (не знаю зачем!!!)
 	if (!getprojectconfig(url,errmsg))

@@ -50,6 +50,14 @@ Item* Item::findItem(const char* name)	//ищет в поддереве (на в
 }
 
 
+void Item::setivalue(int ivalue) //присвоить целочисленное значение
+{
+    char buff[256];
+    snprintf(buff,sizeof(buff),"%d",ivalue);
+    setsvalue(buff);
+}
+
+
 double Item::getdvalue()		//получить значение double
 {
     double result = 0.0;

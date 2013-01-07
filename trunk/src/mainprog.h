@@ -19,6 +19,7 @@ class MainProg : public NProgram
 {
   public:
     MainProg();
+    ~MainProg();
     void smartresize();
     bool mainloop();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий

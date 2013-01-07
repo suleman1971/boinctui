@@ -15,6 +15,8 @@ class Item //элемент дерева данных (например <disk_us
     bool isnode() 			{ return !subitems.empty(); }; 	//true если имеет подэлементы
     void addsubitem(Item* item)		{ item->parent = this; subitems.push_back(item); }; 	//добавляет подэлемент
     void appendvalue(const char* svalue) { this->svalue = this->svalue + svalue; }; //дополняет строку значения
+    void setsvalue(const char* svalue) { this->svalue = svalue; }; //устанавливает строку значения
+    void setivalue(int ivalue); //присвоить целочисленное значение
     void mergetree(Item* tree); //объединяет tree с текущим эл-том
     void clearsubitems(); //удалить все подэл-ты текущего узла
     void delsubitem(Item* subitem); //удалить подэлемент subitem из узла

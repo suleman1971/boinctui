@@ -6,6 +6,7 @@
 
 //Названия пунктов верхнего меню
 #define M_FILE 				"File"
+#define M_VIEW 				"View"
 #define M_PROJECTS			"Projects"
 #define M_TASKS				"Tasks"
 #define M_ACTIVITY			"Activity"
@@ -15,6 +16,14 @@
 #define M_CONFIG_HOSTS			"Configure host list"
 #define M_RUN_BENCHMARKS		"Run CPU benchmarks"
 #define M_QUIT				"Quit boinctui"
+//Названия пунктов меню "View"
+#define M_VIEW_NUMBER			"Task number column"
+#define M_VIEW_STATE			"Task state column"
+#define M_VIEW_DONE			"Percent done column"
+#define M_VIEW_PROJECT			"Project name column"
+#define M_VIEW_ESTIMATE			"Estimate time column"
+#define M_VIEW_DEADLINE			"Deadline time column"
+#define M_VIEW_TASKNAME			"Task name column"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
 #define M_SUSPEND_PROJECT		"Suspend project"
@@ -49,10 +58,12 @@
 #define M_KEY_BINDINGS			"Hot keys list"
 
 
-TopMenu::TopMenu() : NMenu(NRect(1,getmaxx(stdscr),0,0),true)
+TopMenu::TopMenu(Config* cfg) : NMenu(NRect(1,getmaxx(stdscr),0,0),true)
 {
     setserver(NULL);
+    this->cfg = cfg;
     additem(M_FILE,"");
+    additem(M_VIEW,"");
     additem(M_PROJECTS,"");
     additem(M_TASKS,"");
     additem(M_ACTIVITY,"");
@@ -74,6 +85,11 @@ bool TopMenu::action() //открыть субменю
     if ( strcmp(item_name(current_item(menu)),M_FILE) == 0 )
     {
 	insert(new FileSubMenu(NRect(5,25,1, begincol)));
+	result = true;
+    }
+    if ( strcmp(item_name(current_item(menu)),M_VIEW) == 0 )
+    {
+	insert(new ViewSubMenu(NRect(5,25,1, begincol), cfg));
 	result = true;
     }
     if ( strcmp(menu->curitem->name.str,M_PROJECTS) == 0 )
@@ -187,6 +203,60 @@ bool FileSubMenu::action()
 //=============================================================================================
 
 
+ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
+{
+    int colnum = 0;
+    additem(M_VIEW_NUMBER, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_STATE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_DONE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_PROJECT, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_ESTIMATE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_DEADLINE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_TASKNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(NULL,NULL);
+}
+
+
+bool ViewSubMenu::iscolenable(Config* cfg, int n)
+{
+    bool result = false;
+    //читаем из конфига
+    if (cfg != NULL)
+    {
+	Item* rootcfg = cfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
+	    unsigned int columnmask = column_view_mask->getivalue();
+	    result = (1 << n) & columnmask;
+	}
+    }
+    return result;
+}
+
+
+bool ViewSubMenu::action()
+{
+    putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
+    putevent(new TuiEvent(evCOLVIEWCH,item_index(current_item(menu)), false));
+
+/*
+    if ( strcmp(item_name(current_item(menu)),M_NEXT_HOST) == 0 )
+	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
+    if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
+	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
+    if ( strcmp(item_name(current_item(menu)),M_RUN_BENCHMARKS) == 0 )
+	putevent(new TuiEvent(evBENCHMARK)); //NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
+    if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )
+	putevent(new NEvent(NEvent::evKB, 'Q')); //создаем событие иммитирующее нажатие 'Q'
+*/
+    return true;
+}
+
+
+//=============================================================================================
+
+
 HelpSubMenu::HelpSubMenu(NRect rect) : NMenu(rect)
 {
     additem(M_ABOUT,"");
@@ -232,7 +302,6 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     additem(M_NO_NEW_TASKS_PROJECT,"");
     additem(M_ALLOW_NEW_TASKS_PROJECT,"");
     additem(M_RESET_PROJECT,"");
-    #ifdef EXPERIMENTAL
     additem(M_DETACH_PROJECT,"");
     additem(M_ADD_PROJECT,"");
     if (acctmgrname.empty())
@@ -242,7 +311,6 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	additem(M_SYNCHRONIZE_MANAGER,acctmgrname.c_str());
 	additem(M_DISCONNECT_MANAGER,acctmgrname.c_str());
     }
-    #endif
     additem(NULL,NULL);
 }
 
@@ -619,7 +687,7 @@ bool ProjectAccMgrSubMenu::action()
 {
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //создаем событие закрывающее меню
     if (srv != NULL)
-	putevent(new TuiEvent(srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
+	putevent(new TuiEvent(evADDACCMGR, srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
 }
 
 
@@ -675,9 +743,9 @@ bool ProjectUserExistSubMenu::action()
     if (srv != NULL)
     {
 	if ( strcmp(item_name(current_item(menu)),M_PROJECT_USER_EXIST) == 0 )
-	    putevent(new TuiEvent(srv, prjname.c_str(), true));
+	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), true));
 	if ( strcmp(item_name(current_item(menu)),M_PROJECT_NEW_USER) == 0 )
-	    putevent(new TuiEvent(srv, prjname.c_str(), false));
+	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), false));
     }
 }
 

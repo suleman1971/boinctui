@@ -1,14 +1,23 @@
 #include "mainwin.h"
+#include "tuievent.h"
 
 
 #define INFPANWIDTH  20 //ширина инф панели
 
 
-MainWin::MainWin(NRect rect) : NGroup(rect)
+MainWin::MainWin(NRect rect, Config* cfg) : NGroup(rect)
 {
+    colname.push_back("  #  ");
+    colname.push_back("state ");
+    colname.push_back("   done%%");
+    colname.push_back("  project             ");
+    colname.push_back("  est");
+    colname.push_back("  d/l");
+    colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
-    tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
-    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
+    //tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
+    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1), cfg); //создаем окно процессов внутри wmain
+    setcoltitle();
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1)); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+2, 1), NULL); //горизонтальная линия
     vline = new NVLine(NRect(getheight()-2, 1, 1 , getwidth()-INFPANWIDTH-2), NULL); //вертикальная линия
@@ -48,6 +57,18 @@ void 	MainWin::setserver(Srv* srv) //установить отображаемы
 }
 
 
+void MainWin::setcoltitle()
+{
+    std::string s = "";
+    for (size_t i = 0; i < colname.size(); i++)
+    {
+	if (wtask->iscolvisible(i))
+	    s = s + colname[i];
+    }
+    tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD, s.c_str());
+}
+
+
 void MainWin::refresh()
 {
     wattrset(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
@@ -65,5 +86,28 @@ void MainWin::refresh()
     //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
     //wattroff(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     NGroup::refresh();
+}
+
+
+void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
+{
+    NGroup::eventhandle(ev); //предок
+
+    if ( ev->done )
+	return;
+
+    if (ev->type == NEvent::evPROG) //прграммные
+    {
+	switch(ev->cmdcode)
+	{
+	    case evCOLVIEWCH: //изменился набор колонок
+	    {
+		setcoltitle();
+		tablheader->refresh();
+		wtask->refresh();
+	    }
+	} //switch
+    }
+
 }
 

@@ -8,7 +8,7 @@
 class TopMenu : public NMenu //верхний уровень меню
 {
   public:
-    TopMenu();
+    TopMenu(Config* cfg);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     void enable()   { if (!enableflag) {enableflag = true;  set_menu_fore(menu, selectorattr); action(); } };
     void disable()  { if (enableflag) {enableflag = false; selectorattr = menu_fore(menu); set_menu_fore(menu, menu_back(menu)); destroysubmenu(); }; /*цвет указателя = цвет фона*/ };
@@ -19,6 +19,17 @@ class TopMenu : public NMenu //верхний уровень меню
     int		selectorattr; //цвет указателя
     bool	enableflag; //true если меню активно
     Srv*	srv; //текущий отображаемый сервер
+    Config*	cfg;
+};
+
+
+class ViewSubMenu : public NMenu //выпадающие меню "View"
+{
+  public:
+    ViewSubMenu(NRect rect, Config* cfg);
+  protected:
+    virtual bool action(); //вызывается при нажатии Enter
+    bool iscolenable(Config* cfg, int n);
 };
 
 
