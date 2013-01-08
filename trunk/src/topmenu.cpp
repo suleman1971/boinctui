@@ -23,6 +23,7 @@
 #define M_VIEW_PROJECT			"Project name column"
 #define M_VIEW_ESTIMATE			"Estimate time column"
 #define M_VIEW_DEADLINE			"Deadline time column"
+#define M_VIEW_APPNAME			"Application name column"
 #define M_VIEW_TASKNAME			"Task name column"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
@@ -212,6 +213,7 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
     additem(M_VIEW_PROJECT, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_ESTIMATE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_DEADLINE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_APPNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_TASKNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(NULL,NULL);
 }
@@ -239,17 +241,6 @@ bool ViewSubMenu::action()
 {
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
     putevent(new TuiEvent(evCOLVIEWCH,item_index(current_item(menu)), false));
-
-/*
-    if ( strcmp(item_name(current_item(menu)),M_NEXT_HOST) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
-    if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
-    if ( strcmp(item_name(current_item(menu)),M_RUN_BENCHMARKS) == 0 )
-	putevent(new TuiEvent(evBENCHMARK)); //NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
-    if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )
-	putevent(new NEvent(NEvent::evKB, 'Q')); //создаем событие иммитирующее нажатие 'Q'
-*/
     return true;
 }
 

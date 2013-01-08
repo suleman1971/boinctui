@@ -13,6 +13,7 @@ MainWin::MainWin(NRect rect, Config* cfg) : NGroup(rect)
     colname.push_back("  project             ");
     colname.push_back("  est");
     colname.push_back("  d/l");
+    colname.push_back("  application                   ");
     colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
     //tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");

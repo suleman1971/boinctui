@@ -727,6 +727,40 @@ Item* Srv::findaccountmanager(const char* mgrname) //ищет менеджер �
 }
 
 
+Item* Srv::findappbywuname(const char* wuname) //найти приложение для данного WU
+{
+    if (statedom == NULL)
+	return NULL;
+    if (wuname == NULL)
+	return NULL;
+    Item* client_state = statedom->findItem("client_state");
+    if (client_state == NULL)
+	return NULL;
+    std::vector<Item*> wulist = client_state->getItems("workunit"); //список WU
+    std::vector<Item*>::iterator it;
+    //ищем WU
+    for (it = wulist.begin(); it!=wulist.end(); it++)
+    {
+	Item* name = (*it)->findItem("name");
+	if ( strcmp(wuname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ WU!
+	{
+	    Item* app_name = (*it)->findItem("app_name");
+	    std::vector<Item*> applist = client_state->getItems("app"); //список APP
+	    std::vector<Item*>::iterator it2;
+	    for (it2 = applist.begin(); it2!=applist.end(); it2++)
+	    {
+		Item* name = (*it2)->findItem("name");
+		if ( strcmp(app_name->getsvalue(),name->getsvalue()) == 0 ) //имена совпали НАШЛИ APP!
+		{
+		    return (*it2);
+		}
+	    }
+	}
+    }
+    return NULL;
+}
+
+
 time_t	Srv::getlaststattime() //вернет время последней имеющейся статистики
 {
     time_t result = 0;
