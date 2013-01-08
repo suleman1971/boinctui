@@ -12,5 +12,5 @@ Package: boinctui
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: boinc-client
-Description: manager for Boinc client
+Description: Fullscreen text manager for Boinc client
  boinctui is a fullscreen text based control tool for BOINC client

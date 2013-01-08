@@ -1,3 +1,18 @@
+boinctui (2.1.0) unstable; urgency=low
+
+  *"application name" column was added to task list
+
+  * each column in task list can on/off via menu "View"
+
+  * optional key "--without-ncursesw" was added to configure script. This key can disable utf8 and
+    perform linking with plain ncurses
+
+  * implemented support account managers (BAM etc). Attach/Detach/Syncrinize
+
+  * implemented add/detach project directly (without account manager) as existing user or as new user
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 08 Jan 2013 15:55:55 +0400
+
 boinctui (2.0.0b) unstable; urgency=low
 
   * New upstream release
