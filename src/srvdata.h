@@ -30,6 +30,7 @@ class Srv : public TConnect //описание соединения с серв�
     Item* findprojectbyname(const char* projectname); //ищет в getstate
     Item* findprojectbynamefromall(const char* projectname); //ищет в allprojectsdom
     Item* findaccountmanager(const char* mgrname); //ищет менеджер по имени
+    Item* findappbywuname(const char* wuname); //найти приложение для данного WU
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  opnetactivity(const char* op); //изменение режима активности сети "always" "auto" "newer"
     void  opgpuactivity(const char* op); //изменение режима активности GPU "always" "auto" "newer"

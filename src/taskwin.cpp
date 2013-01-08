@@ -273,7 +273,27 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    else
 			cs->append(attr2," %4s", "?");
 		}
-		//колонка 6 имя задачи
+		//колонка 6 имя приложения
+		if(iscolvisible(column++))
+		{
+		    char buf[256];
+		    snprintf(buf, sizeof(buf),"%s","unknown application");
+		    Item* wu_name = (*it)->findItem("wu_name");
+		    if (wu_name != NULL)
+		    {
+			Item* app = srv->findappbywuname(wu_name->getsvalue());
+			if (app != NULL)
+			{
+			    Item* user_friendly_name = app->findItem("user_friendly_name");
+			    if (user_friendly_name != NULL)
+				snprintf(buf, sizeof(buf),"%s",user_friendly_name->getsvalue());
+			}
+		    }
+		    if (iscolvisible(column)) //если след колонка (task) видима нужно обрезать
+			mbstrtrunc(buf,30);
+		    cs->append(attr,"  %-30s", buf);
+		}
+		//колонка 7 имя задачи
 		if(iscolvisible(column++))
 		    cs->append(attr,"  %s", name->getsvalue()); 
 		//добавляем сформированную строку и поле данных с именем задачи (для селектора)
