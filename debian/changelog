@@ -13,11 +13,6 @@ boinctui (2.1.0) unstable; urgency=low
 
  -- Sergey Suslov <suleman1971@gmail.com>  Tue, 08 Jan 2013 15:55:55 +0400
 
-boinctui (2.0.0b) unstable; urgency=low
-
-  * New upstream release
-
- -- Sergey Suslov <suleman1971@gmail.com>  Tue, 25 Dec 2012 12:32:00 +0400
 
 boinctui (1.2.0-0) unstable; urgency=low
 
