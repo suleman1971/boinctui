@@ -24,7 +24,21 @@ View full size image
 
 == Project manipulation ==
 
+=== Select new project from list ===
+
 <p align=center> 
-<img src="https://lh4.googleusercontent.com/-5T8gfueDOlg/UMdja7ApHVI/AAAAAAAAAGo/TQyYrGvYFE4/s676/boinctui-projectsmenu.png"/>
+<a href="https://lh3.googleusercontent.com/-68CxevPYH-o/UO2k-RG4CGI/AAAAAAAAAHU/UsypmefLxS4/s953/boinctui-project1.png">
+<img src="https://lh3.googleusercontent.com/-68CxevPYH-o/UO2k-RG4CGI/AAAAAAAAAHU/UsypmefLxS4/s953/boinctui-project1.png" width=600/>
+<br/>
+View full size image
+</a>
+</p>
+=== Add new project form ===
+<p align=center> 
+<img src="https://lh6.googleusercontent.com/-ArVOiJdXGgM/UO2lF4qJnEI/AAAAAAAAAHc/rAPdpYuetA0/s557/boinctui-addproject-form.png"/>
+</p>
+=== Connect to account manager ===
+<p align=center> 
+<img src="https://lh4.googleusercontent.com/-lMPr00vAKvQ/UO2lNT8xzgI/AAAAAAAAAHs/ifN8KDWFPz8/s571/boinctui-connectbam-form.png"/>
 <br/>
 </p>
