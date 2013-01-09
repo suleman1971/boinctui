@@ -4,8 +4,8 @@
 == Main Window ==
 
 <p align=center> 
-<a href="https://lh4.googleusercontent.com/-Ia-6mDBU4nY/UMdjF-wx__I/AAAAAAAAAFw/SJZOyo3NRZ8/s996/boinctui-mainwin.png">
-<img src="https://lh4.googleusercontent.com/-Ia-6mDBU4nY/UMdjF-wx__I/AAAAAAAAAFw/SJZOyo3NRZ8/s640/boinctui-mainwin.png" width=600/>
+<a href="https://lh5.googleusercontent.com/-PNTt8qXNp8c/UO2kzkrlodI/AAAAAAAAAHM/Ty6Mx1RkIO4/s954/boinctui-mainwin.png">
+<img src="https://lh5.googleusercontent.com/-PNTt8qXNp8c/UO2kzkrlodI/AAAAAAAAAHM/Ty6Mx1RkIO4/s954/boinctui-mainwin.png" width=600/>
 <br/>
 View full size image
 </a>
