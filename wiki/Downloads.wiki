@@ -1,5 +1,5 @@
 #summary Downloads boinctui page.
 
-You can manually download latest binary and source packages for Ubuntu 11.10 12.04 12.10 13.04 from :
-<a href="https://launchpad.net/~costamagnagianfranco/+archive/locutusofborg-ppa/+packages?field.name_filter=boinctui&field.status_filter=published&field.series_filter=">Ubuntu downloads
+You can manually download latest binary and source packages for: 
+ * Ubuntu i386/amd64 (11.10 12.04 12.10 13.04) from :<a href="https://launchpad.net/~costamagnagianfranco/+archive/locutusofborg-ppa/+packages?field.name_filter=boinctui&field.status_filter=published&field.series_filter=">Ubuntu downloads
 </a>
