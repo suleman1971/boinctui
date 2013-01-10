@@ -1,4 +1,5 @@
 #summary Downloads boinctui page.
+#labels Featured
 
 You can manually download latest binary and source packages: 
  * Ubuntu i386/amd64 (11.10 12.04 12.10 13.04) from :<a href="https://launchpad.net/~costamagnagianfranco/+archive/locutusofborg-ppa/+packages?field.name_filter=boinctui&field.status_filter=published&field.series_filter=">Ubuntu downloads
@@ -10,5 +11,5 @@ You can manually download latest binary and source packages:
  * Source rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.src.rpm&can=2&q=">Source Fedora downloads
 </a>
 
- * Bynary i386 rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.i686.rpm&can=2&q=">Source Fedora downloads
+ * Bynary i386 rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.i686.rpm&can=2&q=">Bynary Fedora downloads
 </a>
