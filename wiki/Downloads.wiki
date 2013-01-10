@@ -11,5 +11,5 @@ You can manually download latest binary and source packages:
  * Source rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.src.rpm&can=2&q=">Source Fedora downloads
 </a>
 
- * Bynary i386 rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.i686.rpm&can=2&q=">Bynary Fedora downloads
+ * Binary i386 rpm for Fedora 15 :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-1.2.0-0.fc15.i686.rpm&can=2&q=">Binary Fedora downloads
 </a>
