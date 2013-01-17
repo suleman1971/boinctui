@@ -1,3 +1,9 @@
+boinctui (2.1.1) unstable; urgency=low
+
+  *bugfix: Configuration host list form's fields don't allow long strings
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 17 Jan 2013 10:15:00 +0400
+
 boinctui (2.1.0) unstable; urgency=low
 
   *"application name" column was added to task list
