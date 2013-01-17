@@ -47,7 +47,9 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	//поле для хоста
 	fields[nf] = new_field(1, 15, nl,   5, 0, 0);
 	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-        field_opts_off(fields[nf], O_AUTOSKIP);
+	field_opts_off(fields[nf], O_AUTOSKIP);
+	field_opts_off(fields[nf], O_STATIC);
+	set_max_field(fields[nf],128); //max width 128
 	//set_field_type(field[nf], TYPE_ALNUM, 0);
 	if (i < slist.size())
 	{
@@ -74,6 +76,8 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	fields[nf] = new_field(1, 20, nl, 29, 0, 0);
 	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
 	field_opts_off(fields[nf], O_AUTOSKIP);
+	field_opts_off(fields[nf], O_STATIC);
+	set_max_field(fields[nf],128); //max width 128
 	if (i < slist.size())
 	{
 	    Item* pwd = slist[i]->findItem("pwd");
