@@ -36,7 +36,9 @@ AC_ARG_WITH(
 )
 
 AC_CHECK_LIB(expat,    main,  , [AC_MSG_ERROR([Couldn't find expat library])] )
-AC_CHECK_LIB(crypto ,  main,  , [AC_MSG_ERROR([Couldn't find crypto library])] )
+AC_CHECK_LIB(gnutls-openssl ,  MD5_Init,  , [AC_MSG_ERROR([Couldn't find gnutls-openssl library])] )
+#AC_CHECK_LIB(crypto ,  main,  , [AC_MSG_ERROR([Couldn't find crypto library])] )
+
 
 # Checks for header files.
 
@@ -46,7 +48,7 @@ AC_CHECK_HEADERS( \
 string.h stdlib.h stdio.h sys/stat.h unistd.h stdarg.h sys/ioctl.h arpa/inet.h \
 locale.h malloc.h sys/socket.h netdb.h signal.h ctype.h \
 algorithm string list vector queue stack sstream \
-expat.h curses.h form.h panel.h openssl/md5.h \
+expat.h curses.h form.h panel.h gnutls/openssl.h \
 ] ,  , [AC_MSG_ERROR([Couldn't find any headers])] )
 AC_LANG_POP([C++])
 

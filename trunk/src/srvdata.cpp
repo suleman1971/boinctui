@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <algorithm>
 #include <stdarg.h>
-#include <openssl/md5.h>
+#include <gnutls/openssl.h>
 #include <unistd.h>
 #include "srvdata.h"
 #include "resultparse.h"
