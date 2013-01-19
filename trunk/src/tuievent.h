@@ -14,6 +14,8 @@ enum TuiEventType
     evBENCHMARK,	//run benchmark
     evADDPROJECT,	//форма добавить проект
     evCOLVIEWCH,	//переключение видимости колонки
+    evVIEWMODECH,	//переключение режима видимости All/Hide done/Active tasks only
+    evSORTMODECH,	//переключение режима сортировки списка задач 0-unsorted 1-state e.t.c.
     evADDACCMGR		//форма акк менеджера
 };
 
@@ -37,6 +39,10 @@ class TuiEvent : public NEvent //класс программных событи�
     {
 	this->idata1 = ncolumn;
 	this->bdata1 = enable;
+    };
+    TuiEvent(TuiEventType type ,int mode) : NEvent(evPROG, type) //событие режим видимости задач
+    {
+	this->idata1 = mode;
     };
     Srv*		srv;
     std::string		sdata1; //произвольная строка

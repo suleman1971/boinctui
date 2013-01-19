@@ -25,6 +25,12 @@
 #define M_VIEW_DEADLINE			"Deadline time column"
 #define M_VIEW_APPNAME			"Application name column"
 #define M_VIEW_TASKNAME			"Task name column"
+#define M_ALL_TASKS			"All tasks"
+#define M_HIDE_DONE			"Hide done tasks"
+#define M_ACTIVE_ONLY			"Active tasks only"
+#define M_UNSORTED			"Unsorted tasks list"
+#define M_SORT_BY_STATE			"Sort by state"
+#define M_SORT_BY_DONE			"Sort by done %"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
 #define M_SUSPEND_PROJECT		"Suspend project"
@@ -215,6 +221,34 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
     additem(M_VIEW_DEADLINE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_APPNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_TASKNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem("","");
+    int taskslistmode = 0;
+    if (cfg != NULL)
+    {
+	Item* rootcfg = cfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* tasks_list_mode = rootcfg->findItem("tasks_list_mode");
+	    taskslistmode = tasks_list_mode->getivalue();
+	}
+    }
+    additem(M_ALL_TASKS,   (taskslistmode == 0) ? "(*)" : "( )");
+    additem(M_HIDE_DONE,   (taskslistmode == 1) ? "(*)" : "( )");
+    additem(M_ACTIVE_ONLY, (taskslistmode == 2) ? "(*)" : "( )");
+    additem("","");
+    int taskssortmode = 0;
+    if (cfg != NULL)
+    {
+	Item* rootcfg = cfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* tasks_sort_mode = rootcfg->findItem("tasks_sort_mode");
+	    taskssortmode = tasks_sort_mode->getivalue();
+	}
+    }
+    additem(M_UNSORTED,      (taskssortmode == 0) ? "(*)" : "( )");
+    additem(M_SORT_BY_STATE, (taskssortmode == 1) ? "(*)" : "( )");
+    additem(M_SORT_BY_DONE,  (taskssortmode == 2) ? "(*)" : "( )");
     additem(NULL,NULL);
 }
 
@@ -240,6 +274,43 @@ bool ViewSubMenu::iscolenable(Config* cfg, int n)
 bool ViewSubMenu::action()
 {
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
+
+    if ( strcmp(item_name(current_item(menu)),M_ALL_TASKS) == 0 )
+    {
+	putevent(new TuiEvent(evVIEWMODECH, 0));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)),M_HIDE_DONE) == 0 )
+    {
+	putevent(new TuiEvent(evVIEWMODECH, 1));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)),M_ACTIVE_ONLY) == 0 )
+    {
+	putevent(new TuiEvent(evVIEWMODECH, 2));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_UNSORTED) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 0));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_STATE) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 1));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_DONE) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 2));
+	return true;
+    }
+
     putevent(new TuiEvent(evCOLVIEWCH,item_index(current_item(menu)), false));
     return true;
 }
@@ -430,12 +501,14 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    if ( (have_cuda != NULL)||(have_ati !=NULL) )
 	    {
 		Item* gpu_mode =  srv->ccstatusdom->findItem("gpu_mode");
+		additem("",""); //delimiter
 		additem(M_GPU_ACTIVITY_ALWAYS, ((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 1)) ? "*" : ""); //1 always
 		additem(M_GPU_ACTIVITY_AUTO,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
 		additem(M_GPU_ACTIVITY_NEVER,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
 	    }
 	}
 	Item* network_mode = srv->ccstatusdom->findItem("network_mode");
+	additem("",""); //delimiter
 	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "*" : ""); //1 always
 	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
 	additem(M_NET_ACTIVITY_NEVER,((network_mode!=NULL)&&(network_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
