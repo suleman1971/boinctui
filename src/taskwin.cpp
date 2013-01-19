@@ -8,8 +8,9 @@
 #include "tuievent.h"
 #include "kclog.h"
 
+typedef bool (*FnResultCmpLess)( Item* res1, Item* res2 ); //тип для сортировки списка задач
 
-bool resultCmpLess( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+bool resultCmpLessByState( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
     Item* active_task1 = res1->findItem("active_task");
     Item* active_task2 = res2->findItem("active_task");
@@ -27,6 +28,37 @@ bool resultCmpLess( Item* res1, Item* res2 ) //для сортировки за�
 	return false;
 
     return false;
+}
+
+
+bool resultCmpLessByDone( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* fraction_done1 = res1->findItem("fraction_done");
+    Item* fraction_done2 = res2->findItem("fraction_done");
+    Item* ready_to_report1 = res1->findItem("ready_to_report");
+    Item* ready_to_report2 = res2->findItem("ready_to_report");
+    //kLogPrintf("resultCmpLessByDone: res1 (%s) %p\n", res1->findItem("name")->getsvalue(), fraction_done1);
+    //kLogPrintf("resultCmpLessByDone: res2 (%s) %p\n", res2->findItem("name")->getsvalue(), fraction_done2);
+    if ( (fraction_done1 == NULL)&&(fraction_done2 == NULL) )
+    {
+	if ((ready_to_report1 != NULL)&&(ready_to_report2 == NULL)) //завершенные считаем как наименьшие !!!
+	    return true;
+    }
+    if ( (fraction_done1 == NULL)&&(fraction_done2 != NULL) )
+	return true; //неактивные меньше активных
+    if ( (fraction_done1 != NULL)&&(fraction_done2 != NULL) )
+    {
+	//kLogPrintf("resultCmpLessByDone(%f,%f) = %c\n\n",fraction_done1->getdvalue(), fraction_done2->getdvalue(),fraction_done1->getdvalue() < fraction_done2->getdvalue() ? 't' : 'f');
+	return (fraction_done1->getdvalue() < fraction_done2->getdvalue());
+    }
+    //kLogPrintf("false\n");
+    return false;
+}
+
+
+bool resultCmpAboveByDone( Item* res1, Item* res2 ) //для сортировки задач true если res1 > res2
+{
+    return resultCmpLessByDone(res2, res1);
 }
 
 
@@ -113,7 +145,9 @@ TaskWin::TaskWin(NRect rect, Config* cfg) : NSelectList(rect)
 {
     setselectorbgcolor(COLOR_CYAN);
     columnmask = ~0;
-    //читаем маску из конфига если ее нет то создаем
+    taskslistmode = 0;
+    taskssortmode = 1;
+    //читаем опции из конфига если нет то создаем
     if (cfg != NULL)
     {
 	Item* rootcfg = cfg->getcfgptr();
@@ -127,6 +161,24 @@ TaskWin::TaskWin(NRect rect, Config* cfg) : NSelectList(rect)
 		rootcfg->addsubitem(column_view_mask);
 	    }
 	    columnmask = column_view_mask->getivalue();
+
+	    Item* tasks_list_mode = rootcfg->findItem("tasks_list_mode");
+	    if (tasks_list_mode == NULL) //создать
+	    {
+		tasks_list_mode = new Item("tasks_list_mode");
+		tasks_list_mode->setivalue(taskslistmode);
+		rootcfg->addsubitem(tasks_list_mode);
+	    }
+	    taskslistmode = tasks_list_mode->getivalue();
+
+	    Item* tasks_sort_mode = rootcfg->findItem("tasks_sort_mode");
+	    if (tasks_sort_mode == NULL) //создать
+	    {
+		tasks_sort_mode = new Item("tasks_sort_mode");
+		tasks_sort_mode->setivalue(taskssortmode);
+		rootcfg->addsubitem(tasks_sort_mode);
+	    }
+	    taskssortmode = tasks_sort_mode->getivalue();
 	}
     }
     this->cfg = cfg;
@@ -140,9 +192,9 @@ TaskWin::~TaskWin()
 }
 
 
-void TaskWin::savemasktoconfig() //сохранить маску в дереве конфига
+void TaskWin::saveopttoconfig() //сохранить маску и т.д. в дереве конфига
 {
-    //пишем в конфиг маску
+    //пишем в конфиг
     if (cfg != NULL)
     {
 	Item* rootcfg = cfg->getcfgptr();
@@ -151,6 +203,12 @@ void TaskWin::savemasktoconfig() //сохранить маску в дереве
 	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
 	    if (column_view_mask != NULL)
 		column_view_mask->setivalue(columnmask);
+	    Item* tasks_list_mode = rootcfg->findItem("tasks_list_mode");
+	    if (tasks_list_mode != NULL)
+		tasks_list_mode->setivalue(taskslistmode);
+	    Item* tasks_sort_mode = rootcfg->findItem("tasks_sort_mode");
+	    if (tasks_sort_mode != NULL)
+		tasks_sort_mode->setivalue(taskssortmode);
 	}
     }
 }
@@ -183,8 +241,22 @@ void TaskWin::updatedata() //обновить данные с сервера
     {
         std::vector<Item*> results = client_state->getItems("result");
 	std::vector<Item*>::iterator it;
-	std::sort(results.begin(), results.end(), resultCmpLess); //сортируем
-	
+	if (taskssortmode != 0)
+	{
+	    //критерий сортировки
+	    FnResultCmpLess fcmpless = resultCmpLessByState; //по умолчанию
+	    switch(taskssortmode)
+	    {
+		case 1:
+		    fcmpless = resultCmpLessByState; //по state
+		    break;
+		case 2:
+		    fcmpless = resultCmpAboveByDone; //по done%
+		    break;
+	    }//switch
+	    std::sort(results.begin(), results.end(), fcmpless); //сортируем
+	}
+	int tasknumber = 1;
 	for (it = results.begin(); it!=results.end(); it++,i++) //цикл списка задач
 	{
 	    Item* name  = (*it)->findItem("name");
@@ -209,9 +281,17 @@ void TaskWin::updatedata() //обновить данные с сервера
 		int stateattr = attr;
 		if ( sstate == "DoneEr")
 		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK);
+		//проверяем нужно-ли отображать эту задачу
+		if
+		( !(
+		    (taskslistmode == 0)
+		    || ( ( taskslistmode == 1) && (sstate != "Done" ) )
+		    || ( ( taskslistmode == 2) && ((*it)->findItem("active_task") != NULL) )
+		) )
+		    continue; //пропускаем задачи не подходящие фильтру tasklistmode
 		//колонка 0 номер задачи
 		if(iscolvisible(column++))
-		    cs->append(attr, " %2d  ", i);
+		    cs->append(attr, " %2d  ", tasknumber++);
 		//колонка 1 состояние
 		char sdone[64];
 		if (!fraction_done) //для неактивных секция fraction_done отсутствует
@@ -348,6 +428,18 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 		coldisable(ev1->idata1);
 	    else
 		colenable(ev1->idata1);
+	}
+	if (ev->cmdcode == evVIEWMODECH)
+	{
+	    TuiEvent* ev1 = (TuiEvent*) ev;
+	    taskslistmode = ev1->idata1;
+	    saveopttoconfig();
+	}
+	if (ev->cmdcode == evSORTMODECH)
+	{
+	    TuiEvent* ev1 = (TuiEvent*) ev;
+	    taskssortmode = ev1->idata1;
+	    saveopttoconfig();
 	}
     }
 }

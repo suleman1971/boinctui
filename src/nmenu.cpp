@@ -10,6 +10,7 @@ NMenu::NMenu(NRect rect, bool horis) : NGroup(rect)
     menu = new_menu(mitems);
     setbackground(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     setforeground(getcolorpair(COLOR_BLACK,COLOR_WHITE));
+    set_menu_grey(menu, getcolorpair(COLOR_RED,COLOR_BLACK)); //цвет разделителей
     set_menu_win(menu, win);
     postmenu();
 }
@@ -83,9 +84,19 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
     }
     else
     {
-	itemnames.push_back(strdup(name));
-	itemcomments.push_back(strdup(comment));
-	mitems[itemnames.size()-1] = new_item(itemnames.back(),itemcomments.back());
+	if (strlen(name) > 0)
+	{
+	    itemnames.push_back(strdup(name));
+	    itemcomments.push_back(strdup(comment));
+	    mitems[itemnames.size()-1] = new_item(itemnames.back(),itemcomments.back());
+	}
+	else
+	{
+	    itemnames.push_back(strdup(" "));
+	    itemcomments.push_back(strdup(" "));
+	    mitems[itemnames.size()-1] = new_item(itemnames.back(),itemcomments.back());
+	    item_opts_off(mitems[itemnames.size()-1], O_SELECTABLE);
+	}
     }
 }
 
@@ -149,13 +160,29 @@ void NMenu::eventhandle(NEvent* ev) 	//обработчик событий
 	    */
 	    case KEY_UP:
 		if ( y > 1 )
-		    menu_driver(menu, REQ_UP_ITEM);
+		{
+		    if (item_index(current_item(menu)) > 0) //элемент не первый
+		    {
+			ITEM* preditem = mitems[item_index(current_item(menu)) - 1]; //предыдущий
+			menu_driver(menu, REQ_UP_ITEM);
+			if ( (item_opts(preditem) & O_SELECTABLE) == 0 )
+			    menu_driver(menu, REQ_UP_ITEM); //чтобы пропустить разделитель
+		    }
+		}
 		else
 		    ev->done = false;
 		break;
 	    case KEY_DOWN:
-		if ( y > 1 )
-		    menu_driver(menu, REQ_DOWN_ITEM);
+		if ( y > 1 ) //вертикальное
+		{
+		    ITEM* nextitem = mitems[item_index(current_item(menu)) + 1]; //какой следующий
+		    if (nextitem != NULL) //элемент не последний
+		    {
+			menu_driver(menu, REQ_DOWN_ITEM);
+			if ( (item_opts(nextitem) & O_SELECTABLE) == 0 )
+			    menu_driver(menu, REQ_DOWN_ITEM); //чтобы пропустить разделитель
+		    }
+		}
 		else
 		    ev->done = false;
 		break;
