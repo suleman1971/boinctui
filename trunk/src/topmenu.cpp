@@ -568,7 +568,7 @@ ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(re
 		    if (projects[i]->findItem("suspended_via_gui") != NULL)
 			status = status + "[suspended via gui]";
 		    if (projects[i]->findItem("dont_request_more_work") != NULL)
-			status = status + "[dont request more work]";
+			status = status + "[don't request more work]";
 		    additem(project_name->getsvalue(),status.c_str());
 		}
 	    }
