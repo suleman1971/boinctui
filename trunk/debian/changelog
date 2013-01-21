@@ -1,8 +1,24 @@
+boinctui (2.2.0) unstable; urgency=low
+
+  * tasks list can be sorted by some columns
+
+  * implemented toggle "all tasks"/"hide done tasks"/"active only"
+
+  * migrate from openssl to gnutls-openssl
+
+  * bugfixes:
+    - unexpected crash in configuration form
+    - sometimes statistics panel doesn't update immediately after switch between hosts
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 21 Jan 2013 16:42:00 +0400
+
+
 boinctui (2.1.1) unstable; urgency=low
 
   *bugfix: Configuration host list form's fields don't allow long strings
 
  -- Sergey Suslov <suleman1971@gmail.com>  Thu, 17 Jan 2013 10:15:00 +0400
+
 
 boinctui (2.1.0) unstable; urgency=low
 

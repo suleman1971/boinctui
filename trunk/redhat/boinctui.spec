@@ -1,5 +1,5 @@
 Name:		boinctui
-Version:	2.1.1
+Version:	2.2.0
 Release:	0%{?dist}
 Summary:	curses based manager for Boinc client
 Group:		Applications/Communications
