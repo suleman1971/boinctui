@@ -50,6 +50,7 @@ AddProjectForm::AddProjectForm(int rows, int cols,  Srv* srv, const char* projna
 void AddProjectForm::genfields(int& line, Item* project) //создаст массив полей
 {
     FIELD* f;
+    delfields();
     if (project != NULL)
     {
 	//сообщение об ошибке

@@ -36,6 +36,7 @@ class MainProg : public NProgram
     SrvList* gsrvlist; //глобальный список серверов
     bool	done; //флаг требования завершения
     void setcaption();
+    time_t updatetime; //время последней отрисовки
 };
 
 

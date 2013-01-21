@@ -8,6 +8,8 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     fieldcount = 0;
     frm = new_form(NULL);
     scale_form(frm,&rows,&cols);
+    addfield(NULL);
+    set_form_fields(frm, fields);
     set_form_win(frm, win);
     set_form_sub(frm, derwin(win, rows, cols, 2,2));
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
@@ -58,7 +60,9 @@ void NForm::delfields()
 	for (int i = 0; i < n; i++)
 	    free_field(fields[i]);
 	free(fields);
-	//set_form_fields(frm, NULL);
+	fields = NULL;
+	fieldcount = 0;
+	set_form_fields(frm, NULL);
     }
 }
 

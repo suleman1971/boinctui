@@ -24,7 +24,7 @@ class Srv : public TConnect //описание соединения с серв�
     void updatestatistics();	//обновить статистику <get_statistics>
     void updateallprojects();	//обновить статистику <get_all_projects_list>
     void updateacctmgrinfo();//обновить статистику <acct_mgr_info>
-    std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
+    static std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* resultname);
     Item* findprojectbyname(const char* projectname); //ищет в getstate

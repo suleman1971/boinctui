@@ -101,7 +101,8 @@ Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost
     this->pwd = strdup(pwd);
     lastmsgno = 0;
     diskusagetstamp = 0;
-};
+    statisticststamp = 0;
+}
 
 
 Srv::~Srv()

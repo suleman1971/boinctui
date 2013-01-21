@@ -31,6 +31,9 @@
 #define M_UNSORTED			"Unsorted tasks list"
 #define M_SORT_BY_STATE			"Sort by state"
 #define M_SORT_BY_DONE			"Sort by done %"
+#define M_SORT_BY_PROJECT		"Sort by project name"
+#define M_SORT_BY_ESTIMATE		"Sort by estimate time"
+#define M_SORT_BY_TASK			"Sort by task name"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
 #define M_SUSPEND_PROJECT		"Suspend project"
@@ -246,9 +249,12 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
 	    taskssortmode = tasks_sort_mode->getivalue();
 	}
     }
-    additem(M_UNSORTED,      (taskssortmode == 0) ? "(*)" : "( )");
-    additem(M_SORT_BY_STATE, (taskssortmode == 1) ? "(*)" : "( )");
-    additem(M_SORT_BY_DONE,  (taskssortmode == 2) ? "(*)" : "( )");
+    additem(M_UNSORTED,         (taskssortmode == 0) ? "(*)" : "( )");
+    additem(M_SORT_BY_STATE,    (taskssortmode == 1) ? "(*)" : "( )");
+    additem(M_SORT_BY_DONE,     (taskssortmode == 2) ? "(*)" : "( )");
+    additem(M_SORT_BY_PROJECT,  (taskssortmode == 3) ? "(*)" : "( )");
+    additem(M_SORT_BY_ESTIMATE, (taskssortmode == 4) ? "(*)" : "( )");
+    additem(M_SORT_BY_TASK,     (taskssortmode == 7) ? "(*)" : "( )");
     additem(NULL,NULL);
 }
 
@@ -308,6 +314,24 @@ bool ViewSubMenu::action()
     if ( strcmp(item_name(current_item(menu)), M_SORT_BY_DONE) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 2));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_PROJECT) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 3));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_ESTIMATE) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 4));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_TASK) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 7));
 	return true;
     }
 
@@ -490,9 +514,9 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
     if ((srv != NULL)&&(srv->ccstatusdom != NULL))
     {
 	Item* task_mode = srv->ccstatusdom->findItem("task_mode");
-	additem(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "*" : ""); //1 always
-	additem(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
-	additem(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	additem(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
+	additem(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
+	additem(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
 	srv->updatestate();
 	if (srv->statedom != NULL)
 	{
@@ -502,16 +526,16 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    {
 		Item* gpu_mode =  srv->ccstatusdom->findItem("gpu_mode");
 		additem("",""); //delimiter
-		additem(M_GPU_ACTIVITY_ALWAYS, ((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 1)) ? "*" : ""); //1 always
-		additem(M_GPU_ACTIVITY_AUTO,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
-		additem(M_GPU_ACTIVITY_NEVER,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+		additem(M_GPU_ACTIVITY_ALWAYS, ((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
+		additem(M_GPU_ACTIVITY_AUTO,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
+		additem(M_GPU_ACTIVITY_NEVER,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
 	    }
 	}
 	Item* network_mode = srv->ccstatusdom->findItem("network_mode");
 	additem("",""); //delimiter
-	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "*" : ""); //1 always
-	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "*" : ""); 	//2 pref
-	additem(M_NET_ACTIVITY_NEVER,((network_mode!=NULL)&&(network_mode->getivalue() == 3)) ? "*" : ""); 	//3 never
+	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
+	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
+	additem(M_NET_ACTIVITY_NEVER,((network_mode!=NULL)&&(network_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
     }
     additem(NULL,NULL);
 }

@@ -7,7 +7,7 @@
 CfgForm::CfgForm(int rows, int cols, Config* cfg) : NForm(rows,cols)
 {
     this->cfg = cfg;
-    fields = NULL;
+//    fields = NULL;
     genfields(false);
     set_form_fields(frm, fields);
     post_form(frm);
@@ -16,6 +16,7 @@ CfgForm::CfgForm(int rows, int cols, Config* cfg) : NForm(rows,cols)
 
 void CfgForm::genfields(bool extfields) //создаст массив полей (extfields если нужно добавить хост)
 {
+    delfields();
     this->extfields = extfields;
     //читаем из конфига
     Item* boinctui_cfg = cfg->getcfgptr();
@@ -28,77 +29,81 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     nhost = slist.size(); //число хостов
     if (extfields)
 	nhost++; //новый добавочный хост
+/*
     int fcount = nhost*3+1+1+1; //число серверов по 3 поля на каждый +1 для стат текста заголовка +1 для клавиш +1 для NULL
     fields = (FIELD**)malloc((fcount)*sizeof(FIELD*)); //выделяем память под массив полей
+*/
     std::vector<Item*>::iterator it;
     int i  = 0; //номер хоста
-    int nf = 0; //номер поля
+//    int nf = 0; //номер поля
     int nl = 2; //номер экранной строки
     //статический заголовок полей хостов
-    fields[nf]   = new_field(1, 44, nl, 5, 0, 0);
-    field_opts_off(fields[nf], O_ACTIVE); //статический текст
-    set_field_buffer(fields[nf], 0, "host             port   pwd");
-    set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    nf++; nl = nl + 1;
+    FIELD* field   = addfield(new_field(1, 44, nl, 5, 0, 0));
+    field_opts_off(field, O_ACTIVE); //статический текст
+    set_field_buffer(field, 0, "host             port   pwd");
+    set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+//    nf++;
+    nl = nl + 1;
     //поля для хостов
     //for (it = slist.begin(); it != slist.end(); it++, i++) //цикл по хостам
     for (i = 0; i < nhost; i++) //цикл по хостам
     {
 	//поле для хоста
-	fields[nf] = new_field(1, 15, nl,   5, 0, 0);
-	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	field_opts_off(fields[nf], O_AUTOSKIP);
-	field_opts_off(fields[nf], O_STATIC);
-	set_max_field(fields[nf],128); //max width 128
+	field = addfield(new_field(1, 15, nl,   5, 0, 0));
+	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+	field_opts_off(field, O_AUTOSKIP);
+	field_opts_off(field, O_STATIC);
+	set_max_field(field,128); //max width 128
 	//set_field_type(field[nf], TYPE_ALNUM, 0);
 	if (i < slist.size())
 	{
 	    Item* host = slist[i]->findItem("host");
 	    if (host != NULL)
-		set_field_buffer(fields[nf], 0, host->getsvalue());
+		set_field_buffer(field, 0, host->getsvalue());
 	}
 	if (i == 0)
-	    set_current_field(frm, fields[nf]); //фокус на поле
-	nf++;
+	    set_current_field(frm, field); //фокус на поле
+//	nf++;
 	//поле для порта
-	fields[nf] = new_field(1, 5, nl, 17+5, 0, 0);
-	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	set_field_type(fields[nf], TYPE_INTEGER, 0, 0, 65535);
-        field_opts_off(fields[nf], O_AUTOSKIP);
+	field = addfield(new_field(1, 5, nl, 17+5, 0, 0));
+	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+	set_field_type(field, TYPE_INTEGER, 0, 0, 65535);
+        field_opts_off(field, O_AUTOSKIP);
 	if (i < slist.size())
 	{
 	    Item* port = slist[i]->findItem("port");
 	    if (port != NULL)
-		set_field_buffer(fields[nf], 0, port->getsvalue());
+		set_field_buffer(field, 0, port->getsvalue());
 	}
-	nf++;
+//	nf++;
 	//поле для пароля
-	fields[nf] = new_field(1, 20, nl, 29, 0, 0);
-	set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	field_opts_off(fields[nf], O_AUTOSKIP);
-	field_opts_off(fields[nf], O_STATIC);
-	set_max_field(fields[nf],128); //max width 128
+	field = addfield(new_field(1, 20, nl, 29, 0, 0));
+	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+	field_opts_off(field, O_AUTOSKIP);
+	field_opts_off(field, O_STATIC);
+	set_max_field(field,128); //max width 128
 	if (i < slist.size())
 	{
 	    Item* pwd = slist[i]->findItem("pwd");
 	    if (pwd != NULL)
-		set_field_buffer(fields[nf], 0, pwd->getsvalue());
+		set_field_buffer(field, 0, pwd->getsvalue());
 	}
-	nf++;
+//	nf++;
 	nl = nl + 2;
     }
     //клавиши упр-я
     nl++;
-    fields[nf] = new_field(1, 44, nl, 5, 0, 0);
-    field_opts_off(fields[nf], O_ACTIVE); //статический текст
+    field = addfield(new_field(1, 44, nl, 5, 0, 0));
+    field_opts_off(field, O_ACTIVE); //статический текст
     if (extfields)
-	set_field_buffer(fields[nf], 0, "Esc-Cancel   Enter-Accept");
+	set_field_buffer(field, 0, "Esc-Cancel   Enter-Accept");
     else
-	set_field_buffer(fields[nf], 0, "Esc-Cancel   Enter-Accept   Ins-Add host");
-    set_field_back(fields[nf], getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    nf++; nl = nl + 2;
+	set_field_buffer(field, 0, "Esc-Cancel   Enter-Accept   Ins-Add host");
+    set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+//    nf++;
+    nl = nl + 2;
     //финализация списка полей
-    fields[nf] = NULL;
+    addfield(NULL);
     //пересчитываем высоту формы, чтобы влезли все поля и центрируем
     resize(nl + 1,getwidth());
     move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
@@ -118,7 +123,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 		if (!extfields)
 		{
 		    unpost_form(frm);
-		    delfields();
+		    //delfields();
 		    genfields(true);
 		    set_form_fields(frm, fields);
 		    post_form(frm);

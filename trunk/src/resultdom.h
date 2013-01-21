@@ -28,6 +28,7 @@ class Item //элемент дерева данных (например <disk_us
     Item* findItem(const char* name);					//возвращает подэлемент с именем name или NULL (поиск на всю глубину)
     std::vector<Item*> getItems(const char* name);			//получить из текущего эл-та список подэлементов с именем name (поиска в глубину НЕТ)
     std::string toxmlstring(); 						//сериализация в строку
+    Item*	getparent() {return parent;};
   protected:
     std::string		name; 		//имя эл-та "disk_usage"
     std::string		svalue;		//строка значения "1129827635.000000"
