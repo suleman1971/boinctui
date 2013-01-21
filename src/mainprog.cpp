@@ -14,6 +14,7 @@ MainProg::MainProg()
     about = NULL;
     help = NULL;
     addform = NULL;
+    updatetime = 0; //время последней отрисовки
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0), cfg); //создаем основное окно
     insert(wmain);
@@ -101,6 +102,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		gsrvlist->nextserver();
 		wmain->setserver(gsrvlist->getcursrv());
 		menu->setserver(gsrvlist->getcursrv());
+		updatetime = 0; //время последней отрисовки
 		setcaption();
 		break;
 	    case 'c':
@@ -154,6 +156,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		setcaption();
+		updatetime = 0; //время последней отрисовки
 		break;
 	    }
 	    case evABOUT: //событие About win
@@ -245,7 +248,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 bool MainProg::mainloop() //основной цикл порождающий события
 {
     int takt = 0; //номер оборота цикла
-    time_t updatetime; //время последней отрисовки
+//    time_t updatetime; //время последней отрисовки
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 

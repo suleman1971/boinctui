@@ -36,6 +36,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     FIELD* f;
     if (mgr != NULL)
     {
+	delfields();
 	//сообщение об ошибке
 	errmsgfield = getfieldcount();
 	f = addfield(new_field(1, getwidth()-2, line++, 1, 0, 0));

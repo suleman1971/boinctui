@@ -8,7 +8,9 @@
 #include "tuievent.h"
 #include "kclog.h"
 
+
 typedef bool (*FnResultCmpLess)( Item* res1, Item* res2 ); //тип для сортировки списка задач
+
 
 bool resultCmpLessByState( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
@@ -59,6 +61,43 @@ bool resultCmpLessByDone( Item* res1, Item* res2 ) //для сортировки
 bool resultCmpAboveByDone( Item* res1, Item* res2 ) //для сортировки задач true если res1 > res2
 {
     return resultCmpLessByDone(res2, res1);
+}
+
+
+bool resultCmpLessByProject( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    std::string pname1 = Srv::findProjectName(res1->getparent()/*->statedom*/, res1->findItem("project_url")->getsvalue());
+    std::string pname2 = Srv::findProjectName(res2->getparent()/*->statedom*/, res2->findItem("project_url")->getsvalue());
+    std::transform(pname1.begin(), pname1.end(),pname1.begin(), ::toupper);
+    std::transform(pname2.begin(), pname2.end(),pname2.begin(), ::toupper);
+    return (pname1 < pname2);
+}
+
+
+bool resultCmpLessByEstimate( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* estimated_cpu_time_remaining1 = res1->findItem("estimated_cpu_time_remaining");
+    Item* estimated_cpu_time_remaining2 = res2->findItem("estimated_cpu_time_remaining");
+
+    if ( ( estimated_cpu_time_remaining1 != NULL) && (estimated_cpu_time_remaining2 != NULL) )
+	return (estimated_cpu_time_remaining1->getdvalue() < estimated_cpu_time_remaining2->getdvalue());
+
+    if ( ( estimated_cpu_time_remaining1 != NULL) && (estimated_cpu_time_remaining2 == NULL) )
+	return true;
+
+    return false;
+}
+
+
+bool resultCmpLessByTask( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* name1 = res1->findItem("name");
+    Item* name2 = res2->findItem("name");
+    std::string sname1 = name1->getsvalue();
+    std::string sname2 = name2->getsvalue();
+    std::transform(sname1.begin(), sname1.end(), sname1.begin(), ::toupper);
+    std::transform(sname2.begin(), sname2.end(), sname2.begin(), ::toupper);
+    return (sname1 < sname2);
 }
 
 
@@ -253,6 +292,15 @@ void TaskWin::updatedata() //обновить данные с сервера
 		case 2:
 		    fcmpless = resultCmpAboveByDone; //по done%
 		    break;
+		case 3:
+		    fcmpless = resultCmpLessByProject; //по project
+		    break;
+		case 4:
+		    fcmpless = resultCmpLessByEstimate; //по estimate
+		    break;
+		case 7:
+		    fcmpless = resultCmpLessByTask; //по task
+		    break;
 	    }//switch
 	    std::sort(results.begin(), results.end(), fcmpless); //сортируем
 	}
@@ -300,7 +348,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    sprintf(sdone,"%6.2f",100*fraction_done->getdvalue());
 		if (iscolvisible(column++))
 		    cs->append(stateattr, "%-6s", sstate.c_str());
-		//колонка 2 процент выполнения имя проекта и подвсетка для GPU задач
+		//колонка 2 процент выполнения и подвсетка для GPU задач
 		int attrgpu = attr;
 		Item* plan_class = (*it)->findItem("plan_class");
 		if (plan_class != NULL)
@@ -434,6 +482,8 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    TuiEvent* ev1 = (TuiEvent*) ev;
 	    taskslistmode = ev1->idata1;
 	    saveopttoconfig();
+	    setstartindex(0);	//отображать с начала
+	    selectedindex = -1;	//указатель
 	}
 	if (ev->cmdcode == evSORTMODECH)
 	{
