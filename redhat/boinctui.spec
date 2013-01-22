@@ -6,7 +6,7 @@ Group:		Applications/Communications
 License:	GPL-3.0+
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #Source0:	boinctui-%{version}.tgz
-Source0:	boinctui_%{version}-0.tar.gz
+Source0:	boinctui_%{version}.tar.gz
 
 #BuildRequires:	autoconf
 #Requires:	libcurses libexpat
