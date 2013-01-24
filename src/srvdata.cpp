@@ -113,7 +113,6 @@ Srv::~Srv()
     if (ccstatusdom != NULL) delete ccstatusdom;
     if (statisticsdom != NULL) delete statisticsdom;
     if (allprojectsdom != NULL) delete allprojectsdom;
-    if (ccstatusdom != NULL) delete ccstatusdom;
     if (acctmgrinfodom != NULL) delete acctmgrinfodom;
     if (pwd != NULL) delete pwd;
 }
