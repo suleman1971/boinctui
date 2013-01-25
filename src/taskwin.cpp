@@ -89,6 +89,27 @@ bool resultCmpLessByEstimate( Item* res1, Item* res2 ) //для сортиров
 }
 
 
+bool resultCmpLessByDL( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* report_deadline1 = res1->findItem("report_deadline");
+    Item* report_deadline2 = res2->findItem("report_deadline");
+
+    if ( ( report_deadline1 != NULL) && (report_deadline2 != NULL) )
+	return (report_deadline1->getdvalue() < report_deadline2->getdvalue());
+
+    if ( ( report_deadline1 != NULL) && (report_deadline2 == NULL) )
+	return true;
+
+    return false;
+}
+
+/*
+bool resultCmpLessByApp( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    return false; //not implemented yet
+}
+*/
+
 bool resultCmpLessByTask( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
     Item* name1 = res1->findItem("name");
@@ -297,6 +318,9 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    break;
 		case 4:
 		    fcmpless = resultCmpLessByEstimate; //по estimate
+		    break;
+		case 5:
+		    fcmpless = resultCmpLessByDL; //по deadline
 		    break;
 		case 7:
 		    fcmpless = resultCmpLessByTask; //по task

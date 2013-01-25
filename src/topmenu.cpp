@@ -33,6 +33,8 @@
 #define M_SORT_BY_DONE			"Sort by done %"
 #define M_SORT_BY_PROJECT		"Sort by project name"
 #define M_SORT_BY_ESTIMATE		"Sort by estimate time"
+#define M_SORT_BY_DL			"Sort by deadline"
+#define M_SORT_BY_APP			"Sort by application"
 #define M_SORT_BY_TASK			"Sort by task name"
 //Названия пунктов меню "Projects"
 #define M_UPDATE_PROJECT		"Update project"
@@ -254,6 +256,8 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
     additem(M_SORT_BY_DONE,     (taskssortmode == 2) ? "(*)" : "( )");
     additem(M_SORT_BY_PROJECT,  (taskssortmode == 3) ? "(*)" : "( )");
     additem(M_SORT_BY_ESTIMATE, (taskssortmode == 4) ? "(*)" : "( )");
+    additem(M_SORT_BY_DL,       (taskssortmode == 5) ? "(*)" : "( )");
+    //additem(M_SORT_BY_APP,      (taskssortmode == 6) ? "(*)" : "( )");  //not implemented yet
     additem(M_SORT_BY_TASK,     (taskssortmode == 7) ? "(*)" : "( )");
     additem(NULL,NULL);
 }
@@ -326,6 +330,18 @@ bool ViewSubMenu::action()
     if ( strcmp(item_name(current_item(menu)), M_SORT_BY_ESTIMATE) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 4));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_DL) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 5));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_APP) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 6));
 	return true;
     }
 
