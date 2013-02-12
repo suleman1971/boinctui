@@ -8,7 +8,7 @@ You can manually download latest binary and source packages:
  * Source code boinctui_2.2.1.tar.gz :<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui_2.2.1.tar.gz&can=2&q=">Source downloads
 </a>
 
- * Source rpm for Fedora 15-19:<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-2.2.0-0.fc15.src.rpm&can=2&q=">Source Fedora downloads
+ * Source rpm for Fedora 15-19:<a href="https://code.google.com/p/boinctui/downloads/detail?name=boinctui-2.2.1-0.fc19.src.rpm&can=2&q=">Source Fedora downloads
 </a>
 
  * Binary i386 / x86_64 rpm for Fedora 15-19 :<a href="http://code.google.com/p/boinctui/downloads/list?q=label:Fedora">Binary Fedora downloads
