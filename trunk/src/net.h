@@ -17,6 +17,7 @@ class TConnect //информация о соединении с boinc серв�
     char* waitresult(); //получить ответ на запрос
     char* gethost() { return shost; };
     char* getport() { return sport; };
+    bool  isconnected() { return (hsock != -1); };
   protected:
     virtual void  createconnect (/*const char* shost, const char* sport*/);
     virtual void  disconnect();
