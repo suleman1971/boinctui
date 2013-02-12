@@ -18,6 +18,9 @@ ODIR	= .obj
 SDIR	= src
 exec_prefix = @prefix@
 BINDIR = @bindir@
+ifeq (@HAVE_OPENSSL@, 1)
+    DEFS += -DHAVE_OPENSSL
+endif
 
 ###############################################################################
 
@@ -39,11 +42,11 @@ createobj:
 	@if ! [ -d "$(ODIR)" ] ; then echo "crate $(ODIR)";  mkdir $(ODIR); fi
 
 srctgz: clean all
-	@if ! [ -d "../$(TARGET)" ] ; then echo "crate symlink ../$(TARGET)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET); fi
-	cd ..; tar --exclude-vcs -vzcf $(TARGET)-$(VERSION).tgz \
-	$(TARGET)/src \
-	$(TARGET)/Makefile.in \
-	$(TARGET)/configure.in \
-	$(TARGET)/debian \
-	$(TARGET)/redhat \
-	$(TARGET)/config
+	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then echo "crate symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); fi
+	cd ..; tar --exclude-vcs -vzcf $(TARGET)-$(VERSION).tar.gz \
+	$(TARGET)-$(VERSION)/src \
+	$(TARGET)-$(VERSION)/Makefile.in \
+	$(TARGET)-$(VERSION)/configure.in \
+	$(TARGET)-$(VERSION)/debian \
+	$(TARGET)-$(VERSION)/redhat \
+	$(TARGET)-$(VERSION)/config
