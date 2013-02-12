@@ -1,6 +1,7 @@
 boinctui (2.2.1) unstable; urgency=low
 
-  * bugfix: double free memory (potential crash after edit host list via Config form)
+  * bugfix: double free memory (potential crash after edit host 
+    list via Config form)
 
   * "Sort by deadline" was added into View menu
 
