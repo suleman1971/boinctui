@@ -6,9 +6,9 @@ Group:		Applications/Communications
 License:	GPL-3.0+
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #Source0:	boinctui-%{version}.tgz
-Source0:	boinctui_%{version}.tar.gz
+Source0:	boinctui-%{version}.tar.gz
 
-#BuildRequires:	autoconf
+BuildRequires:	autoconf ncurses-devel expat-devel openssl-devel
 #Requires:	libcurses libexpat
 
 %description
@@ -23,7 +23,7 @@ based on curses library
 
 %build
 autoconf
-./configure
+./configure --without-gnutls
 make clean
 make
 
