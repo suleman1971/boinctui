@@ -13,7 +13,6 @@ OBJS	= $(patsubst %.cpp,$(ODIR)/%.o,$(SRCS))
 LIBS    = @LIBS@
 LDFLAGS = $(LIBS)
 CXXFLAGS = @CXXFLAGS@
-TARGET  = boinctui
 ODIR	= .obj
 SDIR	= src
 exec_prefix = @prefix@
@@ -32,7 +31,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp
 	$(CPP) -c $(CXXFLAGS) $(DEFS) -o $(ODIR)/$*.o $< $(CPPFLAG)
 
 clean:
-	rm -f $(ODIR)/*.o $(TARGET)
+	rm -f $(ODIR)/*.o $(TARGET) config.log
 
 install: all
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(BINDIR)
@@ -41,12 +40,11 @@ install: all
 createobj:
 	@if ! [ -d "$(ODIR)" ] ; then echo "crate $(ODIR)";  mkdir $(ODIR); fi
 
-srctgz: clean all
+srctgz: clean
 	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then echo "crate symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); fi
-	cd ..; tar --exclude-vcs -vzcf $(TARGET)-$(VERSION).tar.gz \
+	cd ..; tar --exclude-vcs -vzcf $(TARGET)_$(VERSION).orig.tar.gz \
 	$(TARGET)-$(VERSION)/src \
+	$(TARGET)-$(VERSION)/redhat \
 	$(TARGET)-$(VERSION)/Makefile.in \
 	$(TARGET)-$(VERSION)/configure.in \
-	$(TARGET)-$(VERSION)/debian \
-	$(TARGET)-$(VERSION)/redhat \
 	$(TARGET)-$(VERSION)/config
