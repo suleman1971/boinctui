@@ -9,9 +9,32 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-%: 
+export DEB_BUILD_HARDENDING=1
+
+include		config
+
+%:
+	dh $@
+
+
+override_dh_auto_configure:
 	autoconf
-	dh $@ 
-override_dh_clean:
+	dh_auto_configure
+
+
+create_orig_tar_gz:
+	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then \
+	    echo "crate symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))"; \
+	    ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); \
+	fi
+	cd ..; tar --exclude-vcs -vzcf $(TARGET)_$(VERSION).orig.tar.gz \
+	$(TARGET)-$(VERSION)/src \
+	$(TARGET)-$(VERSION)/redhat \
+	$(TARGET)-$(VERSION)/Makefile.in \
+	$(TARGET)-$(VERSION)/configure.in \
+	$(TARGET)-$(VERSION)/config ; cd $(TARGET)-$(VERSION)
+
+
+override_dh_clean: create_orig_tar_gz
 	dh_clean
-	rm -rf .obj Makefile configure
+	rm -rf .obj Makefile configure config.status
