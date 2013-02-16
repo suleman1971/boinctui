@@ -1,3 +1,5 @@
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
 include	config
 
 CPP	= @CXX@
@@ -11,7 +13,7 @@ SRCS	= ncolorstring.cpp nhline.cpp nvline.cpp nscrollview.cpp nselectlist.cpp nv
 
 OBJS	= $(patsubst %.cpp,$(ODIR)/%.o,$(SRCS))
 LIBS    = @LIBS@
-LDFLAGS = $(LIBS)
+LDFLAGS = @LDFLAGS@ $(LIBS)
 CXXFLAGS = @CXXFLAGS@
 ODIR	= .obj
 SDIR	= src
@@ -28,7 +30,7 @@ all: createobj $(OBJS)
 	$(CPP) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
-	$(CPP) -c $(CXXFLAGS) $(DEFS) -o $(ODIR)/$*.o $< $(CPPFLAG)
+	$(CPP) -c $(CXXFLAGS) $(CPPFLAGS) $(DEFS) -o $(ODIR)/$*.o $<
 
 clean:
 	rm -f $(ODIR)/*.o $(TARGET) config.log
@@ -38,10 +40,10 @@ install: all
 	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(BINDIR)
 
 createobj:
-	@if ! [ -d "$(ODIR)" ] ; then echo "crate $(ODIR)";  mkdir $(ODIR); fi
+	@if ! [ -d "$(ODIR)" ] ; then echo "create $(ODIR)";  mkdir $(ODIR); fi
 
 srctgz: clean
-	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then echo "crate symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); fi
+	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then echo "create symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); fi
 	cd ..; tar --exclude-vcs -vzcf $(TARGET)_$(VERSION).orig.tar.gz \
 	$(TARGET)-$(VERSION)/src \
 	$(TARGET)-$(VERSION)/redhat \
