@@ -37,4 +37,4 @@ create_orig_tar_gz:
 
 override_dh_clean: create_orig_tar_gz
 	dh_clean
-	rm -rf .obj Makefile configure config.status
+	rm -rf .obj Makefile configure config.status config.log
