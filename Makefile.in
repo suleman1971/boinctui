@@ -1,5 +1,3 @@
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/buildflags.mk
 include	config
 
 CPP	= @CXX@
