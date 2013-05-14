@@ -1,0 +1,2 @@
+version=3
+http://code.google.com/p/boinctui/downloads/list?can=1 .*/boinctui_(\d[\d.]*)\.tar\.gz
