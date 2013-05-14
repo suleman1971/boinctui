@@ -1,4 +1,0 @@
-TARGET  = boinctui
-VERSION = 2.2.1
-DEFS   += -DVERSION=$(VERSION)
-#DEFS   += -DDEBUG
