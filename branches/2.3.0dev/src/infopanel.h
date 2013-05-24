@@ -68,6 +68,7 @@ class InfoPanel : public NView
     void updatedata();
     virtual void refresh();
     void*	setserver(Srv* srv) { this->srv = srv; };
+    virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
     Srv*	srv;
     std::string getdayname(time_t ltime); //название дня "today" "yesterday" ""

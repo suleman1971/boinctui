@@ -28,13 +28,79 @@
 #include "resultparse.h"
 #include "kclog.h"
 
+#define		STATE_TIME_INTERVAL		2	//интервал в секундах между запросами <get_state>
+#define		MSG_TIME_INTERVAL		2	//интервал в секундах между запросами <get_message_count><get_messages>
 #define		DISKUSAGE_TIME_INTERVAL		60	//интервал в секундах между запросами <get_disk_usage>
 #define		STATISTICS_TIME_INTERVAL	300	//интервал в секундах между запросами <get_statistics>
+#define		CCSTATUS_TIME_INTERVAL		600	//интервал в секундах между запросами <get_cc_status>
 
 const int ERR_IN_PROGRESS 	= -204;
 const int BOINC_SUCCESS		= 0;
 
 
+//=============================================================================================
+
+PtrList::~PtrList()
+{
+    kLogPrintf("PtrList::~PtrList() list.size()=%d\n",list.size());
+    while(!list.empty())
+    {
+	delete list.front();
+	list.erase(list.begin());
+    }
+    pthread_mutex_destroy(&mutex); 
+}
+
+
+Item* PtrList::hookptr() //получить указатель из хвоста списка
+{
+    Item* result = NULL;
+    pthread_mutex_lock(&mutex);
+    if (!list.empty())
+    {
+	list.back()->refcount++;
+	result = list.back()->dom;
+    }
+    pthread_mutex_unlock(&mutex);
+    return result;
+}
+
+
+void PtrList::releaseptr(Item* ptr) //сообщить списку что указатель больше не нужен (список сам решит нужно ли его удалять)
+{
+    std::list<DomPtr*>::iterator it;
+    pthread_mutex_lock(&mutex);
+    //ищем элемент связанный с ptr
+    for( it = list.begin(); it != list.end(); it++)
+    {
+	if ( (*it)->dom == ptr) //нашли
+	{
+	    (*it)->refcount--; //уменьшаем счетчик ссылок
+	}
+    }
+    //очищаем старые ненужные эл-ты
+    bool done;
+    do
+    {
+	done = true;
+	for( it = list.begin(); it != list.end(); it++)
+	{
+	    if ( ((*it) != list.back()) && ((*it)->refcount <= 0) ) //нашли (последний не трогаем)
+	    {
+		delete (*it)->dom;
+		delete (*it);
+		list.erase(it);
+		done = false;
+		break;
+	    }
+	}
+    }
+    while (!done);
+    pthread_mutex_unlock(&mutex);
+}
+
+
+//=============================================================================================
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортировки статистики true если дата stat1 > stat2
 {
@@ -90,7 +156,10 @@ void SrvList::refreshcfg() //перечитать из конфига
 	}
     }
     if (!servers.empty())
+    {
 	cursrv = servers.begin();
+	(*cursrv)->setactive(true);
+    }
 }
 
 
@@ -108,9 +177,11 @@ void SrvList::clear() //удалить все соединения
 
 void SrvList::nextserver() //переключиться на след сервер в списке
 {
+    (*cursrv)->setactive(false); //деактивируем тред
     cursrv++;
     if (cursrv == servers.end()) //дошли до конца переходим в начало списка
 	cursrv = servers.begin();
+    (*cursrv)->setactive(true); //активиркем тред
 }
 
 //=============================================================================================
@@ -118,24 +189,21 @@ void SrvList::nextserver() //переключиться на след серве
 
 Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport)
 {
-    msgdom = statedom = dusagedom = statisticsdom = allprojectsdom = ccstatusdom = acctmgrinfodom = NULL;
+    allprojectsdom = NULL;
     this->pwd = strdup(pwd);
     lastmsgno = 0;
-    diskusagetstamp = 0;
-    statisticststamp = 0;
+    active = false;
+    pthread_mutex_init(&mutex, NULL);
 }
 
 
 Srv::~Srv()
 {
-    if (msgdom != NULL) delete msgdom;
-    if (statedom != NULL) delete statedom;
-    if (dusagedom != NULL) delete dusagedom;
-    if (ccstatusdom != NULL) delete ccstatusdom;
-    if (statisticsdom != NULL) delete statisticsdom;
+    setactive(false); //завершаем опросный тред (если он есть)
+    pthread_join(thread, NULL); //ждем пока тред остановится
     if (allprojectsdom != NULL) delete allprojectsdom;
-    if (acctmgrinfodom != NULL) delete acctmgrinfodom;
     if (pwd != NULL) delete pwd;
+    pthread_mutex_destroy(&mutex);
 }
 
 
@@ -151,10 +219,12 @@ Item* Srv::req(const char* fmt, ...) //выполнить запрос (верн
     strcat(req, fmt);
     strcat(req, "\n</boinc_gui_rpc_request>\n\003");
     va_list	args;
+    lock();
     va_start(args, fmt);
     sendreq(req, args);
     va_end(args);
     char* result = waitresult();
+    unlock();
     if (result != NULL) //получен ответ
     {
 	// === отрезаем теги <boinc_gui_rpc_reply> </boinc_gui_rpc_reply>
@@ -175,7 +245,9 @@ Item* Srv::req(const char* fmt, ...) //выполнить запрос (верн
 	if (strstr(fmt, "<get_messages>") != NULL)
 	    b =  (char*)stripinvalidtag(b, strlen(b)); //убираем кривые теги
 	// === разбираем ответ ===
+	lock();
 	Item* dom = xmlparse(b, strlen(b)); //парсим xml
+	unlock();
 	free(result); //рез-т в тесктовом виде больше не нужен
 	return dom;
     }
@@ -186,7 +258,9 @@ Item* Srv::req(const char* fmt, ...) //выполнить запрос (верн
 
 void Srv::createconnect()
 {
+    lock();
     TConnect::createconnect();
+    unlock();
     if (hsock != -1)
 	login();
 }
@@ -230,49 +304,27 @@ bool Srv::login() //авторизоваться на сервере
 }
 
 
-void Srv::updatedata() //обновить данные с сервера
-{
-    updatemsgs(); //обновить сообщения
-    updatestate(); //состояние
-    updatediskusage(); //disk_usage
-}
-
-
 void Srv::updatestatistics()
 {
-    if (gettimeelapsed(statisticststamp) < STATISTICS_TIME_INTERVAL)
-	return; //если прошло мало времени игнорируем вызов
-    if (statisticsdom != NULL)
-	delete statisticsdom; //очищаем предыдущий рез-т
-    statisticsdom = req("<get_statistics/>");
-    statisticststamp = time(NULL);
+    statisticsdom.addptr(req("<get_statistics/>"));
 }
 
 
 void Srv::updateccstatus()	//обновить состояние <get_cc_status>
 {
-    if (ccstatusdom != NULL)
-	delete ccstatusdom; //очищаем предыдущий рез-т
-    ccstatusdom = req("<get_cc_status/>");
+    ccstatusdom.addptr(req("<get_cc_status/>"));
 }
 
 
 void Srv::updatediskusage()
 {
-    if (gettimeelapsed(diskusagetstamp) < DISKUSAGE_TIME_INTERVAL)
-	return; //если прошло мало времени игнорируем вызов
-    if (dusagedom != NULL)
-	delete dusagedom; //очищаем предыдущий рез-т
-    dusagedom = req("<get_disk_usage/>");
-    diskusagetstamp = time(NULL);
+    dusagedom.addptr(req("<get_disk_usage/>"));
 }
 
 
 void Srv::updatestate()
 {
-    if (statedom != NULL)
-	delete statedom; //очищаем предыдущий рез-т
-    statedom = req("<get_state/>");
+    statedom.addptr(req("<get_state/>"));
 }
 
 
@@ -304,14 +356,18 @@ void Srv::updatemsgs() //обновить сообщения
     if (domtree == NULL)
 	return;
     // === дополняем массив визуальных строк ===
-    if (msgdom != NULL) //если есть ранее полученные сообщения
+    if (!msgdom.empty()) //если есть ранее полученные сообщения
     {
+	Item* tmpmsgdom = msgdom.hookptr();
 	//объединяем ветку "msgs" новых сообщений с основным деревом (msgdom)
-	(msgdom->findItem("msgs"))->mergetree(domtree->findItem("msgs"));
+	msgdom.lock();
+	(tmpmsgdom->findItem("msgs"))->mergetree(domtree->findItem("msgs"));
+	msgdom.unlock();
 	delete domtree; //очищаем рез-т
+	msgdom.releaseptr(tmpmsgdom);
     }
     else
-	msgdom = domtree;
+	msgdom.addptr(domtree);
     lastmsgno = curseqno;
 }
 
@@ -326,33 +382,31 @@ void Srv::updateallprojects()
 
 void Srv::updateacctmgrinfo()//обновить статистику <acct_mgr_info>
 {
-    if (acctmgrinfodom != NULL)
-	delete acctmgrinfodom; //очищаем предыдущий рез-т
-    acctmgrinfodom = req("<acct_mgr_info/>");
+    acctmgrinfodom.addptr(req("<acct_mgr_info/>"));
 }
 
 
 void Srv::opactivity(const char* op) //изменение режима активности BOINC сервера "always" "auto" "newer"
 {
-    sendreq("<boinc_gui_rpc_request>\n<set_run_mode><%s/><duration>0</duration></set_run_mode>\n</boinc_gui_rpc_request>\n\003",op);
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* d = req("<set_run_mode><%s/><duration>0</duration></set_run_mode>",op);
+    if (d != NULL)
+	delete d;
 }
 
 
 void Srv::opnetactivity(const char* op) //изменение режима активности сети "always" "auto" "newer"
 {
-    sendreq("<boinc_gui_rpc_request>\n<set_network_mode><%s/><duration>0</duration></set_network_mode>\n</boinc_gui_rpc_request>\n\003",op);
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* d = req("<set_network_mode><%s/><duration>0</duration></set_network_mode>",op);
+    if (d != NULL)
+	delete d;
 }
 
 
 void Srv::opgpuactivity(const char* op) //изменение режима активности GPU "always" "auto" "newer"
 {
-    sendreq("<boinc_gui_rpc_request>\n<set_gpu_mode><%s/><duration>0</duration></set_gpu_mode>\n</boinc_gui_rpc_request>\n\003",op);
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* d = req("<set_gpu_mode><%s/><duration>0</duration></set_gpu_mode>",op);
+    if (d != NULL)
+	delete d;
 }
 
 
@@ -367,28 +421,30 @@ void Srv::optask(Item* result, const char* op) //действия над зад�
 	if (result->findItem("active_task") == NULL)
 	    return; //меняем состояние только для активных
     }
-    sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,project_url->getsvalue(),name->getsvalue(),op);
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* d = req("<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>",op,project_url->getsvalue(),name->getsvalue(),op);
+    if (d != NULL)
+	delete d;
 }
 
 
 void Srv::opproject(const char* name, const char* op) //действия над проектом ("project_suspend","project_resume",...)
 {
-    if (statedom == NULL)
+    if (statedom.empty())
 	return;
-    std::string url = findProjectUrl(statedom,name);
-    sendreq("<boinc_gui_rpc_request>\n<%s>\n<project_url>%s</project_url>\n</%s>\n</boinc_gui_rpc_request>\n\003",op,url.c_str(),op);
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* tmpdom = statedom.hookptr();
+    std::string url = findProjectUrl(tmpdom,name);
+    Item* d = req("<%s>\n<project_url>%s</project_url>\n</%s>",op,url.c_str(),op);
+    statedom.releaseptr(tmpdom);
+    if (d != NULL)
+	delete d;
 }
 
 
 void Srv::runbenchmarks() //запустить бенчмарк
 {
-    sendreq("<boinc_gui_rpc_request>\n<run_benchmarks/>\n</boinc_gui_rpc_request>\n\003");
-    char* s = waitresult();
-    free(s); //результат не проверяем
+    Item* d = req("<run_benchmarks/>");
+    if (d != NULL)
+	delete d;
 }
 
 
@@ -611,6 +667,8 @@ bool Srv::accountmanager(const char* url, const char* username, const char* pass
 	free(res);
     }
     while((count--)&&(!done));
+    acctmgrinfodom.needupdate = true; //чтобы тред обновил данные
+    sleep(1); //даем треду 1 сек на обновление
     kLogPrintf("RET %b\n",done);
     return done;
 }
@@ -658,13 +716,17 @@ std::string Srv::findProjectUrl(Item* tree, const char* name) //найти в д
 
 Item* Srv::findresultbyname(const char* resultname)
 {
-    if (statedom == NULL)
+    if (statedom.empty())
 	return NULL;
     if (resultname == NULL)
 	return NULL;
-    Item* client_state = statedom->findItem("client_state");
+    Item* tmpstatedom = statedom.hookptr();
+    Item* client_state = tmpstatedom->findItem("client_state");
     if (client_state == NULL)
+    {
+	statedom.releaseptr(tmpstatedom);
 	return NULL;
+    }
     std::vector<Item*> results = client_state->getItems("result"); //список задач
     std::vector<Item*>::iterator it;
     for (it = results.begin(); it!=results.end(); it++)
@@ -672,22 +734,28 @@ Item* Srv::findresultbyname(const char* resultname)
 	Item* name = (*it)->findItem("name");
 	if ( strcmp(resultname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
 	{
+	    statedom.releaseptr(tmpstatedom);
 	    return (*it);
 	}
     }
+    statedom.releaseptr(tmpstatedom);
     return NULL;
 }
 
 
 Item* Srv::findprojectbyname(const char* projectname)
 {
-    if (statedom == NULL)
+    if (statedom.empty())
 	return NULL;
     if (projectname == NULL)
 	return NULL;
-    Item* client_state = statedom->findItem("client_state");
+    Item* tmpstatedom = statedom.hookptr();
+    Item* client_state = tmpstatedom->findItem("client_state");
     if (client_state == NULL)
+    {
+	statedom.releaseptr(tmpstatedom);
 	return NULL;
+    }
     std::vector<Item*> projects = client_state->getItems("project"); //список проектов
     std::vector<Item*>::iterator it;
     for (it = projects.begin(); it!=projects.end(); it++)
@@ -695,9 +763,11 @@ Item* Srv::findprojectbyname(const char* projectname)
 	Item* name = (*it)->findItem("project_name");
 	if ( strcmp(projectname,name->getsvalue()) == 0 ) //имена совпали НАШЛИ!
 	{
+	    statedom.releaseptr(tmpstatedom);
 	    return (*it);
 	}
     }
+    statedom.releaseptr(tmpstatedom);
     return NULL;
 }
 
@@ -750,13 +820,17 @@ Item* Srv::findaccountmanager(const char* mgrname) //ищет менеджер �
 
 Item* Srv::findappbywuname(const char* wuname) //найти приложение для данного WU
 {
-    if (statedom == NULL)
+    if (statedom.empty())
 	return NULL;
     if (wuname == NULL)
 	return NULL;
-    Item* client_state = statedom->findItem("client_state");
+    Item* tmpstatedom = statedom.hookptr();
+    Item* client_state = tmpstatedom->findItem("client_state");
     if (client_state == NULL)
+    {
+	statedom.releaseptr(tmpstatedom);
 	return NULL;
+    }
     std::vector<Item*> wulist = client_state->getItems("workunit"); //список WU
     std::vector<Item*>::iterator it;
     //ищем WU
@@ -773,11 +847,13 @@ Item* Srv::findappbywuname(const char* wuname) //найти приложение
 		Item* name = (*it2)->findItem("name");
 		if ( strcmp(app_name->getsvalue(),name->getsvalue()) == 0 ) //имена совпали НАШЛИ APP!
 		{
+		    statedom.releaseptr(tmpstatedom);
 		    return (*it2);
 		}
 	    }
 	}
     }
+    statedom.releaseptr(tmpstatedom);
     return NULL;
 }
 
@@ -785,9 +861,10 @@ Item* Srv::findappbywuname(const char* wuname) //найти приложение
 time_t	Srv::getlaststattime() //вернет время последней имеющейся статистики
 {
     time_t result = 0;
-    if (statisticsdom == NULL)
+    if (statisticsdom.empty())
 	return 0;
-    Item* statistics = statisticsdom->findItem("statistics");
+    Item* tmpstatisticsdom = statisticsdom.hookptr();
+    Item* statistics = tmpstatisticsdom->findItem("statistics");
     if (statistics!=NULL)
     {
 	std::vector<Item*> project_statistics = statistics->getItems("project_statistics");
@@ -805,6 +882,7 @@ time_t	Srv::getlaststattime() //вернет время последней им�
 	    }
 	} //проекты
     }
+    statisticsdom.releaseptr(tmpstatisticsdom);
     return result;
 }
 
@@ -813,3 +891,49 @@ time_t Srv::gettimeelapsed(time_t t) //вернет соличество сек�
 {
     return (time(NULL) - t);
 }
+
+
+void* Srv::updatethread(void* args) //трейд опрашивающий сервер
+{
+    Srv* me = (Srv*)args;
+    kLogPrintf("%s:%s::updatethread() started\n",me->gethost(),me->getport());
+    me->takt = 0;
+    while(me->active)
+    {
+	//get data from remote server
+	if ( (me->takt % STATE_TIME_INTERVAL) == 0 )
+	    me->updatestate(); //<get_state>
+	if ( (me->takt % MSG_TIME_INTERVAL) == 0 )
+	    me->updatemsgs(); //<get_message_count>/<get_messages>
+	if ( (me->takt % STATISTICS_TIME_INTERVAL) == 0 )
+	    me->updatestatistics(); //<get_statistics>
+	if ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 )
+	    me->updatediskusage(); //<get_disk_usage>
+	if ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 )
+	    me->updateccstatus(); //<get_cc_status>
+	if (me->acctmgrinfodom.needupdate)
+	    me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
+	
+	sleep(1);
+	me->takt++;
+    }
+    kLogPrintf("%s:%s::updatethread() stoped\n",me->gethost(),me->getport());
+    return NULL;
+}
+
+
+void  Srv::setactive(bool b) //включить/выключить тред обновления данных
+{
+    if (isactive() != b)
+	if (b)
+	{
+	    active = true;
+	    if ( 0 != pthread_create(&thread, NULL, updatethread, this))
+		kLogPrintf("pthread_create() error\n");
+	}
+	else
+	{
+	    active = false; //сигнализирует треду остановиться
+	}
+}
+

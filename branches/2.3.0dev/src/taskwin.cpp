@@ -188,33 +188,24 @@ std::string getresultstatestr(Item* result)
 }
 
 
-//std::string getestimatetimestr(Item* result) //получить в виде строки прогнозируемое время завершения задачи
 std::string gethumanreadabletimestr(time_t time) //получить в виде строки прогнозируемое время завершения задачи
 {
-//    Item* estimated_cpu_time_remaining = result->findItem("estimated_cpu_time_remaining");
     std::stringstream s;
-//    if ( estimated_cpu_time_remaining != NULL )
-//    {
-//	double dtime = estimated_cpu_time_remaining->getdvalue();
-//	time_t time = dtime; //берем только целую часть
-	tm* t = gmtime(&time);
-	if ( t->tm_yday > 0 )
-	    s << t->tm_yday << "d";
+    tm* t = gmtime(&time);
+    if ( t->tm_yday > 0 )
+	s << t->tm_yday << "d";
+    else
+	if ( t->tm_hour > 0 )
+	    s << t->tm_hour << "h";
 	else
-	    if ( t->tm_hour > 0 )
-		s << t->tm_hour << "h";
+	    if ( t->tm_min > 0 )
+		s << t->tm_min << "m";
 	    else
-		if ( t->tm_min > 0 )
-		    s << t->tm_min << "m";
+		if ( t->tm_sec > 0 )
+		    s << t->tm_sec << "s";
 		else
-		    if ( t->tm_sec > 0 )
-			s << t->tm_sec << "s";
-		    else
-			s << "- ";
-//	s << t->tm_yday << "d" << t->tm_hour << "h" << t->tm_min << "m"<< t->tm_sec << "s";
+		    s << "- ";
 	return s.str();
-//    }
-//    return "inf";
 }
 
 
@@ -308,11 +299,11 @@ void TaskWin::updatedata() //обновить данные с сервера
 {
     if (srv == NULL)
 	return;
-    srv->updatestate(); //обновляем данные в контейнере
     clearcontent();
-    if (srv->statedom == NULL)
+    if (srv->statedom.empty())
 	return;
-    Item* client_state = srv->statedom->findItem("client_state");
+    Item* tmpstatedom = srv->statedom.hookptr();
+    Item* client_state = tmpstatedom->findItem("client_state");
     int i = 1; //счетчик заданий строк
     if (client_state != NULL)
     {
@@ -404,7 +395,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if(iscolvisible(column++))
 		    cs->append(attrgpu, "  %6s", sdone);
 		//колонка 3 имя проекта
-		std::string pname = srv->findProjectName(srv->statedom, (*it)->findItem("project_url")->getsvalue());//findProjectName(srv->statedom, *it);
+		std::string pname = srv->findProjectName(tmpstatedom, (*it)->findItem("project_url")->getsvalue());//findProjectName(srv->statedom, *it);
 		char* sproject = strdup(pname.c_str());
 		if(iscolvisible(column++))
 		    cs->append(attr, "  %-20s", mbstrtrunc(sproject,20));
@@ -471,6 +462,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 	    }
 	} //цикл списка задач
     }
+    srv->statedom.releaseptr(tmpstatedom);
 }
 
 
@@ -532,6 +524,11 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    taskssortmode = ev1->idata1;
 	    saveopttoconfig();
 	}
+    }
+    if (ev->type == NEvent::evTIMER) //таймер
+    {
+	updatedata(); 	//запросить данные с сервера
+	refresh();	//перерисовать окно
     }
 }
 

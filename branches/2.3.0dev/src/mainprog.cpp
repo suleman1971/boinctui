@@ -21,6 +21,8 @@
 #include "mainprog.h"
 #include "tuievent.h"
 
+#define EVTIMERINTERVAL 2 //число секунд через которые генерируется evTIMER
+
 
 MainProg::MainProg()
 {
@@ -31,7 +33,7 @@ MainProg::MainProg()
     about = NULL;
     help = NULL;
     addform = NULL;
-    updatetime = 0; //время последней отрисовки
+    evtimertime = 0; //запускаем таймер с нуля
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0), cfg); //создаем основное окно
     insert(wmain);
@@ -119,7 +121,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		gsrvlist->nextserver();
 		wmain->setserver(gsrvlist->getcursrv());
 		menu->setserver(gsrvlist->getcursrv());
-		updatetime = 0; //время последней отрисовки
+		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		setcaption();
 		break;
 	    case 'c':
@@ -173,7 +175,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		setcaption();
-		updatetime = 0; //время последней отрисовки
+		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		break;
 	    }
 	    case evABOUT: //событие About win
@@ -264,8 +266,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 
 bool MainProg::mainloop() //основной цикл порождающий события
 {
-    int takt = 0; //номер оборота цикла
-//    time_t updatetime; //время последней отрисовки
+//    static time_t evtimertime = 0; //time of last evTIMER
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 
@@ -284,6 +285,13 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    wmain->refresh();
 	    wstatus->refresh();
 	}
+	//если настало время посылаем evTIMER
+	if (time(NULL) - evtimertime > EVTIMERINTERVAL)
+	{
+	    NEvent* event = new NEvent(NEvent::evTIMER, 0); //создаем событие таймера
+	    putevent(event); //отправить в очередь
+	    time(&evtimertime);
+	}
 	//есть символ в буфере
 	int ic;
 	if ( (ic = getch()) != ERR ) //символ(ы) есть?
@@ -291,33 +299,17 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    NEvent* event = new NEvent(NEvent::evKB, ic); //создаем событие
 	    putevent(event); //отправить в очередь
 	}
-	//нет событий в очереди
-	if (evqueue.empty())
-	{
-	    if (time(NULL)-updatetime > 2) //перерисовывались меньше 2х секунд назад
-	    {
-		wmain->wtask->updatedata(); 	//запросить данные с сервера
-		wmain->wtask->refresh();		//перерисовать окно
-		if (gsrvlist->getcursrv()->isconnected())
-		{
-		    wmain->wmsg->updatedata(); 	//запросить данные с сервера
-		    wmain->wmsg->refresh(); 		//перерисовать окно
-		    wmain->panel1->updatedata(); 	//сформировать данные
-		    wmain->panel1->refresh(); 		//перерисовать окно
-		}
-		time(&updatetime);
-	    }
-	}
-	else
+	//есть события в очереди - выполняем
+	while(!evqueue.empty())
 	{
 	    NEvent* event = evqueue.front(); //получить первое событие из очереди
 	    evqueue.pop();
 	    this->eventhandle(event); //отправить событие обработчику
 	    delete event; //удаляем отработанное событие
 	    //обновляем экран
+	    update_panels();
+	    doupdate(); //физически выполняет перерисовку
 	}
-	update_panels();
-	doupdate(); //физически выполняет перерисовку
 	//разблокируем SIGWINCH
 	sigprocmask(SIG_UNBLOCK, &newset, 0); 
     }

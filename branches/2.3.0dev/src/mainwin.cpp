@@ -126,6 +126,5 @@ void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    }
 	} //switch
     }
-
 }
 

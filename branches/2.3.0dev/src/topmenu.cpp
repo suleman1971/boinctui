@@ -404,15 +404,16 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
     std::string acctmgrname = "";
     if (srv != NULL)
     {
-	srv->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
-	if (srv->acctmgrinfodom != NULL)
+	if (!srv->acctmgrinfodom.empty())
 	{
-	    Item* acct_mgr_name = srv->acctmgrinfodom->findItem("acct_mgr_name");
+	    Item* tmpacctmgrinfodom = srv->acctmgrinfodom.hookptr();
+	    Item* acct_mgr_name = tmpacctmgrinfodom->findItem("acct_mgr_name");
 	    if (acct_mgr_name != NULL)
 		acctmgrname = acct_mgr_name->getsvalue();
-	    Item* acct_mgr_url = srv->acctmgrinfodom->findItem("acct_mgr_url");
+	    Item* acct_mgr_url = tmpacctmgrinfodom->findItem("acct_mgr_url");
 	    if (acct_mgr_url != NULL)
 		accmgrurl = acct_mgr_url->getsvalue();
+	    srv->acctmgrinfodom.releaseptr(tmpacctmgrinfodom);
 	}
     }
     additem(M_UPDATE_PROJECT,"");
@@ -542,33 +543,34 @@ ActivitySubMenu::ActivitySubMenu(NRect rect, Srv* srv) : NMenu(rect)
 {
     unpost_menu(menu);
     this->srv = srv;
-    if (srv != NULL)
-	srv->updateccstatus(); //обновить данные с boinc-а
-    if ((srv != NULL)&&(srv->ccstatusdom != NULL))
+    if ((srv != NULL)&&(!srv->ccstatusdom.empty()))
     {
-	Item* task_mode = srv->ccstatusdom->findItem("task_mode");
+	Item* tmpccstatusdom = srv->ccstatusdom.hookptr();
+	Item* task_mode = tmpccstatusdom->findItem("task_mode");
 	additem(M_ACTIVITY_ALWAYS, ((task_mode!=NULL)&&(task_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
 	additem(M_ACTIVITY_AUTO,((task_mode!=NULL)&&(task_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
 	additem(M_ACTIVITY_NEVER,((task_mode!=NULL)&&(task_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
-	srv->updatestate();
-	if (srv->statedom != NULL)
+	if (!srv->statedom.empty())
 	{
-	    Item* have_ati = srv->statedom->findItem("have_ati");
-	    Item* have_cuda = srv->statedom->findItem("have_cuda");
+	    Item* tmpstatedom = srv->statedom.hookptr();
+	    Item* have_ati = tmpstatedom->findItem("have_ati");
+	    Item* have_cuda = tmpstatedom->findItem("have_cuda");
 	    if ( (have_cuda != NULL)||(have_ati !=NULL) )
 	    {
-		Item* gpu_mode =  srv->ccstatusdom->findItem("gpu_mode");
+		Item* gpu_mode =  tmpccstatusdom->findItem("gpu_mode");
 		additem("",""); //delimiter
 		additem(M_GPU_ACTIVITY_ALWAYS, ((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
 		additem(M_GPU_ACTIVITY_AUTO,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
 		additem(M_GPU_ACTIVITY_NEVER,((gpu_mode!=NULL)&&(gpu_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
 	    }
+	    srv->statedom.releaseptr(tmpstatedom);
 	}
-	Item* network_mode = srv->ccstatusdom->findItem("network_mode");
+	Item* network_mode = tmpccstatusdom->findItem("network_mode");
 	additem("",""); //delimiter
 	additem(M_NET_ACTIVITY_ALWAYS, ((network_mode!=NULL)&&(network_mode->getivalue() == 1)) ? "(*)" : "( )"); //1 always
 	additem(M_NET_ACTIVITY_AUTO,((network_mode!=NULL)&&(network_mode->getivalue() == 2)) ? "(*)" : "( )"); 	//2 pref
 	additem(M_NET_ACTIVITY_NEVER,((network_mode!=NULL)&&(network_mode->getivalue() == 3)) ? "(*)" : "( )"); 	//3 never
+	srv->ccstatusdom.releaseptr(tmpccstatusdom);
     }
     additem(NULL,NULL);
 }
@@ -609,10 +611,10 @@ ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(re
 {
     this->srv = srv;
     this->op = op;
-    if ((srv != NULL)&&(srv->statedom != NULL))
+    if ((srv != NULL)&&(!srv->statedom.empty()))
     {
-	srv->updatestate();
-	Item* client_state = srv->statedom->findItem("client_state");
+	Item* tmpstatedom = srv->statedom.hookptr();
+	Item* client_state = tmpstatedom->findItem("client_state");
 	if (client_state != NULL)
 	{
 	    std::vector<Item*> projects = client_state->getItems("project");
@@ -630,6 +632,7 @@ ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(re
 		}
 	    }
 	}
+	srv->statedom.releaseptr(tmpstatedom);
     }
     additem(NULL,NULL);
 }
