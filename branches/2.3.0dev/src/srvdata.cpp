@@ -901,15 +901,15 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
     while(me->active)
     {
 	//get data from remote server
-	if ( (me->takt % STATE_TIME_INTERVAL) == 0 )
+	if ( me->statedom.empty() || ( (me->takt % STATE_TIME_INTERVAL) == 0 ) )
 	    me->updatestate(); //<get_state>
-	if ( (me->takt % MSG_TIME_INTERVAL) == 0 )
+	if ( me->msgdom.empty() || ( (me->takt % MSG_TIME_INTERVAL) == 0 ) )
 	    me->updatemsgs(); //<get_message_count>/<get_messages>
-	if ( (me->takt % STATISTICS_TIME_INTERVAL) == 0 )
+	if ( me->statisticsdom.empty() || ( (me->takt % STATISTICS_TIME_INTERVAL) == 0 ) )
 	    me->updatestatistics(); //<get_statistics>
-	if ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 )
+	if ( me->dusagedom.empty() || ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 ) )
 	    me->updatediskusage(); //<get_disk_usage>
-	if ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 )
+	if ( me->ccstatusdom.empty() || ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 ) )
 	    me->updateccstatus(); //<get_cc_status>
 	if (me->acctmgrinfodom.needupdate)
 	    me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
