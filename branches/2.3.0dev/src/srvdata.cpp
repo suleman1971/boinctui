@@ -410,18 +410,9 @@ void Srv::opgpuactivity(const char* op) //изменение режима акт
 }
 
 
-void Srv::optask(Item* result, const char* op) //действия над задачей ("suspend_result",...)
+void Srv::optask(const char* url, const char* name, const char* op) //действия над задачей ("suspend_result",...)
 {
-    Item* name = result->findItem("name");
-    Item* project_url = result->findItem("project_url");
-    if ((name == NULL) || (project_url == NULL))
-	return;
-    if ((strcmp(op,"suspend_result")==0)||(strcmp(op,"resume_result")==0))
-    {
-	if (result->findItem("active_task") == NULL)
-	    return; //меняем состояние только для активных
-    }
-    Item* d = req("<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>",op,project_url->getsvalue(),name->getsvalue(),op);
+    Item* d = req("<%s>\n<project_url>%s</project_url>\n<name>%s</name>\n</%s>",op,url,name,op);
     if (d != NULL)
 	delete d;
 }

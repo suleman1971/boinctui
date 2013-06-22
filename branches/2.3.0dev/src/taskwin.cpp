@@ -457,7 +457,8 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if(iscolvisible(column++))
 		    cs->append(attr,"  %s", name->getsvalue()); 
 		//добавляем сформированную строку и поле данных с именем задачи (для селектора)
-		addstring(strdup(name->getsvalue()),cs);
+		//addstring(strdup(name->getsvalue()),cs);
+		addstring(new TaskInfo(name->getsvalue(),(*it)->findItem("project_url")->getsvalue()), cs);
 		free(sproject);
 	    }
 	} //цикл списка задач
@@ -482,14 +483,6 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    case KEY_DOWN:
 		selectordown();
 		break;
-	    case 'S':
-	    case 's':
-		optask('S');
-		break;
-	    case 'R':
-	    case 'r':
-		optask('R');
-		break;
 	    default:
 		ev->done = false; //нет реакции на этот код
 	} //switch
@@ -500,7 +493,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     {
 	if (ev->cmdcode == evABORTRES) //событие "abort_result"
 	{
-	    optask('A');
+	    ev->done =false;
 	}
 	if (ev->cmdcode == evCOLVIEWCH) //событие изменения видимости колонки
 	{
@@ -527,24 +520,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     }
     if (ev->type == NEvent::evTIMER) //таймер
     {
-	updatedata(); 	//запросить данные с сервера
+	updatedata();	//запросить данные с сервера
 	refresh();	//перерисовать окно
     }
-}
-
-
-void TaskWin::optask(char op)
-{
-    char* name = (char*)getselectedobj();
-    if (name == NULL)
-	return;
-    Item* result = srv->findresultbyname(name);
-    if (result == NULL)
-	return;
-    if ((op=='S')&&(result->findItem("suspended_via_gui") == NULL)) //задача НЕ suspend via gui
-	srv->optask(result,"suspend_result");
-    if ((op=='R')&&(result->findItem("suspended_via_gui") != NULL)) //задача suspend via gui
-	srv->optask(result,"resume_result");
-    if (op=='A')
-	srv->optask(result,"abort_result");
 }

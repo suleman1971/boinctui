@@ -531,7 +531,11 @@ bool TasksSubMenu::action()
     if ( strcmp(item_name(current_item(menu)),M_RESUME_TASK) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'R')); //создаем событие иммитирующее нажатие 'R'
     if ( strcmp(item_name(current_item(menu)),M_ABORT_TASK) == 0 )
-	putevent(new TuiEvent(evABORTRES)); //NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
+    {
+	TuiEvent* ev = new TuiEvent(evABORTRES);
+	ev->bdata1 = false;
+	putevent(ev); //NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
+    }
     return true;
 }
 
@@ -642,31 +646,44 @@ bool ProjectListSubMenu::action()
 {
     if (srv != NULL)
     {
+	const char* sop = NULL;
+	bool confirmed = false;
 	switch(op)
 	{
 	    case 'S': //Suspend project
-		srv->opproject(item_name(current_item(menu)),"project_suspend");
+		confirmed = true; //действие не требует подтверждения юзером
+		sop = "project_suspend";
 		break;
 	    case 'R': //Resume project
-		srv->opproject(item_name(current_item(menu)),"project_resume");
+		confirmed = true; //действие не требует подтверждения юзером
+		sop = "project_resume";
 		break;
 	    case 'U': //Update project
-		srv->opproject(item_name(current_item(menu)),"project_update");
+		confirmed = true; //действие не требует подтверждения юзером
+		sop = "project_update";
 		break;
 	    case 'r': //Reset project
-		srv->opproject(item_name(current_item(menu)),"project_reset");
+		sop = "project_reset";
 		break;
 	    case 'd': //Detach project
-		srv->opproject(item_name(current_item(menu)),"project_detach");
+		sop = "project_detach";
 		break;
 	    case 'N': //No New Task project
-		srv->opproject(item_name(current_item(menu)),"project_nomorework");
+		confirmed = true; //действие не требует подтверждения юзером
+		sop = "project_nomorework";
 		break;
 	    case 'A': //Allow More Work project
-		srv->opproject(item_name(current_item(menu)),"project_allowmorework");
+		confirmed = true; //действие не требует подтверждения юзером
+		sop = "project_allowmorework";
 		break;
 	    default:
 		break;
+	}
+	if (sop)
+	{
+	    TuiEvent* ev = new TuiEvent(evPROJECTOP, srv, item_name(current_item(menu)),sop);
+	    ev->bdata1 = confirmed;
+	    putevent(ev);
 	}
     }
     //создаем событие закрывающее меню

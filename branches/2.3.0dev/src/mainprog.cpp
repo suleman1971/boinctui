@@ -17,9 +17,12 @@
 
 #include <sys/ioctl.h>
 #include <signal.h>
+#include <sstream>
 #include "kclog.h"
 #include "mainprog.h"
 #include "tuievent.h"
+#include "nmessagebox.h"
+
 
 #define EVTIMERINTERVAL 2 //число секунд через которые генерируется evTIMER
 
@@ -122,9 +125,27 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    cfgform->refresh();
 		}
 		break;
+	    case 'S':
+	    case 's':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		    gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"suspend_result");
+		break;
+	    }
+	    case 'R':
+	    case 'r':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"resume_result");
+		break;
+	    }
 	    case 27:
 		menu->disable();
+		//деструктим все какие есть модельные окна
 		destroybyid(typeid(CfgForm).name()); //деструктим форму
+		destroybyid(typeid(NMessageBox).name()); //деструктим форму
 		break;
 	    case KEY_F(9):
 		if (!menu->isenable())
@@ -209,6 +230,63 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    }
 		}
 		break;
+	    }
+	    case evPROJECTOP: //операции над проектом
+	    {
+		TuiEvent* ev1 = (TuiEvent*)ev;
+		const char* projname = ev1->sdata1.c_str();
+		const char* projop = ev1->sdata2.c_str();
+		if (!ev1->bdata1) //если нет флага подтвержденного события, то не выполняем а спрашиваем юзера
+		{
+		    menu->disable(); //выключаем меню
+		    //создаем окно сообщения с подтверждением
+		    std::stringstream s;
+		    s << "Please Confirm\n\n" << "Project   : "<< projname << "\nOperation : " << projop;
+		    NMessageBox* mbox = new NMessageBox(s.str().c_str());
+		    TuiEvent* buttonYev = new TuiEvent(evPROJECTOP, ev1->srv, projname, projop); //событие для кнопки Y
+		    buttonYev->bdata1 = true; //флаг подтвержденности
+		    mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+		    NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+		    mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+		    insert(mbox);
+		}
+		else
+		{
+		    kLogPrintf("evPROJECT confirmed event detected\n");
+		    ev1->srv->opproject(projname, projop); //выполняем действие
+		    destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+		}
+		break;
+	    }
+	    case evABORTRES: //событие действий над проектами "abort_result" и.т.д.
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		{
+		    TuiEvent* ev1 = (TuiEvent*)ev;
+		    if (!ev1->bdata1) //если нет флага подтвержденного события, то не выполняем а спрашиваем юзера
+		    {
+			menu->disable(); //выключаем меню
+			//создаем окно сообщения с подтверждением
+			std::stringstream s;
+			s << "Please Confirm\n\n" << "Task   : " << tinfo->taskname << "\nOperation : " << "Abort";
+			NMessageBox* mbox = new NMessageBox(s.str().c_str());
+			TuiEvent* buttonYev = new TuiEvent(evABORTRES); //событие для кнопки Y
+			buttonYev->bdata1 = true; //флаг подтвержденности
+			mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+			insert(mbox);
+		    }
+		    else
+		    {
+			kLogPrintf("evABORTRES confirmed event detected\n");
+			Srv* srv = gsrvlist->getcursrv();
+			srv->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"abort_result"); //выполняем действие
+			destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+		    }
+		    break;
+		}
 	    }
 	} //switch
     }
