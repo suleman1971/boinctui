@@ -518,7 +518,7 @@ TasksSubMenu::TasksSubMenu(NRect rect) : NMenu(rect)
 {
     additem(M_SUSPEND_TASK,"  S");
     additem(M_RESUME_TASK ,"  R");
-    additem(M_ABORT_TASK  ,"");
+    additem(M_ABORT_TASK  ,"  A");
     additem(NULL,NULL);
 }
 

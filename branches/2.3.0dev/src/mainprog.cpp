@@ -141,6 +141,26 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"resume_result");
 		break;
 	    }
+	    case 'A':
+	    case 'a':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		{
+			menu->disable(); //выключаем меню
+			//создаем окно сообщения с подтверждением
+			std::stringstream s;
+			s << "Please Confirm\n\n" << "Task   : " << tinfo->taskname << "\nOperation : " << "Abort";
+			NMessageBox* mbox = new NMessageBox(s.str().c_str());
+			TuiEvent* buttonYev = new TuiEvent(evABORTRES); //событие для кнопки Y
+			buttonYev->bdata1 = true; //флаг подтвержденности
+			mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+			insert(mbox);
+		}
+		break;
+	    }
 	    case 27:
 		menu->disable();
 		//деструктим все какие есть модельные окна
