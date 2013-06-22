@@ -23,6 +23,7 @@
 HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/2-rows/2,getmaxx(stdscr)/2-cols/2))
 {
     caption = strdup(" Hot keys list ");
+    modalflag = true;
     resize(15,60);
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
     box(win,0,0);

@@ -33,7 +33,8 @@ enum TuiEventType
     evCOLVIEWCH,	//переключение видимости колонки
     evVIEWMODECH,	//переключение режима видимости All/Hide done/Active tasks only
     evSORTMODECH,	//переключение режима сортировки списка задач 0-unsorted 1-state e.t.c.
-    evADDACCMGR		//форма акк менеджера
+    evADDACCMGR,	//форма акк менеджера
+    evPROJECTOP		//операции над проектом
 };
 
 
@@ -52,6 +53,14 @@ class TuiEvent : public NEvent //класс программных событи�
 	this->srv = srv;
 	this->sdata1 = mgrname;
     };
+    TuiEvent(TuiEventType type, Srv* srv, const char* projname, const char* projop) : NEvent(evPROG, type) //событие для действий с проектами
+    {
+	this->srv = srv;
+	this->sdata1 = projname;
+	this->sdata2 = projop;
+	this->bdata1 = false; //true - если получено подтверждение
+    };
+
     TuiEvent(TuiEventType type ,int ncolumn, bool enable) : NEvent(evPROG, type) //событие переключения видимости колонки
     {
 	this->idata1 = ncolumn;
@@ -63,6 +72,7 @@ class TuiEvent : public NEvent //класс программных событи�
     };
     Srv*		srv;
     std::string		sdata1; //произвольная строка
+    std::string		sdata2; //произвольная строка
     bool		bdata1; //произаольная bool переменная
     int			idata1; //произвольное целое
 };

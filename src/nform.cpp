@@ -23,6 +23,7 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
 {
     fields = NULL;
     fieldcount = 0;
+    modalflag = true;
     frm = new_form(NULL);
     scale_form(frm,&rows,&cols);
     addfield(NULL);

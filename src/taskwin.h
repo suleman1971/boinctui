@@ -23,6 +23,14 @@
 #include "srvdata.h"
 
 
+struct TaskInfo
+{
+    TaskInfo(const char* taskname, const char* projecturl) {this->taskname = taskname; this->projecturl = projecturl; };
+    std::string taskname;
+    std::string projecturl;
+};
+
+
 class TaskWin : public NSelectList
 {
   public:
@@ -39,7 +47,6 @@ class TaskWin : public NSelectList
     //unsigned int getcolumnmask() { return columnmask; };
   protected:
     Srv*	srv; //текущий отображаемый сервер
-    void	optask(char op);
     unsigned int columnmask; //маска видмсости колонок
     int		taskslistmode; //0 все задачи 1 кроме завершенных 2 только активные
     int		taskssortmode; //0 нет сортировки 1 state 2 done 3 project 4 est 5 d/l 6 app 7 task

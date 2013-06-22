@@ -16,6 +16,7 @@
 // =============================================================================
 
 #include <string.h>
+#include "kclog.h"
 #include "msgwin.h"
 #include "net.h"
 #include "resultparse.h"
@@ -25,18 +26,23 @@ void MsgWin::updatedata() //обновить данные с сервера
 {
     if (srv == NULL)
 	return;
-    srv->updatemsgs(); //обновить данные в хранилище
-    if (srv->msgdom == NULL)
+    if (srv->msgdom.empty())
     {
 	clearcontent();
 	return;
     }
+    Item* tmpmsgdom = srv->msgdom.hookptr();
+    srv->msgdom.lock();
     if (lastmsgno == srv->lastmsgno) //в srv есть новые еще не отрисованные сообщения?
+    {
+	srv->msgdom.unlock();
+	srv->msgdom.releaseptr(tmpmsgdom);
 	return;
+    }
     // === дополняем массив визуальных строк ===
     if (lastmsgno == 0)
         clearcontent(); //очищаем если отображение идет с начала
-    Item* msgs = srv->msgdom->findItem("msgs");
+    Item* msgs = tmpmsgdom->findItem("msgs");
     if (msgs != NULL)
     {
 	std::vector<Item*> mlist = msgs->getItems("msg");
@@ -67,6 +73,8 @@ void MsgWin::updatedata() //обновить данные с сервера
     lastmsgno = srv->lastmsgno;
     //поскольку есть новые сообщения, то делаем автоскроллинг в конец
     setautoscroll(true);
+    srv->msgdom.unlock();
+    srv->msgdom.releaseptr(tmpmsgdom);
 }
 
 
@@ -100,5 +108,10 @@ void MsgWin::eventhandle(NEvent* ev) 	//обработчик событий
 	} //switch
 	if (ev->done) //если обработали, то нужно перерисоваться
 	    refresh();
+    }
+    if ( ev->type == NEvent::evTIMER )
+    {
+	updatedata();	//запросить данные с сервера
+	refresh(); 		//перерисовать окно
     }
 }

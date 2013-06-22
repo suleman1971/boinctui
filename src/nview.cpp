@@ -56,6 +56,7 @@ NView::NView(NRect rect)
     scrollok(win,false);
     needrefresh = true;
     owner = NULL;
+    modalflag = false;
     #ifdef DEBUG
     refreshcount = 0; //счетчик обновлений
     #endif

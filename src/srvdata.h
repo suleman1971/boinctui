@@ -21,9 +21,36 @@
 #include <string.h>
 #include <stdlib.h>
 #include <list>
+#include <pthread.h>
 #include "net.h"
 #include "resultdom.h"
 #include "cfg.h"
+
+
+struct DomPtr
+{
+    DomPtr(Item* ptr) {refcount = 0; dom = ptr; };
+    Item* dom; //указатель на данные
+    int   refcount; //количество hook-ов данного указателя
+};
+
+
+class PtrList
+{
+  public:
+    PtrList() { pthread_mutex_init(&mutex, NULL); needupdate = true; };
+    ~PtrList();
+    void lock() { pthread_mutex_lock(&mutex); };
+    void unlock() { pthread_mutex_unlock(&mutex); };
+    Item* hookptr(); //получить указатель из хвоста списка
+    void releaseptr(Item* ptr); //сообщить списку что указатель больше не нужен (список сам решит нужно ли его удалять)
+    void addptr(Item* ptr) { pthread_mutex_lock(&mutex); if (ptr != NULL) list.push_back(new DomPtr(ptr)); needupdate = false; pthread_mutex_unlock(&mutex);}; //добавить указатель в хвост списка
+    bool empty() { pthread_mutex_lock(&mutex); bool result = list.empty(); pthread_mutex_unlock(&mutex); return result; };
+    bool needupdate; //говорит треду что нужно незамедлительно обновлять данные
+  private:
+    std::list<DomPtr*> list;
+    pthread_mutex_t	mutex;
+};
 
 
 bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортировки статистики true если дата stat1 > stat2
@@ -34,13 +61,7 @@ class Srv : public TConnect //описание соединения с серв�
   public:
     Srv(const char* shost, const char* sport, const char* pwd);
     virtual ~Srv();
-    void updatemsgs();		//обновить список сообщений <get_messages>
-    void updatestate();		//обновить состояние <get_state>
-    void updatediskusage();	//обновить состояние <get_disk_usage>
-    void updateccstatus();	//обновить состояние <get_cc_status>
-    void updatestatistics();	//обновить статистику <get_statistics>
     void updateallprojects();	//обновить статистику <get_all_projects_list>
-    void updateacctmgrinfo();//обновить статистику <acct_mgr_info>
     static std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
     std::string findProjectUrl(Item* tree, const char* name); //найти в дереве tree url проекта с заданным именем
     Item* findresultbyname(const char* resultname);
@@ -51,7 +72,7 @@ class Srv : public TConnect //описание соединения с серв�
     void  opactivity(const char* op); //изменение режима активности BOINC сервера "always" "auto" "newer"
     void  opnetactivity(const char* op); //изменение режима активности сети "always" "auto" "newer"
     void  opgpuactivity(const char* op); //изменение режима активности GPU "always" "auto" "newer"
-    void  optask(Item* result, const char* op); //действия над задачей ("suspend_result",...)
+    void  optask(const char* url, const char* name, const char* op); //действия над задачей ("suspend_result",...)
     void  opproject(const char* name, const char* op); //действия над проектом ("project_suspend","project_resume",...)
     void  runbenchmarks(); //запустить бенчмарк
     bool  projectattach(const char* url, const char* prjname, const char* email, const char* pass, std::string& errmsg); //подключить проект
@@ -59,23 +80,36 @@ class Srv : public TConnect //описание соединения с серв�
     bool  accountmanager(const char* url, const char* username, const char* pass, bool useconfigfile, std::string& errmsg); //подключить аккаунт менеджер
     bool  getprojectconfig(const char* url, std::string& errmsg); //получить c сервера файл конфигурации
     time_t	getlaststattime(); //вернет время последней имеющейся статистики
-    Item*	msgdom; 	//xml дерево сообщений
+    PtrList	msgdom; 	//xml дерево сообщений
     int		lastmsgno; 	//номер последнего сообщения полученного с сервера
-    Item*	statedom; 	//xml дерево состояний
-    Item*	ccstatusdom;	//xml дерево для <get_cc_status>
-    Item*	dusagedom;	//xml дерево для <get_disk_usage>
-    Item*	statisticsdom;	//xml дерево для <get_statistics>
+    PtrList	statedom; 	//xml дерево состояний
+    PtrList	ccstatusdom;	//xml дерево для <get_cc_status>
+    PtrList	dusagedom;	//xml дерево для <get_disk_usage>
+    PtrList	statisticsdom;	//xml дерево для <get_statistics>
     Item*	allprojectsdom;	//xml дерево для <get_all_projects_list>
-    Item*	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
+    PtrList	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
     bool  login(); 		//авторизоваться на сервере
     virtual void  createconnect();
+    void  setactive(bool b); //включить/выключить тред обновления данных
+    bool  isactive() {return active;};
+    void lock() { pthread_mutex_lock(&mutex); };
+    void unlock() { pthread_mutex_unlock(&mutex); };
   protected:
-    void updatedata();		//обновить данные с сервера
+    void updatestate();		//обновить состояние <get_state>
+    void updatemsgs();		//обновить список сообщений <get_messages>
+    void updatestatistics();	//обновить статистику <get_statistics>
+    void updatediskusage();	//обновить состояние <get_disk_usage>
+    void updateccstatus();	//обновить состояние <get_cc_status>
+    void updateacctmgrinfo();//обновить статистику <acct_mgr_info>
     time_t gettimeelapsed(time_t t); //вернет соличество секунд между t и тек. временем
     char* pwd;
-    time_t	diskusagetstamp; //время последнего запроса <get_disk_usage>
-    time_t	statisticststamp; //время последнего запроса <get_statistics>
+  private:
+    unsigned int 	takt; //номер оборота цикла updatethread()
+    static void* 	updatethread(void* args); //трейд опрашивающий сервер
+    pthread_t		thread;
+    bool		active; //true если трейд активен
+    pthread_mutex_t	mutex;
 };
 
 
@@ -97,9 +131,6 @@ class SrvList //список всех серверов
     std::list<Srv*>::iterator cursrv; //текущиq сервер
     Config*	cfg;
 };
-
-
-//extern SrvList* gsrvlist; //глобальный список серверов
 
 
 #endif //SRVDATA_H

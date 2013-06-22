@@ -17,9 +17,14 @@
 
 #include <sys/ioctl.h>
 #include <signal.h>
+#include <sstream>
 #include "kclog.h"
 #include "mainprog.h"
 #include "tuievent.h"
+#include "nmessagebox.h"
+
+
+#define EVTIMERINTERVAL 2 //число секунд через которые генерируется evTIMER
 
 
 MainProg::MainProg()
@@ -27,11 +32,7 @@ MainProg::MainProg()
     done = false;
     cfg = new Config(".boinctui.cfg");
     gsrvlist = new SrvList(cfg);
-    cfgform = NULL;
-    about = NULL;
-    help = NULL;
-    addform = NULL;
-    updatetime = 0; //время последней отрисовки
+    evtimertime = 0; //запускаем таймер с нуля
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0), cfg); //создаем основное окно
     insert(wmain);
@@ -86,16 +87,7 @@ void MainProg::smartresize()
     wmain->resize(getmaxy(stdscr)-2, getmaxx(stdscr));
     wstatus->resize(1, getmaxx(stdscr)); //ширина статус строки
     wstatus->move(getmaxy(stdscr)-1,0); //позиция статус строки
-    if (cfgform != NULL)
-	cfgform->move(getmaxy(stdscr)/2-cfgform->getheight()/2,getmaxx(stdscr)/2-cfgform->getwidth()/2); //окно конфигурации (если есть)
-    if (about != NULL)
-	about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //окно About (если есть)
-    if (help != NULL)
-	help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //окно About (если есть)
-    if (addform != NULL)
-	addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //окно Add Project (если есть)
-    if (addmgrform != NULL)
-	addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //окно Add Account Manager (если есть)
+    centermodalitems(getmaxy(stdscr),getmaxx(stdscr)); //центрировать модальные формы (если есть)
     MainProg::needresize = false;
 }
 
@@ -119,29 +111,61 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		gsrvlist->nextserver();
 		wmain->setserver(gsrvlist->getcursrv());
 		menu->setserver(gsrvlist->getcursrv());
-		updatetime = 0; //время последней отрисовки
+		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		setcaption();
 		break;
 	    case 'c':
 	    case 'C':
-		if (cfgform == NULL)
+		if (getitembyid(typeid(CfgForm).name()) == NULL)
 		{
 		    menu->disable();
-		    cfgform = new CfgForm(15,54,cfg);
+		    CfgForm* cfgform = new CfgForm(15,54,cfg);
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();
 		}
 		break;
+	    case 'S':
+	    case 's':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		    gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"suspend_result");
+		break;
+	    }
+	    case 'R':
+	    case 'r':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"resume_result");
+		break;
+	    }
+	    case 'A':
+	    case 'a':
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		{
+			menu->disable(); //выключаем меню
+			//создаем окно сообщения с подтверждением
+			std::stringstream s;
+			s << "Please Confirm\n\n" << "Task   : " << tinfo->taskname << "\nOperation : " << "Abort";
+			NMessageBox* mbox = new NMessageBox(s.str().c_str());
+			TuiEvent* buttonYev = new TuiEvent(evABORTRES); //событие для кнопки Y
+			buttonYev->bdata1 = true; //флаг подтвержденности
+			mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+			insert(mbox);
+		}
+		break;
+	    }
 	    case 27:
 		menu->disable();
-		//деструктим форму
-		if (cfgform != NULL)
-		{
-		    remove(cfgform);
-		    delete cfgform;
-		    cfgform = NULL;
-		}
+		//деструктим все какие есть модельные окна
+		destroybyid(typeid(CfgForm).name()); //деструктим форму
+		destroybyid(typeid(NMessageBox).name()); //деструктим форму
 		break;
 	    case KEY_F(9):
 		if (!menu->isenable())
@@ -161,32 +185,20 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 	    case evCFGCH: //событие при изменении конфига
 	    {
 		menu->disable();
-		//деструктим форму
-		if (cfgform != NULL)
-		{
-		    remove(cfgform);
-		    delete cfgform;
-		    cfgform = NULL;
-		}
+		destroybyid(typeid(CfgForm).name()); //деструктим форму
 		//реакция на изменение конфига
 		gsrvlist->refreshcfg();
 		wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		setcaption();
-		updatetime = 0; //время последней отрисовки
+		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		break;
 	    }
 	    case evABOUT: //событие About win
 	    {
-		if (about != NULL)
+		if (!destroybyid(typeid(AboutWin).name()))
 		{
-		    remove(about);
-		    delete about;
-		    about = NULL;
-		}
-		else
-		{
-		    about = new AboutWin(2,40);
+		    AboutWin* about = new AboutWin(2,40);
 		    insert(about);
 		    about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //центрируем
 		}
@@ -194,15 +206,9 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 	    }
 	    case evKEYBIND: //событие KeyBinding win
 	    {
-		if (help != NULL)
+		if (!destroybyid(typeid(HelpWin).name()))
 		{
-		    remove(help);
-		    delete help;
-		    help = NULL;
-		}
-		else
-		{
-		    help = new HelpWin(2,40);
+		    HelpWin* help = new HelpWin(2,40);
 		    insert(help);
 		    help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //центрируем
 		}
@@ -217,19 +223,13 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 	    }
 	    case evADDPROJECT: //добавить проект
 	    {
-		if (addform != NULL)
-		{
-		    remove(addform);
-		    delete addform;
-		    addform = NULL;
-		}
-		else
+		if (!destroybyid(typeid(AddProjectForm).name()))
 		{
 		    TuiEvent* ev1 = (TuiEvent*)ev;
 		    Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
+			AddProjectForm* addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
 			insert(addform);
 			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
 		    }
@@ -238,24 +238,75 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 	    }
 	    case evADDACCMGR: //добавить акк менеджер
 	    {
-		if (addmgrform != NULL)
-		{
-		    remove(addmgrform);
-		    delete addmgrform;
-		    addmgrform = NULL;
-		}
-		else
+		if (!destroybyid(typeid(AddAccMgrForm).name()))
 		{
 		    TuiEvent* ev1 = (TuiEvent*)ev;
 		    Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			addmgrform = new AddAccMgrForm(30,65,ev1->srv,ev1->sdata1.c_str());
+			AddAccMgrForm* addmgrform = new AddAccMgrForm(30,65,ev1->srv,ev1->sdata1.c_str());
 			insert(addmgrform);
 			addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //центрируем
 		    }
 		}
 		break;
+	    }
+	    case evPROJECTOP: //операции над проектом
+	    {
+		TuiEvent* ev1 = (TuiEvent*)ev;
+		const char* projname = ev1->sdata1.c_str();
+		const char* projop = ev1->sdata2.c_str();
+		if (!ev1->bdata1) //если нет флага подтвержденного события, то не выполняем а спрашиваем юзера
+		{
+		    menu->disable(); //выключаем меню
+		    //создаем окно сообщения с подтверждением
+		    std::stringstream s;
+		    s << "Please Confirm\n\n" << "Project   : "<< projname << "\nOperation : " << projop;
+		    NMessageBox* mbox = new NMessageBox(s.str().c_str());
+		    TuiEvent* buttonYev = new TuiEvent(evPROJECTOP, ev1->srv, projname, projop); //событие для кнопки Y
+		    buttonYev->bdata1 = true; //флаг подтвержденности
+		    mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+		    NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+		    mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+		    insert(mbox);
+		}
+		else
+		{
+		    kLogPrintf("evPROJECT confirmed event detected\n");
+		    ev1->srv->opproject(projname, projop); //выполняем действие
+		    destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+		}
+		break;
+	    }
+	    case evABORTRES: //событие действий над проектами "abort_result" и.т.д.
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		{
+		    TuiEvent* ev1 = (TuiEvent*)ev;
+		    if (!ev1->bdata1) //если нет флага подтвержденного события, то не выполняем а спрашиваем юзера
+		    {
+			menu->disable(); //выключаем меню
+			//создаем окно сообщения с подтверждением
+			std::stringstream s;
+			s << "Please Confirm\n\n" << "Task   : " << tinfo->taskname << "\nOperation : " << "Abort";
+			NMessageBox* mbox = new NMessageBox(s.str().c_str());
+			TuiEvent* buttonYev = new TuiEvent(evABORTRES); //событие для кнопки Y
+			buttonYev->bdata1 = true; //флаг подтвержденности
+			mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
+			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
+			insert(mbox);
+		    }
+		    else
+		    {
+			kLogPrintf("evABORTRES confirmed event detected\n");
+			Srv* srv = gsrvlist->getcursrv();
+			srv->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"abort_result"); //выполняем действие
+			destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+		    }
+		    break;
+		}
 	    }
 	} //switch
     }
@@ -264,8 +315,6 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 
 bool MainProg::mainloop() //основной цикл порождающий события
 {
-    int takt = 0; //номер оборота цикла
-//    time_t updatetime; //время последней отрисовки
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 
@@ -284,6 +333,13 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    wmain->refresh();
 	    wstatus->refresh();
 	}
+	//если настало время посылаем evTIMER
+	if (time(NULL) - evtimertime > EVTIMERINTERVAL)
+	{
+	    NEvent* event = new NEvent(NEvent::evTIMER, 0); //создаем событие таймера
+	    putevent(event); //отправить в очередь
+	    time(&evtimertime);
+	}
 	//есть символ в буфере
 	int ic;
 	if ( (ic = getch()) != ERR ) //символ(ы) есть?
@@ -291,33 +347,17 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    NEvent* event = new NEvent(NEvent::evKB, ic); //создаем событие
 	    putevent(event); //отправить в очередь
 	}
-	//нет событий в очереди
-	if (evqueue.empty())
-	{
-	    if (time(NULL)-updatetime > 2) //перерисовывались меньше 2х секунд назад
-	    {
-		wmain->wtask->updatedata(); 	//запросить данные с сервера
-		wmain->wtask->refresh();		//перерисовать окно
-		if (gsrvlist->getcursrv()->isconnected())
-		{
-		    wmain->wmsg->updatedata(); 	//запросить данные с сервера
-		    wmain->wmsg->refresh(); 		//перерисовать окно
-		    wmain->panel1->updatedata(); 	//сформировать данные
-		    wmain->panel1->refresh(); 		//перерисовать окно
-		}
-		time(&updatetime);
-	    }
-	}
-	else
+	//есть события в очереди - выполняем
+	while(!evqueue.empty())
 	{
 	    NEvent* event = evqueue.front(); //получить первое событие из очереди
 	    evqueue.pop();
 	    this->eventhandle(event); //отправить событие обработчику
 	    delete event; //удаляем отработанное событие
 	    //обновляем экран
+	    update_panels();
+	    doupdate(); //физически выполняет перерисовку
 	}
-	update_panels();
-	doupdate(); //физически выполняет перерисовку
 	//разблокируем SIGWINCH
 	sigprocmask(SIG_UNBLOCK, &newset, 0); 
     }
