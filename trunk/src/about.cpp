@@ -26,6 +26,7 @@
 
 AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/2-rows/2,getmaxx(stdscr)/2-cols/2))
 {
+    modalflag = true;
     caption = strdup(" BOINCTUI ");
     resize(10,getwidth());
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);

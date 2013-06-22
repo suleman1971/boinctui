@@ -30,10 +30,13 @@ class NGroup : public NView
     virtual ~NGroup();
     void insert(NView* view) { view->setowner(this); items.push_back(view); };
     void remove(NView* view) { items.remove(view); };
+    NView* getitembyid(const char* id); //получить эл-т зная id его класса
+    bool destroybyid(const char* id); //удалить (с деструкцией) эл-т зная id его класса
     virtual void refresh();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     virtual void setneedrefresh();
     virtual void move(int begrow, int begcol);
+    void centermodalitems(int maxy, int maxx); //центрировать все модальные эл-ты (maxy,maxx -размер экрана)
   protected:
     std::list<NView*> items; //список вложенных элементов
 };

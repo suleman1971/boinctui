@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include "kclog.h"
 #include "infopanel.h"
 #include "net.h"
 #include "resultparse.h"
@@ -53,7 +54,7 @@ void InfoPanel::refresh()
 {
     if (srv == NULL)
 	return;
-    if (srv->statedom == NULL)
+    if (srv->statedom.empty())
     {
 	needrefresh = true;
 	werase(win);
@@ -176,10 +177,10 @@ void InfoPanel::updatedata()
     if (srv == NULL)
 	return;
     //===данные по процессам===
-    srv->updatestate();
-    if (srv->statedom == NULL)
+    if (srv->statedom.empty())
 	return;
-    Item* client_state = srv->statedom->findItem("client_state");
+    Item* tmpstatedom = srv->statedom.hookptr();
+    Item* client_state = tmpstatedom->findItem("client_state");
     nactivetasks = 0;
     ndonetasks = 0;
     nruntasks = 0;
@@ -211,10 +212,13 @@ void InfoPanel::updatedata()
 	needrefresh = true;
     }
     //===данные по дискам===
-    srv->updatediskusage();
-    if (srv->dusagedom == NULL)
+    if (srv->dusagedom.empty())
+    {
+	srv->statedom.releaseptr(tmpstatedom);
 	return;
-    Item* disk_usage_summary = srv->dusagedom->findItem("disk_usage_summary");
+    }
+    Item* tmpdusagedom = srv->dusagedom.hookptr();
+    Item* disk_usage_summary = tmpdusagedom->findItem("disk_usage_summary");
     if (disk_usage_summary != NULL)
     {
 	dtotal = disk_usage_summary->findItem("d_total")->getdvalue();
@@ -229,9 +233,12 @@ void InfoPanel::updatedata()
 	}
     }
     //===данные статистики===
-    srv->updatestatistics();
-    if (srv->statisticsdom == NULL)
+    if (srv->statisticsdom.empty())
+    {
+	srv->statedom.releaseptr(tmpstatedom);
+	srv->dusagedom.releaseptr(tmpdusagedom);
 	return;
+    }
     laststattime = srv->getlaststattime();
 //    time_t predstattime = laststattime - (24*60*60); //предыдущий день
     usertotal = 0;
@@ -246,7 +253,8 @@ void InfoPanel::updatedata()
     double hosttotalpredday = 0;
 
     projects.clear();
-    Item* statistics = srv->statisticsdom->findItem("statistics");
+    Item* tmpstatisticsdom = srv->statisticsdom.hookptr();
+    Item* statistics = tmpstatisticsdom->findItem("statistics");
     if (statistics!=NULL)
     {
 	std::vector<Item*> project_statistics = statistics->getItems("project_statistics");
@@ -254,10 +262,10 @@ void InfoPanel::updatedata()
 	for (it = project_statistics.begin(); it!=project_statistics.end(); it++) //цикл списка проектов
 	{
 	    ProjectStat st; //заполнить эту структуру
-	    st.name = srv->findProjectName(srv->statedom,((*it)->findItem("master_url")->getsvalue()));
+	    st.name = srv->findProjectName(tmpstatedom,((*it)->findItem("master_url")->getsvalue()));
 	    st.sstatus = "";
 	    //строка статуса
-	    if (srv->statedom != NULL)
+	    if (!srv->statedom.empty())
 	    {
 		Item* project = srv->findprojectbyname(st.name.c_str());
 		if (project != NULL)
@@ -292,7 +300,7 @@ void InfoPanel::updatedata()
 		    hosttotalpredday = hosttotalpredday + predday->findItem("host_total_credit")->getdvalue();
 		}
 		//суммарно по всем дням и проектам
-		Item* frontday = daily_statistics.front(); //берем последний не смотря на его дату
+		Item* frontday = daily_statistics.front(); //берем последний несмотря на его дату
 		if (daily_statistics.size() > 1)
 		{
 		    Item* predfrontday;
@@ -324,5 +332,20 @@ void InfoPanel::updatedata()
 	lastdayhost = hosttotallastday - hosttotalpredday;
 	//сортируем проекты чтобы наиболее актуальные отображались первыми
 	std::sort(projects.begin(), projects.end(), ProjectStat::CmpAbove);
+    }
+    srv->statisticsdom.releaseptr(tmpstatisticsdom);
+    srv->statedom.releaseptr(tmpstatedom);
+}
+
+
+void InfoPanel::eventhandle(NEvent* ev) 	//обработчик событий
+{
+    NView::eventhandle(ev); //предок
+    if ( ev->done )
+	return;
+    if ( ev->type == NEvent::evTIMER )
+    {
+	updatedata();	//запросить данные с сервера
+	refresh(); 	//перерисовать окно
     }
 }

@@ -1,3 +1,16 @@
+boinctui (2.3.0dev-1) UNRELEASED; urgency=low
+
+  * network requests moved to separete threads (ui not freeze then 
+    network hang)
+
+  * add confirmation dialogs for some operations (abort task, detach 
+    project etc.)
+
+  * shortcut "A" added for abort selected task
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Sat, 22 Jun 2013 11:22:00 +0400
+
+
 boinctui (2.2.1-1) unstable; urgency=low
 
   [ Steffen Moeller (sponsoring) ]

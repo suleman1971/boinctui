@@ -15,6 +15,7 @@
 // <http://www.gnu.org/licenses/>.
 // =============================================================================
 
+#include <string.h>
 #include "ngroup.h"
 
 
@@ -25,6 +26,36 @@ NGroup::~NGroup()
     {
 	delete (*it);
     }
+}
+
+
+NView* NGroup::getitembyid(const char* id) //получить эл-т зная id его класса
+{
+    NView* result = NULL;
+    std::list<NView*>::iterator it;
+    for(it = items.begin(); it != items.end(); it++)
+    {
+	if (strcmp((*it)->getid(), id) == 0)
+	{
+	    result = (*it);
+	    break;
+	}
+    }
+    return result;
+}
+
+
+bool NGroup::destroybyid(const char* id) //удалить (с деструкцией) эл-т зная id его класса
+{
+    bool result = false;
+    NView* item = getitembyid(id);
+    if (item != NULL)
+    {
+	remove(item);
+	delete(item);
+	result = true;
+    }
+    return result;
 }
 
 
@@ -59,6 +90,17 @@ void NGroup::move(int begrow, int begcol)
     for(it = items.begin(); it != items.end(); it++) //перместить все подэлементы
     {
 	(*it)->move((*it)->getbegrow(),(*it)->getbegcol());
+    }
+}
+
+
+void NGroup::centermodalitems(int maxy, int maxx) //центрировать все модальные эл-ты (maxy,maxx -размер экрана)
+{
+    std::list<NView*>::iterator it;
+    for(it = items.begin(); it != items.end(); it++) //ищем модальные подэлементы
+    {
+	if ((*it)->ismodal())
+	    (*it)->move(maxy/2-(*it)->getheight()/2,maxx/2-(*it)->getwidth()/2);
     }
 }
 

@@ -44,16 +44,11 @@ class MainProg : public NProgram
     TopMenu*		menu;
     MainWin*		wmain;
     NStaticText*	wstatus;
-    AboutWin*		about;
-    HelpWin*		help;
-    AddProjectForm*	addform; //форма добавления проекта
-    AddAccMgrForm*	addmgrform; //форма аккаунт менеджера
     Config* cfg;
-    CfgForm* cfgform; //окно конфигурации
     SrvList* gsrvlist; //глобальный список серверов
     bool	done; //флаг требования завершения
     void setcaption();
-    time_t updatetime; //время последней отрисовки
+    time_t evtimertime; //time of last evTIMER
 };
 
 

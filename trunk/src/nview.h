@@ -18,6 +18,7 @@
 #ifndef NVIEW_H
 #define NVIEW_H
 
+#include <typeinfo>
 #include <panel.h>
 #include "nrect.h"
 #include "nevent.h"
@@ -48,6 +49,8 @@ class NView //базовый визуальный класс
     virtual void eventhandle(NEvent* ev) {/*EMPTY*/}; 	//обработчик событий
     virtual void putevent(NEvent* ev); //отправить событие по цепочке владельцев в очередь
     void setowner(NGroup* owner);
+    virtual const char* getid() { return typeid(*this).name(); }; //возвращает имя класса
+    virtual bool ismodal() { return modalflag; };
   protected:
     NGroup*	owner;	//владелец эл-та
     WINDOW* 	win;	//окно curses
@@ -56,6 +59,7 @@ class NView //базовый визуальный класс
     #ifdef DEBUG
     int		refreshcount; //счетчик обновлений
     #endif
+    bool	modalflag; //true если этот эл-т модальный
   private:
     int getabsbegrow(); //получить начальную строку (абсолютную на экране)
     int getabsbegcol(); //получить начальный столбец (абсолютный на экране)
