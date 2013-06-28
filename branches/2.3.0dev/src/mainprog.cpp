@@ -29,6 +29,7 @@
 
 MainProg::MainProg()
 {
+    uistate = 0;
     done = false;
     cfg = new Config(".boinctui.cfg");
     gsrvlist = new SrvList(cfg);
@@ -45,18 +46,7 @@ MainProg::MainProg()
     wstatus 	= new NStaticText(NRect(1, getmaxx(stdscr), getmaxy(stdscr)-1, 0)); //создаем окно статуса
     insert(wstatus);
     wstatus->setbgcolor(getcolorpair(COLOR_WHITE,COLOR_GREEN));
-    int attrYG = A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN);
-    int attrWG = A_BOLD | getcolorpair(COLOR_WHITE,COLOR_GREEN);
-    wstatus->appendstring(attrYG, " PgUp/PgDn");
-    wstatus->appendstring(attrWG, " Scroll Msg |");
-    wstatus->appendstring(attrYG, " Up/Dn");
-    wstatus->appendstring(attrWG, " Select |");
-    wstatus->appendstring(attrYG, " S");
-    wstatus->appendstring(attrWG, "uspend |");
-    wstatus->appendstring(attrYG, " R");
-    wstatus->appendstring(attrWG, "esume |");
-    wstatus->appendstring(attrYG, " F9");
-    wstatus->appendstring(attrWG, " Menu |");
+    updatestatuslinecontent();
 }
 
 
@@ -92,6 +82,43 @@ void MainProg::smartresize()
 }
 
 
+void MainProg::updatestatuslinecontent()
+{
+    int attrYG = A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN);
+    int attrWG = A_BOLD | getcolorpair(COLOR_WHITE,COLOR_GREEN);
+    int attrBG = A_BOLD | getcolorpair(COLOR_BLACK,COLOR_GREEN) | A_BOLD;
+    if (uistate & stUIMODALFORM)
+    {
+	wstatus->setstring(attrYG, " Esc");
+	wstatus->appendstring(attrWG, " Cancel");
+    }
+    else
+    {
+	wstatus->setstring(attrYG, " PgUp/PgDn");
+	wstatus->appendstring(attrWG, " Scroll Msg |");
+	wstatus->appendstring(attrYG, " Up/Dn");
+	wstatus->appendstring(attrWG, " Select |");
+	if (uistate & stUISELECTOR)
+	{
+	    wstatus->appendstring(attrYG, " S");
+	    wstatus->appendstring(attrWG, "uspend");
+	    wstatus->appendstring(attrWG, " |");
+	    wstatus->appendstring(attrYG, " R");
+	    wstatus->appendstring(attrWG, "esume |");
+	}
+	else
+	{
+	    wstatus->appendstring(attrBG, " Suspend");
+	    wstatus->appendstring(attrWG, " |");
+	    wstatus->appendstring(attrBG, " Resume");
+	    wstatus->appendstring(attrWG, " |");
+	}
+	wstatus->appendstring(attrYG, " F9");
+	wstatus->appendstring(attrWG, " Menu |");
+    }
+}
+
+
 void MainProg::eventhandle(NEvent* ev)	//обработчик событий КОРНЕВОЙ!
 {
     NProgram::eventhandle(ev);
@@ -123,6 +150,8 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();
+		    uistate = uistate | stUIMODALFORM;
+		    updatestatuslinecontent();
 		}
 		break;
 	    case 'S':
@@ -147,17 +176,9 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
 		if (tinfo) //только если есть выделенный эл-т
 		{
-			menu->disable(); //выключаем меню
-			//создаем окно сообщения с подтверждением
-			std::stringstream s;
-			s << "Please Confirm\n\n" << "Task   : " << tinfo->taskname << "\nOperation : " << "Abort";
-			NMessageBox* mbox = new NMessageBox(s.str().c_str());
-			TuiEvent* buttonYev = new TuiEvent(evABORTRES); //событие для кнопки Y
-			buttonYev->bdata1 = true; //флаг подтвержденности
-			mbox->addbutton(new NMButton("Yes",buttonYev, 'Y','y',0));
-			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
-			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
-			insert(mbox);
+		    TuiEvent* ev = new TuiEvent(evABORTRES);
+		    ev->bdata1 = false;
+		    putevent(ev); //создаем событие с кодом 2 "abort_result"
 		}
 		break;
 	    }
@@ -166,6 +187,8 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		//деструктим все какие есть модельные окна
 		destroybyid(typeid(CfgForm).name()); //деструктим форму
 		destroybyid(typeid(NMessageBox).name()); //деструктим форму
+		uistate = uistate & ~stUIMODALFORM;
+		updatestatuslinecontent();
 		break;
 	    case KEY_F(9):
 		if (!menu->isenable())
@@ -201,7 +224,11 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    AboutWin* about = new AboutWin(2,40);
 		    insert(about);
 		    about->move(getmaxy(stdscr)/2-about->getheight()/2,getmaxx(stdscr)/2-about->getwidth()/2); //центрируем
+		    uistate = uistate | stUIMODALFORM;
 		}
+		else
+		    uistate = uistate & ~stUIMODALFORM;
+		updatestatuslinecontent();
 		break;
 	    }
 	    case evKEYBIND: //событие KeyBinding win
@@ -211,7 +238,11 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    HelpWin* help = new HelpWin(2,40);
 		    insert(help);
 		    help->move(getmaxy(stdscr)/2-help->getheight()/2,getmaxx(stdscr)/2-help->getwidth()/2); //центрируем
+		    uistate = uistate | stUIMODALFORM;
 		}
+		else
+		    uistate = uistate & ~stUIMODALFORM;
+		updatestatuslinecontent();
 		break;
 	    }
 	    case evBENCHMARK: //запустить бенчмарк
@@ -232,8 +263,12 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 			AddProjectForm* addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
 			insert(addform);
 			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
+			uistate = uistate | stUIMODALFORM;
 		    }
 		}
+		else
+		    uistate = uistate & ~stUIMODALFORM;
+		updatestatuslinecontent();
 		break;
 	    }
 	    case evADDACCMGR: //добавить акк менеджер
@@ -247,8 +282,12 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 			AddAccMgrForm* addmgrform = new AddAccMgrForm(30,65,ev1->srv,ev1->sdata1.c_str());
 			insert(addmgrform);
 			addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //центрируем
+			uistate = uistate | stUIMODALFORM;
 		    }
 		}
+		else
+		    uistate = uistate & ~stUIMODALFORM;
+		updatestatuslinecontent();
 		break;
 	    }
 	    case evPROJECTOP: //операции над проектом
@@ -269,13 +308,16 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
 		    mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
 		    insert(mbox);
+		    uistate = uistate | stUIMODALFORM;
 		}
 		else
 		{
 		    kLogPrintf("evPROJECT confirmed event detected\n");
 		    ev1->srv->opproject(projname, projop); //выполняем действие
-		    destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+		    if (destroybyid(typeid(NMessageBox).name())) //удаляем окно подтверждения (если есть)
+			uistate = uistate & ~stUIMODALFORM;
 		}
+		updatestatuslinecontent();
 		break;
 	    }
 	    case evABORTRES: //событие действий над проектами "abort_result" и.т.д.
@@ -297,16 +339,31 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 			NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
 			mbox->addbutton(new NMButton("No",buttonNev, 'N','n',27,0));
 			insert(mbox);
+			uistate = uistate | stUIMODALFORM;
 		    }
 		    else
 		    {
 			kLogPrintf("evABORTRES confirmed event detected\n");
 			Srv* srv = gsrvlist->getcursrv();
 			srv->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"abort_result"); //выполняем действие
-			destroybyid(typeid(NMessageBox).name()); //удаляем окно подтверждения (если есть)
+			if (destroybyid(typeid(NMessageBox).name())) //удаляем окно подтверждения (если есть)
+			    uistate = uistate & ~stUIMODALFORM;
 		    }
+		    updatestatuslinecontent();
 		    break;
 		}
+	    }
+	    case evTASKSELECTORON:
+	    {
+		uistate = uistate | stUISELECTOR;
+		updatestatuslinecontent();
+		break;
+	    }
+	    case evTASKSELECTOROFF:
+	    {
+		uistate = uistate & ~stUISELECTOR;
+		updatestatuslinecontent();
+		break;
 	    }
 	} //switch
     }

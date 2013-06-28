@@ -472,6 +472,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     NSelectList::eventhandle(ev); //предок
     if ( ev->done )
 	return;
+    bool selectorvisiblebak = (selectedindex >= 0)&&(selectedindex < content.size()); //состояние селектора до
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;
@@ -518,6 +519,12 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    saveopttoconfig();
 	}
     }
+    //если изменилась видимость селектора, то генерируем соотв евент
+    if (((selectedindex >= 0)&&(selectedindex < content.size()) )&&(!selectorvisiblebak))
+	putevent(new TuiEvent(evTASKSELECTORON)); //селектор включился
+    if (((selectedindex == -1)||(selectedindex == content.size()))&&(selectorvisiblebak))
+	putevent(new TuiEvent(evTASKSELECTOROFF)); //селектор выключился
+    //событие таймера
     if (ev->type == NEvent::evTIMER) //таймер
     {
 	updatedata();	//запросить данные с сервера
