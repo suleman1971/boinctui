@@ -13,3 +13,6 @@ You can manually download latest binary and source packages:
 
  * Binary i386 / x86_64 rpm for Fedora 15-19 :<a href="http://code.google.com/p/boinctui/downloads/list?q=label:Fedora">Binary Fedora downloads
 </a>
+
+ * Archlinux :<a href="https://aur.archlinux.org/packages/boinctui">AUR downloads
+</a>
