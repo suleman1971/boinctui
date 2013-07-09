@@ -193,6 +193,7 @@ Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost
     this->pwd = strdup(pwd);
     lastmsgno = 0;
     active = false;
+    ccstatusdomneedupdate = false;
     pthread_mutex_init(&mutex, NULL);
 }
 
@@ -391,6 +392,7 @@ void Srv::opactivity(const char* op) //изменение режима акти�
     Item* d = req("<set_run_mode><%s/><duration>0</duration></set_run_mode>",op);
     if (d != NULL)
 	delete d;
+    ccstatusdomneedupdate = true;
 }
 
 
@@ -399,6 +401,7 @@ void Srv::opnetactivity(const char* op) //изменение режима акт
     Item* d = req("<set_network_mode><%s/><duration>0</duration></set_network_mode>",op);
     if (d != NULL)
 	delete d;
+    ccstatusdomneedupdate = true;
 }
 
 
@@ -407,6 +410,7 @@ void Srv::opgpuactivity(const char* op) //изменение режима акт
     Item* d = req("<set_gpu_mode><%s/><duration>0</duration></set_gpu_mode>",op);
     if (d != NULL)
 	delete d;
+    ccstatusdomneedupdate = true;
 }
 
 
@@ -900,8 +904,11 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 	    me->updatestatistics(); //<get_statistics>
 	if ( me->dusagedom.empty() || ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 ) )
 	    me->updatediskusage(); //<get_disk_usage>
-	if ( me->ccstatusdom.empty() || ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 ) )
+	if ( me->ccstatusdom.empty() || ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 ) || me->ccstatusdomneedupdate )
+	{
 	    me->updateccstatus(); //<get_cc_status>
+	    me->ccstatusdomneedupdate = false;
+	}
 	if (me->acctmgrinfodom.needupdate)
 	    me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
 	

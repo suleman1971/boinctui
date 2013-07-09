@@ -484,6 +484,11 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    case KEY_DOWN:
 		selectordown();
 		break;
+	    case KEY_ENTER:
+	    case '\n':
+		if ((selectedindex >= 0)&&(selectedindex < content.size())) //селектор видимый
+		    putevent(new TuiEvent(evTASKINFO));
+		break;
 	    default:
 		ev->done = false; //нет реакции на этот код
 	} //switch

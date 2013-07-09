@@ -7,7 +7,8 @@ SRCS	= ncolorstring.cpp nhline.cpp nvline.cpp nscrollview.cpp nselectlist.cpp nv
           ngroup.cpp nstatictext.cpp nform.cpp nprogram.cpp nmenu.cpp nmessagebox.cpp \
           kclog.cpp cfg.cpp srvdata.cpp mbstring.cpp net.cpp resultparse.cpp resultdom.cpp \
           mainprog.cpp infopanel.cpp mainwin.cpp msgwin.cpp taskwin.cpp tui-main.cpp  \
-          cfgform.cpp topmenu.cpp about.cpp helpwin.cpp addprojectform.cpp addmgrform.cpp
+          cfgform.cpp topmenu.cpp about.cpp helpwin.cpp addprojectform.cpp addmgrform.cpp \
+	  taskinfowin.cpp
 
 OBJS	= $(patsubst %.cpp,$(ODIR)/%.o,$(SRCS))
 LIBS    = @LIBS@

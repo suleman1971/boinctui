@@ -92,7 +92,15 @@ void MainProg::updatestatuslinecontent()
 	wstatus->setstring(attrYG, " Esc");
 	wstatus->appendstring(attrWG, " Cancel");
     }
-    else
+    if (uistate & stUITASKINFO)
+    {
+	wstatus->setstring(attrYG, " Esc");
+	wstatus->appendstring(attrWG, " Cancel");
+	wstatus->appendstring(attrWG, " |");
+	wstatus->appendstring(attrYG, " PgUp/PgDn");
+	wstatus->appendstring(attrWG, " Scroll ");
+    }
+    if ( (uistate == 0)||(uistate == stUISELECTOR) )
     {
 	wstatus->setstring(attrYG, " PgUp/PgDn");
 	wstatus->appendstring(attrWG, " Scroll Msg |");
@@ -187,7 +195,9 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		//деструктим все какие есть модельные окна
 		destroybyid(typeid(CfgForm).name()); //деструктим форму
 		destroybyid(typeid(NMessageBox).name()); //деструктим форму
+		destroybyid(typeid(TaskInfoWin).name()); //деструктим форму
 		uistate = uistate & ~stUIMODALFORM;
+		uistate = uistate & ~stUITASKINFO;
 		updatestatuslinecontent();
 		break;
 	    case KEY_F(9):
@@ -364,6 +374,18 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		uistate = uistate & ~stUISELECTOR;
 		updatestatuslinecontent();
 		break;
+	    }
+	    case evTASKINFO:
+	    {
+		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
+		if (tinfo) //только если есть выделенный эл-т
+		{
+		    TaskInfoWin* taskinfowin = new TaskInfoWin("Task Info Raw View", gsrvlist->getcursrv(), tinfo->projecturl.c_str(), tinfo->taskname.c_str());
+		    insert(taskinfowin);
+		    taskinfowin->move(getmaxy(stdscr)/2-taskinfowin->getheight()/2,getmaxx(stdscr)/2-taskinfowin->getwidth()/2); //центрируем
+		    uistate = uistate | stUITASKINFO;
+		    updatestatuslinecontent();
+		}
 	    }
 	} //switch
     }

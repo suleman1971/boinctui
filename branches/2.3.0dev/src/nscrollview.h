@@ -35,10 +35,12 @@ class NScrollView : public NView //область со скроллингом
     virtual void drawcontent(); //отрисовывает буфер строк
     void scrollto(int delta); //сдвинуть отображение на drlta строк вверх или вниз
     void setstartindex(int n) { startindex = n; }; //установить отображение со строки n
+    int  getstartindex() { return startindex; }; //получить номер первой видимой строки
     bool getautoscroll() { return autoscroll; }; //true если включен режим автоскроллинга
     void setautoscroll(bool b); //true чтобы включить автоскроллинг
     virtual void resize(int rows, int cols);
     virtual void refresh();
+    int getstringcount() { return content.size();}; //число строк
   protected:
     std::vector<NColorString*> content; //массив строк с цветовыми аттрибутами
     int	startindex; //номер первой видимой строки
