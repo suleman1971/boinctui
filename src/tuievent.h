@@ -34,7 +34,10 @@ enum TuiEventType
     evVIEWMODECH,	//переключение режима видимости All/Hide done/Active tasks only
     evSORTMODECH,	//переключение режима сортировки списка задач 0-unsorted 1-state e.t.c.
     evADDACCMGR,	//форма акк менеджера
-    evPROJECTOP		//операции над проектом
+    evPROJECTOP,	//операции над проектом
+    evTASKINFO,		//генерируется когда нужно открыть окно детальной информации о задаче
+    evTASKSELECTORON,	//генерируется когда селектор задач становится видимым
+    evTASKSELECTOROFF	//генерируется когда селектор задач становится скрытым
 };
 
 

@@ -52,7 +52,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 	    for (it = cstring->parts.begin(); it != cstring->parts.end(); it++) //цикл по частям тек строки
 	    {
 		NColorStringPart* part = *it;
-		if (startindex + line != selectedindex) //эта строка не выделена
+		if ((!selectorenable)||(startindex + line != selectedindex)) //эта строка не выделена или селектор выключен
 		    wattrset(win,part->attr); //включаем атрибут
 		else
 		{
@@ -70,7 +70,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 	    } //цикл частей одной строки
 	    //wattrset(win,0); //отключаем атрибут
 	    //очищаем до конца строки
-	    if (startindex + line != selectedindex)
+	    if ((!selectorenable)||(startindex + line != selectedindex))
 	        wclrtoeol(win);
 	    else
 	    {

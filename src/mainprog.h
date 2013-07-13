@@ -30,6 +30,11 @@
 #include "helpwin.h"
 #include "addprojectform.h"
 #include "addmgrform.h"
+#include "taskinfowin.h"
+
+#define stUISELECTOR	1 //бит означающий что селектор задач включен
+#define stUIMODALFORM	2 //бит означающий что активна модальная форма
+#define stUITASKINFO	4 //бит означающий что активно окно и-и о задаче
 
 
 class MainProg : public NProgram
@@ -49,6 +54,8 @@ class MainProg : public NProgram
     bool	done; //флаг требования завершения
     void setcaption();
     time_t evtimertime; //time of last evTIMER
+    unsigned int uistate; //маска состояния интерфейса
+    void updatestatuslinecontent();
 };
 
 

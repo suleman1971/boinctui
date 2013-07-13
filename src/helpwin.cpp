@@ -24,7 +24,7 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
 {
     caption = strdup(" Hot keys list ");
     modalflag = true;
-    resize(15,60);
+    resize(17,60);
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
     box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
@@ -39,9 +39,11 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     text1->appendstring(attr2,"       \"PgUp\"/\"PgDn\" - Scroll Messages Window\n");
     text1->appendstring(attr2,"\n");
     text1->appendstring(attr1,"   Task Controls:\n");
+    text1->appendstring(attr2,"       \"Up\"/\"Dn\"     - Select task\n");
     text1->appendstring(attr2,"       \"S\"           - Suspend selected running task\n");
     text1->appendstring(attr2,"       \"R\"           - Resume selected suspended task\n");
-    text1->appendstring(attr2,"       \"Up\"/\"Dn\"     - Select task\n");
+    text1->appendstring(attr2,"       \"A\"           - Abort selected task\n");
+    text1->appendstring(attr2,"       \"Enter\"       - View selected task raw info\n");
     insert(text1);
 }
 

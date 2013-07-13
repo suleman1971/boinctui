@@ -88,6 +88,7 @@ class Srv : public TConnect //описание соединения с серв�
     PtrList	statisticsdom;	//xml дерево для <get_statistics>
     Item*	allprojectsdom;	//xml дерево для <get_all_projects_list>
     PtrList	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
+    bool	ccstatusdomneedupdate; //если true тред обновит ccstatusdom без ожидания
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
     bool  login(); 		//авторизоваться на сервере
     virtual void  createconnect();

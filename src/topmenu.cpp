@@ -72,6 +72,7 @@
 #define M_SUSPEND_TASK			"Suspend task"
 #define M_RESUME_TASK			"Resume task"
 #define M_ABORT_TASK			"Abort task"
+#define M_INFO_TASK			"View raw task info"
 //Названия пунктов меню "Activity"
 #define M_ACTIVITY_ALWAYS		"Run always"
 #define M_ACTIVITY_AUTO			"Run based on preferences"
@@ -519,6 +520,7 @@ TasksSubMenu::TasksSubMenu(NRect rect) : NMenu(rect)
     additem(M_SUSPEND_TASK,"  S");
     additem(M_RESUME_TASK ,"  R");
     additem(M_ABORT_TASK  ,"  A");
+    additem(M_INFO_TASK  ,"  Enter");
     additem(NULL,NULL);
 }
 
@@ -536,6 +538,8 @@ bool TasksSubMenu::action()
 	ev->bdata1 = false;
 	putevent(ev); //NEvent(NEvent::evPROG, 2)); //создаем событие с кодом 2 "abort_result"
     }
+    if ( strcmp(item_name(current_item(menu)),M_INFO_TASK) == 0 )
+	putevent(new NEvent(NEvent::evKB, KEY_ENTER)); //создаем событие имитирующее нажатие 'Enter'
     return true;
 }
 
