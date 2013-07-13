@@ -35,6 +35,7 @@ class TaskInfoWin : public NGroup  //стандартный диалог вид�
   private:
     int maxlen1;
     int maxlen2;
+    std::vector<std::pair<std::string, std::string> > ssbak; //прошлое значение
     std::string		caption;
     std::string		projecturl;
     std::string		taskname;
