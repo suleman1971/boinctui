@@ -15,26 +15,32 @@
 // <http://www.gnu.org/licenses/>.
 // =============================================================================
 
-#ifndef CFG_H
-#define CFG_H
+#ifndef TASKINFOWIN_H
+#define TASKINFOWIN_H
 
-#include "resultdom.h"
 
-class Config
+#include <list>
+#include <string>
+#include "ngroup.h"
+#include "nscrollview.h"
+#include "tuievent.h"
+
+
+class TaskInfoWin : public NGroup  //стандартный диалог вида Ok/Cancel или Yes/No
 {
   public:
-    Config(const char* filename);
-    ~Config();
-    void  load();
-    void  save();
-    void  generatedefault();
-    Item* getcfgptr() { if ( root!= NULL) return root->findItem("boinctui_cfg"); else return NULL; };
-    void  addhost(const char* host, const char* port, const char* pwd);
-    bool  isdefault; //true если конфиг не найден и создан дефолтный
-  protected:
-    char* fullname;	//полное имя файла
-    Item* root;  	//корень дерева конфига
+    TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, const char* taskname);
+    void eventhandle(NEvent* ev);	//обработчик событий
+    void updatedata();
+  private:
+    int maxlen1;
+    int maxlen2;
+    std::string		caption;
+    std::string		projecturl;
+    std::string		taskname;
+    Srv* srv;
+    NScrollView*	content;
 };
 
 
-#endif //CFG_H
+#endif //TASKINFOWIN_H

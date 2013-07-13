@@ -37,10 +37,18 @@ std::vector<Item*> Item::getItems(const char* name) //получить из те
 {
     std::vector<Item*> result;
     std::list<Item*>::iterator it;
-    for (it=subitems.begin(); it!=subitems.end(); it++)
+    if (strlen(name) > 0)
     {
-	if ( strcmp((*it)->getname(),name) == 0 )
-	    result.push_back(*it);
+	for (it=subitems.begin(); it!=subitems.end(); it++)
+	{
+	    if ( strcmp((*it)->getname(),name) == 0 )
+		result.push_back(*it);
+	}
+    }
+    else //если имя не задано вернет все имеющиеся
+    {
+	for (it=subitems.begin(); it!=subitems.end(); it++)
+		result.push_back(*it);
     }
     return result;
 }
