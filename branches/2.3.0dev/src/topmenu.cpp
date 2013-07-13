@@ -54,6 +54,11 @@
 #define M_SORT_BY_APP			"Sort by application"
 #define M_SORT_BY_TASK			"Sort by task name"
 //Названия пунктов меню "Projects"
+#define M_ADD_PROJECT			"Add project"
+#define M_CONNECT_MANAGER		"Connect to account manager"
+#define M_SYNCHRONIZE_MANAGER		"Synchronize with manager"
+#define M_DISCONNECT_MANAGER		"Stop using account manager"
+//Названия пунктов подменю "Projects/Имя проекта"
 #define M_UPDATE_PROJECT		"Update project"
 #define M_SUSPEND_PROJECT		"Suspend project"
 #define M_RESUME_PROJECT		"Resume project"
@@ -61,10 +66,6 @@
 #define M_ALLOW_NEW_TASKS_PROJECT	"Allow new tasks"
 #define M_RESET_PROJECT			"Reset project"
 #define M_DETACH_PROJECT		"Detach project"
-#define M_ADD_PROJECT			"Add project"
-#define M_CONNECT_MANAGER		"Connect to account manager"
-#define M_SYNCHRONIZE_MANAGER		"Synchronize with manager"
-#define M_DISCONNECT_MANAGER		"Stop using account manager"
 //Названия пунктов меню "Add project/User Exist"
 #define M_PROJECT_USER_EXIST		"Existing user"
 #define M_PROJECT_NEW_USER		"Create new user account"
@@ -417,13 +418,6 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    srv->acctmgrinfodom.releaseptr(tmpacctmgrinfodom);
 	}
     }
-    additem(M_UPDATE_PROJECT,"");
-    additem(M_SUSPEND_PROJECT ,"");
-    additem(M_RESUME_PROJECT,"");
-    additem(M_NO_NEW_TASKS_PROJECT,"");
-    additem(M_ALLOW_NEW_TASKS_PROJECT,"");
-    additem(M_RESET_PROJECT,"");
-    additem(M_DETACH_PROJECT,"");
     additem(M_ADD_PROJECT,"");
     if (acctmgrname.empty())
 	additem(M_CONNECT_MANAGER,"");
@@ -432,6 +426,35 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	additem(M_SYNCHRONIZE_MANAGER,acctmgrname.c_str());
 	additem(M_DISCONNECT_MANAGER,acctmgrname.c_str());
     }
+    //имена подключенных проектов
+    additem("","");
+    if ((srv != NULL)&&(!srv->statedom.empty()))
+    {
+	Item* tmpstatedom = srv->statedom.hookptr();
+	Item* client_state = tmpstatedom->findItem("client_state");
+	if (client_state != NULL)
+	{
+	    std::vector<Item*> projects = client_state->getItems("project");
+	    for (int i = 0; i < projects.size(); i++)
+	    {
+		Item* project_name = projects[i]->findItem("project_name");
+		if (project_name != NULL)
+		{
+		    std::string status = ""; //строка состояния
+		    if (projects[i]->findItem("suspended_via_gui") != NULL)
+			status = status + "[Susp.]";
+		    if (projects[i]->findItem("dont_request_more_work") != NULL)
+			status = status + "[N.N.Tsk]";
+		    additem(project_name->getsvalue(),status.c_str());
+		}
+	    }
+	}
+	srv->statedom.releaseptr(tmpstatedom);
+    }
+    additem(NULL,NULL);
+
+
+
     additem(NULL,NULL);
 }
 
@@ -442,36 +465,27 @@ bool ProjectsSubMenu::action()
     if (!items.empty()) //если уже открыто выходим
 	return false;
     //формируем код операции для подменю
-    char op = '?'; //код операции передаваемый в меню списка проектов
-    if ( strcmp(item_name(current_item(menu)),M_SUSPEND_PROJECT) == 0 )
-	op = 'S';
-    if ( strcmp(item_name(current_item(menu)),M_RESUME_PROJECT) == 0 )
-	op = 'R';
-    if ( strcmp(item_name(current_item(menu)),M_UPDATE_PROJECT) == 0 )
-	op = 'U';
-    if ( strcmp(item_name(current_item(menu)),M_NO_NEW_TASKS_PROJECT) == 0 )
-	op = 'N';
-    if ( strcmp(item_name(current_item(menu)),M_ALLOW_NEW_TASKS_PROJECT) == 0 )
-	op = 'A';
-    if ( strcmp(item_name(current_item(menu)),M_RESET_PROJECT) == 0 )
-	op = 'r';
-    if ( strcmp(item_name(current_item(menu)),M_DETACH_PROJECT) == 0 )
-	op = 'd';
-    //создаем подменю для подключенных проектов
+    bool actiondone = false;
+    //создаем подменю
     int begincol = 2/*getwidth() - 2*/; //смещение на экране по горизонтали
     int beginrow = 2 + item_index(current_item(menu)); //смещение на экране по вертикали
-    if (op != '?')
-	insert(new ProjectListSubMenu(NRect(5,25,beginrow, begincol), srv, op));
     if ( strcmp(item_name(current_item(menu)), M_ADD_PROJECT) == 0 ) //подключиться к новому проекту
+    {
 	insert(new ProjectAllListSubMenu(NRect(5,25,beginrow, begincol), srv));
+	actiondone = true;
+    }
     if ( strcmp(item_name(current_item(menu)), M_CONNECT_MANAGER) == 0 ) //подключить менеджер
+    {
 	insert(new ProjectAccMgrSubMenu(NRect(5,25,beginrow, begincol), srv));
+	actiondone = true;
+    }
     if ( strcmp(item_name(current_item(menu)), M_DISCONNECT_MANAGER) == 0 ) //отключить менеджер
     {
 	putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
 	std::string errmsg;
 	if (srv != NULL)
 	    srv->accountmanager("","","",false,errmsg);
+	actiondone = true;
     }
     if ( strcmp(item_name(current_item(menu)), M_SYNCHRONIZE_MANAGER) == 0 ) //синхронизироваться с менеджером
     {
@@ -479,8 +493,13 @@ bool ProjectsSubMenu::action()
 	std::string errmsg;
 	if (srv != NULL)
 	    srv->accountmanager(accmgrurl.c_str(),"","",true,errmsg);
+	actiondone = true;
     }
-
+    //если ни одна M_ константа не подошла значит это название проекта
+    if (!actiondone)
+    {
+	insert(new ProjectListSubMenu(NRect(5,25,beginrow, begincol), srv, item_name(current_item(menu))));
+    }
     return true;
 }
 
@@ -615,33 +634,17 @@ bool ActivitySubMenu::action()
 //=============================================================================================
 
 
-ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, char op) : NMenu(rect)
+ProjectListSubMenu::ProjectListSubMenu(NRect rect, Srv* srv, std::string projname) : NMenu(rect)
 {
     this->srv = srv;
-    this->op = op;
-    if ((srv != NULL)&&(!srv->statedom.empty()))
-    {
-	Item* tmpstatedom = srv->statedom.hookptr();
-	Item* client_state = tmpstatedom->findItem("client_state");
-	if (client_state != NULL)
-	{
-	    std::vector<Item*> projects = client_state->getItems("project");
-	    for (int i = 0; i < projects.size(); i++)
-	    {
-		Item* project_name = projects[i]->findItem("project_name");
-		if (project_name != NULL)
-		{
-		    std::string status = ""; //строка состояния
-		    if (projects[i]->findItem("suspended_via_gui") != NULL)
-			status = status + "[suspended via gui]";
-		    if (projects[i]->findItem("dont_request_more_work") != NULL)
-			status = status + "[don't request more work]";
-		    additem(project_name->getsvalue(),status.c_str());
-		}
-	    }
-	}
-	srv->statedom.releaseptr(tmpstatedom);
-    }
+    this->projname = projname;
+    additem(M_UPDATE_PROJECT,"");
+    additem(M_SUSPEND_PROJECT ,"");
+    additem(M_RESUME_PROJECT,"");
+    additem(M_NO_NEW_TASKS_PROJECT,"");
+    additem(M_ALLOW_NEW_TASKS_PROJECT,"");
+    additem(M_RESET_PROJECT,"");
+    additem(M_DETACH_PROJECT,"");
     additem(NULL,NULL);
 }
 
@@ -652,40 +655,43 @@ bool ProjectListSubMenu::action()
     {
 	const char* sop = NULL;
 	bool confirmed = false;
-	switch(op)
-	{
-	    case 'S': //Suspend project
-		confirmed = true; //действие не требует подтверждения юзером
-		sop = "project_suspend";
-		break;
-	    case 'R': //Resume project
-		confirmed = true; //действие не требует подтверждения юзером
-		sop = "project_resume";
-		break;
-	    case 'U': //Update project
-		confirmed = true; //действие не требует подтверждения юзером
-		sop = "project_update";
-		break;
-	    case 'r': //Reset project
-		sop = "project_reset";
-		break;
-	    case 'd': //Detach project
-		sop = "project_detach";
-		break;
-	    case 'N': //No New Task project
-		confirmed = true; //действие не требует подтверждения юзером
-		sop = "project_nomorework";
-		break;
-	    case 'A': //Allow More Work project
-		confirmed = true; //действие не требует подтверждения юзером
-		sop = "project_allowmorework";
-		break;
-	    default:
-		break;
+
+	if ( strcmp(item_name(current_item(menu)),M_SUSPEND_PROJECT) == 0 )
+	{//Suspend project
+	    confirmed = true; //действие не требует подтверждения юзером
+	    sop = "project_suspend";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_RESUME_PROJECT) == 0 )
+	{//Resume project
+	    confirmed = true; //действие не требует подтверждения юзером
+	    sop = "project_resume";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_UPDATE_PROJECT) == 0 )
+	{//Update project
+	    confirmed = true; //действие не требует подтверждения юзером
+	    sop = "project_update";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_NO_NEW_TASKS_PROJECT) == 0 )
+	{//No New Task project
+	    confirmed = true; //действие не требует подтверждения юзером
+	    sop = "project_nomorework";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_ALLOW_NEW_TASKS_PROJECT) == 0 )
+	{//Allow More Work project
+	    confirmed = true; //действие не требует подтверждения юзером
+	    sop = "project_allowmorework";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_RESET_PROJECT) == 0 )
+	{//Reset project
+	    sop = "project_reset";
+	}
+	if ( strcmp(item_name(current_item(menu)),M_DETACH_PROJECT) == 0 )
+	{//Detach project
+	    sop = "project_detach";
 	}
 	if (sop)
 	{
-	    TuiEvent* ev = new TuiEvent(evPROJECTOP, srv, item_name(current_item(menu)),sop);
+	    TuiEvent* ev = new TuiEvent(evPROJECTOP, srv, projname.c_str(),sop);
 	    ev->bdata1 = confirmed;
 	    putevent(ev);
 	}
