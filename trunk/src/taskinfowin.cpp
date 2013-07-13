@@ -42,6 +42,22 @@ void Tree2Text(Item* item, std::vector<std::pair<std::string, std::string> >& vo
     }
 }
 
+//поиск в векторе v переменной с именем varname. Вернет значение или ""
+std::string FindVar(std::vector<std::pair<std::string, std::string> >& v, std::string& varname)
+{
+    std::string result = "";
+    std::vector<std::pair<std::string, std::string> >::iterator it;
+    for (it = v.begin(); it!=v.end(); it++)
+    {
+	if ((*it).first == varname)
+	{
+	    result = (*it).second;
+	    break;
+	}
+    }
+    return result;
+}
+
 
 // =============================================================================
 
@@ -136,8 +152,16 @@ void TaskInfoWin::updatedata()
     std::vector<std::pair<std::string, std::string> >::iterator it;
     for (it = ss.begin(); it!=ss.end(); it++)
     {
-	content->addstring(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, "%-*s   %s\n", maxlen1, (*it).first.c_str(), (*it).second.c_str());
+	int varcolor = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
+	int valcolor = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
+	if ((FindVar(ssbak, (*it).first) != (*it).second)&&(!ssbak.empty()))
+	    valcolor = getcolorpair(COLOR_CYAN, COLOR_BLACK) | A_BOLD;
+
+	NColorString* cs = new NColorString(varcolor, "%-*s   ", maxlen1, (*it).first.c_str());
+	cs->append(valcolor, "%s\n", (*it).second.c_str());
+	content->addstring(cs);
     }
+    ssbak = ss;
 }
 
 

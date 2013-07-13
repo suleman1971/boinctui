@@ -83,12 +83,12 @@ class FileSubMenu : public NMenu //выпадающие меню "File"
 class ProjectListSubMenu : public NMenu //выпадающие меню второго уровня Список проектов
 {
   public:
-    ProjectListSubMenu(NRect rect, Srv* srv, char op);
+    ProjectListSubMenu(NRect rect, Srv* srv, std::string projname);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
     virtual bool action(); //вызывается при нажатии Enter
     Srv*	srv; //текущий отображаемый сервер
-    char	op;  //выполняемая операция 'S','R',e.t.c.
+    std::string	projname;  //имя проекта
 };
 
 
