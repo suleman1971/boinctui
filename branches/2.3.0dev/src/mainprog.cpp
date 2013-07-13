@@ -113,6 +113,8 @@ void MainProg::updatestatuslinecontent()
 	    wstatus->appendstring(attrWG, " |");
 	    wstatus->appendstring(attrYG, " R");
 	    wstatus->appendstring(attrWG, "esume |");
+	    wstatus->appendstring(attrYG, " Enter");
+	    wstatus->appendstring(attrWG, " Info");
 	}
 	else
 	{
@@ -120,7 +122,9 @@ void MainProg::updatestatuslinecontent()
 	    wstatus->appendstring(attrWG, " |");
 	    wstatus->appendstring(attrBG, " Resume");
 	    wstatus->appendstring(attrWG, " |");
+	    wstatus->appendstring(attrBG, " Enter Info");
 	}
+	wstatus->appendstring(attrWG, " |");
 	wstatus->appendstring(attrYG, " F9");
 	wstatus->appendstring(attrWG, " Menu |");
     }
@@ -195,9 +199,12 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		//деструктим все какие есть модельные окна
 		destroybyid(typeid(CfgForm).name()); //деструктим форму
 		destroybyid(typeid(NMessageBox).name()); //деструктим форму
-		destroybyid(typeid(TaskInfoWin).name()); //деструктим форму
+		if (destroybyid(typeid(TaskInfoWin).name())) //деструктим форму
+		{
+		    wmain->wtask->setselectorenable(true);
+		    uistate = uistate & ~stUITASKINFO;
+		}
 		uistate = uistate & ~stUIMODALFORM;
-		uistate = uistate & ~stUITASKINFO;
 		updatestatuslinecontent();
 		break;
 	    case KEY_F(9):
@@ -380,6 +387,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		TaskInfo* tinfo = (TaskInfo*)wmain->wtask->getselectedobj();
 		if (tinfo) //только если есть выделенный эл-т
 		{
+		    wmain->wtask->setselectorenable(false);
 		    TaskInfoWin* taskinfowin = new TaskInfoWin("Task Info Raw View", gsrvlist->getcursrv(), tinfo->projecturl.c_str(), tinfo->taskname.c_str());
 		    insert(taskinfowin);
 		    taskinfowin->move(getmaxy(stdscr)/2-taskinfowin->getheight()/2,getmaxx(stdscr)/2-taskinfowin->getwidth()/2); //центрируем
@@ -397,6 +405,8 @@ bool MainProg::mainloop() //основной цикл порождающий с�
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 
+    if (cfg->isdefault) //если конфига нет то открыть форму
+	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
     do
     {
 	//блокировка сигнала изменения окна SIGWINCH на время отрисовки (из-за нереентерабельности курсес)

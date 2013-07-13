@@ -56,6 +56,7 @@ Config::~Config()
 
 void Config::load()
 {
+    isdefault = true;
     if (fullname == NULL)
     {
 	generatedefault();
@@ -82,6 +83,7 @@ void Config::load()
 	kLogPrintf("%s\n",buf);
 	root = xmlparse(buf, st.st_size);
 	fclose (pfile);
+	isdefault = false;
     }
 }
 

@@ -30,6 +30,7 @@ class Config
     void  generatedefault();
     Item* getcfgptr() { if ( root!= NULL) return root->findItem("boinctui_cfg"); else return NULL; };
     void  addhost(const char* host, const char* port, const char* pwd);
+    bool  isdefault; //true если конфиг не найден и создан дефолтный
   protected:
     char* fullname;	//полное имя файла
     Item* root;  	//корень дерева конфига

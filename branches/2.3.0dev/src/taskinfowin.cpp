@@ -65,6 +65,14 @@ TaskInfoWin::TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, 
 	content->resize(content->getstringcount(), content->getwidth());
 	resize(content->getheight() + 4, getwidth());
     }
+    //растягиваем по ширине
+    content->resize(content->getheight(), maxlen1 + maxlen2 + 10);
+    resize(getheight(), content->getwidth() + 4);
+    if (getwidth() > getmaxx(stdscr) - 10) //если слишком широко обрезаем
+    {
+	resize(getheight(), getmaxx(stdscr) - 10);
+	content->resize(content->getheight(), getwidth() - 4);
+    }
     box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2), this->caption.c_str());
     refresh();
@@ -81,8 +89,8 @@ void TaskInfoWin::updatedata()
     Item* tmpstatedom = srv->statedom.hookptr();
     Item* client_state = tmpstatedom->findItem("client_state");
     std::vector<std::pair<std::string, std::string> > ss;
-    int maxlen1 = 0;
-    int maxlen2 = 0;
+    maxlen1 = 0;
+    maxlen2 = 0;
     if (client_state != NULL)
     {
 	content->clearcontent();
@@ -97,6 +105,26 @@ void TaskInfoWin::updatedata()
 		(strcmp(project_url->getsvalue(), projecturl.c_str()) == 0)&&
 		(strcmp(name->getsvalue(), taskname.c_str()) == 0))
 	    {
+		//имя проекта
+		std::string pname = srv->findProjectName(tmpstatedom, (*it)->findItem("project_url")->getsvalue());
+		ss.push_back(std::pair<std::string, std::string>("PROJECT NAME", pname));
+		//имя приложения
+		char buf[256];
+		snprintf(buf, sizeof(buf),"%s","unknown application");
+		Item* wu_name = (*it)->findItem("wu_name");
+		if (wu_name != NULL)
+		{
+		    Item* app = srv->findappbywuname(wu_name->getsvalue());
+		    if (app != NULL)
+		    {
+			Item* user_friendly_name = app->findItem("user_friendly_name");
+			if (user_friendly_name != NULL)
+			snprintf(buf, sizeof(buf),"%s",user_friendly_name->getsvalue());
+		    }
+		}
+		ss.push_back(std::pair<std::string, std::string>("APP NAME", buf));
+		ss.push_back(std::pair<std::string, std::string>("", ""));
+		//raw данные
 		Tree2Text(*it, ss, maxlen1, maxlen2);
 		break;
 	    }
@@ -106,9 +134,9 @@ void TaskInfoWin::updatedata()
     srv->statedom.releaseptr(tmpstatedom);
     //заполняем визуальные строки
     std::vector<std::pair<std::string, std::string> >::iterator it;
-    for (it = ss.begin(); it!=ss.end(); it++) //цикл списка задач
+    for (it = ss.begin(); it!=ss.end(); it++)
     {
-	content->addstring(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, "%-*s : %s\n", maxlen1, (*it).first.c_str(), (*it).second.c_str());
+	content->addstring(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, "%-*s   %s\n", maxlen1, (*it).first.c_str(), (*it).second.c_str());
     }
 }
 

@@ -33,6 +33,8 @@ class TaskInfoWin : public NGroup  //стандартный диалог вид�
     void eventhandle(NEvent* ev);	//обработчик событий
     void updatedata();
   private:
+    int maxlen1;
+    int maxlen2;
     std::string		caption;
     std::string		projecturl;
     std::string		taskname;
