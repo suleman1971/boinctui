@@ -912,7 +912,12 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 	if (me->acctmgrinfodom.needupdate)
 	    me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
 	
-	sleep(1);
+	for (int i = 0; i < 10; i++)
+	{
+	    usleep(100000); //100 milisec
+	    if (me->ccstatusdomneedupdate)
+		break; //прервать сон если нужен срочный апдейт
+	}
 	me->takt++;
     }
     kLogPrintf("%s:%s::updatethread() stoped\n",me->gethost(),me->getport());
