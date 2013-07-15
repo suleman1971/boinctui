@@ -95,6 +95,22 @@ bool resultCmpLessByEstimate( Item* res1, Item* res2 ) //для сортиров
 {
     Item* estimated_cpu_time_remaining1 = res1->findItem("estimated_cpu_time_remaining");
     Item* estimated_cpu_time_remaining2 = res2->findItem("estimated_cpu_time_remaining");
+    Item* ready_to_report1 = res1->findItem("ready_to_report");
+    Item* ready_to_report2 = res2->findItem("ready_to_report");
+    Item* active_task1 = res1->findItem("active_task");
+    Item* active_task2 = res2->findItem("active_task");
+
+    if ( (ready_to_report1 == NULL) && (ready_to_report2 != NULL) )
+	return true;
+
+    if ( (ready_to_report1 != NULL) && (ready_to_report2 == NULL) )
+	return false;
+
+    if ( (active_task1 != NULL) && (active_task2 == NULL) )
+	return true;
+
+    if ( (active_task1 == NULL) && (active_task2 != NULL) )
+	return false;
 
     if ( ( estimated_cpu_time_remaining1 != NULL) && (estimated_cpu_time_remaining2 != NULL) )
 	return (estimated_cpu_time_remaining1->getdvalue() < estimated_cpu_time_remaining2->getdvalue());
@@ -389,6 +405,8 @@ void TaskWin::updatedata() //обновить данные с сервера
 			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
 		    if (strstr(plan_class->getsvalue(),"cuda") != NULL )
 			attrgpu = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
+		    if (strstr(plan_class->getsvalue(),"intel") != NULL ) //NEED CHECK !!!
+			attrgpu = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
 		}
 		if (( sstate != "Run" )&&( sstate != "Done"))
 		    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
