@@ -6,7 +6,7 @@ Build-Depends: autoconf, debhelper (>= 8.0.0), autotools-dev,
  libncursesw5-dev, libncurses5-dev, libgnutls-dev, libexpat1-dev,
  hardening-wrapper, dpkg-dev, libc6-dev
 Standards-Version: 3.9.4
-Vcs-Svn: http://boinctui.googlecode.com/svn/trunk/
+Vcs-Svn: https://boinctui.googlecode.com/svn/trunk/
 Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/
 Homepage: http://boinctui.googlecode.com
 
