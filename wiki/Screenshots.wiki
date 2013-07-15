@@ -13,6 +13,19 @@ View full size image
 
 ----
 
+== Task Info Raw View Window ==
+
+<p align=center> 
+<a href="https://boinctui.googlecode.com/svn/wiki/boinctui-taskinfo.png">
+<img src="https://boinctui.googlecode.com/svn/wiki/boinctui-taskinfo.png" width=600/>
+<br/>
+View full size image
+</a>
+</p>
+
+----
+
+
 == Configuration Form ==
 
 <p align=center> 
