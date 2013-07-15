@@ -1,14 +1,24 @@
-boinctui (2.3.0dev-1) UNRELEASED; urgency=low
+boinctui (2.3.1-1) unstable; urgency=low
+
+  * implemented detail task raw info window
 
   * network requests moved to separete threads (ui not freeze then 
     network hang)
 
-  * add confirmation dialogs for some operations (abort task, detach 
+  * confirmation dialogs for some operations (abort task, detach 
     project etc.)
+
+  * "Projects" menu restructured
 
   * shortcut "A" added for abort selected task
 
- -- Sergey Suslov <suleman1971@gmail.com>  Sat, 22 Jun 2013 11:22:00 +0400
+  * status line context depended
+
+  * configuration form automaticaly show at first boinctui start
+
+  * at "sort by estimate time" mode completed tasks moved to the end of list
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 15 Jul 2013 10:53:00 +0400
 
 
 boinctui (2.2.1-1) unstable; urgency=low
