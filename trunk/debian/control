@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
 Build-Depends: autoconf, debhelper (>= 8.0.0), autotools-dev,
  libncursesw5-dev, libncurses5-dev, libgnutls-dev, libexpat1-dev,
- hardening-wrapper, dpkg-dev, libc6-dev
+ hardening-wrapper
 Standards-Version: 3.9.4
 Vcs-Svn: https://boinctui.googlecode.com/svn/trunk/
 Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/

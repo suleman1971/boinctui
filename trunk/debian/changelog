@@ -14,7 +14,7 @@ boinctui (2.3.1-1) unstable; urgency=low
 
   * status line context depended
 
-  * configuration form automaticaly show at first boinctui start
+  * configuration form automatically show at first boinctui start
 
   * at "sort by estimate time" mode completed tasks moved to the end of list
 
