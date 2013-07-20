@@ -1,5 +1,6 @@
 include	config
 
+DEFS	+= -DVERSION=$(VERSION) @DEFS@
 CPP	= @CXX@
 INSTALL_PROGRAM = install
 
@@ -17,6 +18,13 @@ CXXFLAGS = @CXXFLAGS@
 ODIR	= .obj
 SDIR	= src
 exec_prefix = @prefix@
+prefix = @prefix@
+DATAROOTDIR = @datarootdir@
+BINDIR = @bindir@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+DOCDIR = $(DATAROOTDIR)@docdir@
+
+
 BINDIR = @bindir@
 ifeq (@HAVE_OPENSSL@, 1)
     DEFS += -DHAVE_OPENSSL
@@ -26,26 +34,29 @@ endif
 
 all: createobj $(OBJS)
 	@echo "\nLinking...\n"
-	$(CPP) -o $(TARGET) $(OBJS) $(LDFLAGS)
+	$(CPP) -o $(PACKAGE_TARNAME) $(OBJS) $(LDFLAGS)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
+	@echo " "
 	$(CPP) -c $(CXXFLAGS) $(CPPFLAGS) $(DEFS) -o $(ODIR)/$*.o $<
 
 clean:
-	rm -f $(ODIR)/*.o $(TARGET) config.log
+	rm -f $(ODIR)/*.o $(PACKAGE_TARNAME) config.log
 
 install: all
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(BINDIR)
-	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) $(PACKAGE_TARNAME) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) -d $(DESTDIR)$(DOCDIR)
+	$(INSTALL_PROGRAM) changelog $(DESTDIR)$(DOCDIR)
 
 createobj:
 	@if ! [ -d "$(ODIR)" ] ; then echo "create $(ODIR)";  mkdir $(ODIR); fi
 
-srctgz: clean
-	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then echo "create symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(TARGET)-$(VERSION); fi
-	cd ..; tar --exclude-vcs -vzcf $(TARGET)_$(VERSION).orig.tar.gz \
-	$(TARGET)-$(VERSION)/src \
-	$(TARGET)-$(VERSION)/redhat \
-	$(TARGET)-$(VERSION)/Makefile.in \
-	$(TARGET)-$(VERSION)/configure.in \
-	$(TARGET)-$(VERSION)/config
+#srctgz: clean
+#	@if ! [ -d "../$(PACKAGE_TARNAME)-$(VERSION)" ] ; then echo "create symlink ../$(PACKAGE_TARNAME)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(PACKAGE_TARNAME)-$(VERSION); fi
+#	cd ..; tar --exclude-vcs -vzcf $(PACKAGE_TARNAME)_$(VERSION).orig.tar.gz \
+#	$(PACKAGE_TARNAME)-$(VERSION)/src \
+#	$(PACKAGE_TARNAME)-$(VERSION)/redhat \
+#	$(PACKAGE_TARNAME)-$(VERSION)/Makefile.in \
+#	$(PACKAGE_TARNAME)-$(VERSION)/configure.in \
+#	$(PACKAGE_TARNAME)-$(VERSION)/config

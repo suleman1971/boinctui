@@ -2,7 +2,7 @@ Source: boinctui
 Section: net
 Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
-Build-Depends: autoconf, debhelper (>= 8.0.0), autotools-dev,
+Build-Depends: autoconf, debhelper (>= 9), autotools-dev,
  libncursesw5-dev, libncurses5-dev, libgnutls-dev, libexpat1-dev,
  hardening-wrapper
 Standards-Version: 3.9.4
