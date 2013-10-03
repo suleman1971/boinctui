@@ -115,3 +115,76 @@ void NScrollView::setautoscroll(bool b) //true чтобы включить ав�
 	needrefresh = true;
 };
 
+
+void NScrollView::eventhandle(NEvent* ev) //обработчик событий
+{
+    NView::eventhandle(ev); //предок
+    if ( ev->done )
+	return;
+    //реакция на мышь
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    if ( ev->type == NEvent::evMOUSE )
+    {
+	//скроллинг по колесу
+	if (isinside(mevent->row, mevent->col))
+	{
+	    //колесо вверх
+	    #if NCURSES_MOUSE_VERSION > 1
+	    if (mevent->cmdcode & BUTTON4_PRESSED) //NOT TESTED
+	    #else
+	    if (mevent->cmdcode & BUTTON4_PRESSED)
+	    #endif
+	    {
+		scrollto(-getheight()/2); //вверх на полокна
+		setautoscroll(false);
+		ev->done = true;
+	    }
+	    //колесо вниз
+	    #if NCURSES_MOUSE_VERSION > 1
+	    if (mevent->cmdcode & BUTTON5_PRESSED) //NOT TESTED
+	    #else
+	    if ( mevent->cmdcode & (BUTTON2_PRESSED | REPORT_MOUSE_POSITION)) //REPORT_MOUSE_POSITION подпорка иначе теряет эвенты при быстрой прокрутке вниз
+	    #endif
+	    {
+		if (!getautoscroll())
+		{
+		    int oldpos = getstartindex();
+		    scrollto(getheight()/2); 	//вниз на пол окна
+		    if ( oldpos == getstartindex()) 	//позиция не изменилась (уже достигли конца)
+			setautoscroll(true);	//включаем автоскроллинг
+		    ev->done = true;
+		}
+	    }
+	}
+    }
+    //клавиатура
+/*
+    if ( ev->type == NEvent::evKB )
+    {
+	ev->done = true;
+        switch(ev->keycode)
+	{
+	    case KEY_PPAGE:
+		content->scrollto(-getheight()/2); //вверх на полокна
+		content->setautoscroll(false);
+		break;
+	    case KEY_NPAGE:
+		if (!content->getautoscroll())
+		{
+		    int oldpos = content->getstartindex();
+		    content->scrollto(getheight()/2); 	//вниз на пол окна
+		    if ( oldpos == content->getstartindex()) 	//позиция не изменилась (уже достигли конца)
+			content->setautoscroll(true);	//включаем автоскроллинг
+		}
+		break;
+	    default:
+		//блокировать все клавиатурные кроме кода закрытия формы
+		if (ev->keycode == 27)
+		    ev->done = false;
+	} //switch
+    }
+*/
+    if (ev->done) //если обработали, то нужно перерисоваться
+	refresh();
+}
+

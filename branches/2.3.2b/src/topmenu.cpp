@@ -149,8 +149,17 @@ bool TopMenu::action() //открыть субменю
 
 void TopMenu::eventhandle(NEvent* ev) 	//обработчик событий
 {
-    if ( !isenable() )
-	return; //не обрабатывать если меню не активно
+    if ( !isenable() /*&& ( ev->type != NEvent::evMOUSE)*/ )
+    {
+	if ( ev->type == NEvent::evMOUSE)
+	{
+	    NMouseEvent* mevent = (NMouseEvent*)ev;
+	    if ((mevent->cmdcode & BUTTON1_CLICKED) && (isinside(mevent->row, mevent->col)))
+		enable(); //влючить по клику
+	}
+	else
+	    return; //не обрабатывать клавиатурные если меню не активно
+    }
     if ( ev->done )
 	return; //не обрабатывать если уже обработано кем-то ранее
     //отправляем событие всем подменю
@@ -197,9 +206,17 @@ void TopMenu::eventhandle(NEvent* ev) 	//обработчик событий
 	    default:
 		ev->done = false; //нет реакции на этот код
 	} //switch
-	if (ev->done) //если обработали, то нужно перерисоваться
-	    refresh();
     }
+    //если клик мыши до сих пор не обработан
+    //значит он за пределами меню и меню нужно гасить
+    if ( ev->type == NEvent::evMOUSE)
+    {
+	NMouseEvent* mevent = (NMouseEvent*)ev;
+	if ((mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED)) && (!ev->done))
+	    disable(); //выключить по клику вне меню
+    }
+    if (ev->done) //если обработали, то нужно перерисоваться
+        refresh();
 }
 
 
