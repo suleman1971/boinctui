@@ -457,8 +457,10 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    NEvent* event = evqueue.front(); //получить первое событие из очереди
 	    evqueue.pop();
 	    this->eventhandle(event); //отправить событие обработчику
+	    #ifdef DEBUG
 	    if ((event->type != NEvent::evTIMER)&&(!event->done))
 		kLogPrintf("WARNING! lost event %s\n", event->tostring().c_str());
+	    #endif
 	    delete event; //удаляем отработанное событие
 	    //обновляем экран
 	    update_panels();

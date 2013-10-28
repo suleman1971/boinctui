@@ -131,6 +131,12 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 {
     if ( ev->done )
 	return;
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    if ( ev->type == NEvent::evMOUSE)
+    {
+	//if (isinside(mevent->row, mevent->col))
+	    NForm::eventhandle(ev); //предок
+    }
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;
