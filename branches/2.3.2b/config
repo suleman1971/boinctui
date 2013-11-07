@@ -2,3 +2,4 @@ TARGET  = boinctui
 VERSION = 2.3.2b
 #DEFS   += -DVERSION=$(VERSION)
 #DEFS   += -DDEBUG
+DEFS   += -DENABLEMOUSE
