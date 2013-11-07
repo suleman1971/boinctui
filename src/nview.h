@@ -44,6 +44,7 @@ class NView //базовый визуальный класс
     int getbegrow()	{ return rect.begrow; }; //начальная строка
     int getbegcol()	{ return rect.begcol; }; //начальный столбец
     void erase() 	{ werase(win); }; 	//очистить
+    bool isinside(int row, int col); //true если координаты внутри окна (row col абсолютные!)
     virtual void refresh(); 	//перерисовать
     virtual void setneedrefresh() { needrefresh = true; };
     virtual void eventhandle(NEvent* ev) {/*EMPTY*/}; 	//обработчик событий
@@ -60,9 +61,9 @@ class NView //базовый визуальный класс
     int		refreshcount; //счетчик обновлений
     #endif
     bool	modalflag; //true если этот эл-т модальный
-  private:
     int getabsbegrow(); //получить начальную строку (абсолютную на экране)
     int getabsbegcol(); //получить начальный столбец (абсолютный на экране)
+  private:
     NRect	rect;	//координаты и размер
 
 };

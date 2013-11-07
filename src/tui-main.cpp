@@ -32,7 +32,10 @@ void initcurses()
     noecho();
     curs_set(0);
     keypad(stdscr,true); //разрешаем стрелки и т.п.
-    timeout(250); //ожидание для getch() 250 милисекунд
+    #ifdef ENABLEMOUSE
+    mousemask(ALL_MOUSE_EVENTS, NULL); // Report all mouse events
+    #endif
+    timeout(100); //ожидание для getch() 100 милисекунд
     start_color();
     initcolorpairs();
 }

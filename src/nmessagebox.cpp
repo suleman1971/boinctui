@@ -52,6 +52,19 @@ void NMButton::eventhandle(NEvent* ev) 	//обработчик событий
     NStaticText::eventhandle(ev); //предок
     if ( ev->done )
 	return;
+    //одиночный или двойной клик
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    if (( ev->type == NEvent::evMOUSE ) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED)))
+    {
+	if (isinside(mevent->row, mevent->col))
+	{
+		ev->done = true;
+		NEvent* tmp = pevent;
+		pevent = NULL;
+		putevent(tmp); //активируем событие связанное с этой кнопкой
+	}
+    }
+    //клавиатура
     if ( ev->type == NEvent::evKB )
     {
 	if ( keys.end() != std::find(keys.begin(), keys.end(), ev->cmdcode) )
@@ -140,7 +153,15 @@ void NMessageBox::eventhandle(NEvent* ev) 	//обработчик событий
 
     if ( ev->done )
 	return;
-
+    //одиночный или двойной клик
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    if (( ev->type == NEvent::evMOUSE )/* && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED))*/)
+    {
+	//блокируем все мышиные мнутри окна
+//	if (isinside(mevent->row, mevent->col))
+	    ev->done = true;
+    }
+    //клавиатура
     if (ev->type == NEvent::evKB )
     {
 	//блокировать все клавиатурные кроме кода закрытия формы

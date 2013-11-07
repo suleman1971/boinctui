@@ -81,7 +81,7 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
 	if ( !ishoris ) //для вертикальных есть рамка
 	{
 	    int lines = itemnames.size(); //видимых эл-тов
-	    if (lines + getbegrow() > getmaxy(stdscr) - 8)
+	    if ((lines>2)&&(lines + getbegrow() > getmaxy(stdscr) - 8))
 		lines = getmaxy(stdscr)-getbegrow() - 8;
 	    set_menu_format(menu, lines, 1);
 	    resize(lines+2,menu->width+3); //изменяем размер под кол-во эл-тов
@@ -150,11 +150,74 @@ void NMenu::eventhandle(NEvent* ev) 	//обработчик событий
     if ( ev->done )
 	return; //выходим если какое-то подменю обработало событие
     //пытаемся обработать самостоятельно
+    int y,x;
+    menu_format(menu, &y, &x);
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    //колесо прокрутки мыши
+    if ( ev->type == NEvent::evMOUSE )
+    {
+	if (isinside(mevent->row, mevent->col))
+	{
+	    //колесо вверх
+	    #if NCURSES_MOUSE_VERSION > 1
+	    if (mevent->cmdcode & BUTTON4_PRESSED) //NOT TESTED
+	    #else
+	    if (mevent->cmdcode & BUTTON4_PRESSED)
+	    #endif
+	    {
+		if ( y > 1 )
+		{
+		    if (item_index(current_item(menu)) > 0) //элемент не первый
+		    {
+			ITEM* preditem = mitems[item_index(current_item(menu)) - 1]; //предыдущий
+			menu_driver(menu, REQ_SCR_UPAGE);
+		    }
+		    ev->done = true;
+		}
+	    }
+	    //колесо вниз
+	    #if NCURSES_MOUSE_VERSION > 1
+	    if (mevent->cmdcode & BUTTON5_PRESSED) //NOT TESTED
+	    #else
+	    if ( mevent->cmdcode & (BUTTON2_PRESSED | REPORT_MOUSE_POSITION)) //REPORT_MOUSE_POSITION подпорка иначе теряет эвенты при быстрой прокрутке вниз
+	    #endif
+	    {
+		if ( y > 1 ) //вертикальное
+		{
+		    ITEM* nextitem = mitems[item_index(current_item(menu)) + 1]; //какой следующий
+		    if (nextitem != NULL) //элемент не последний
+			menu_driver(menu, REQ_SCR_DPAGE);
+		    ev->done = true;
+		}
+	    }
+	}
+    }
+    //одиночный или двойной клик
+    if (( ev->type == NEvent::evMOUSE ) && (((mevent->cmdcode & BUTTON1_CLICKED))||((mevent->cmdcode & BUTTON1_DOUBLE_CLICKED))))
+    {
+	if (isinside(mevent->row, mevent->col))
+	{
+	    int n;
+	    if (y > 1) //вертикальное
+		n = mevent->row - getabsbegrow() - 1 + menu->toprow;
+	    else //горизонтальное
+		n = mevent->col/(menu->itemlen+menu->spc_cols) - getabsbegcol();
+	    if ((n >= 0)&&(n < item_count(menu)))
+	    {
+		if ( (item_opts(mitems[n]) & O_SELECTABLE) != 0 )
+		{
+		    set_current_item(menu, mitems[n]); //сделеть n-ный активным
+		    destroysubmenu(); //закрыть субменю
+		    if ((y == 1)||(mevent->cmdcode & BUTTON1_DOUBLE_CLICKED))
+			action(); //putevent(new NEvent(NEvent::evKB, KEY_ENTER)); //открыть соотв субменю
+		}
+		ev->done = true;
+	    }
+	}
+    }
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;
-	int y,x;
-	menu_format(menu, &y, &x);
         switch(ev->keycode)
 	{
 	    case KEY_ENTER:
@@ -208,9 +271,9 @@ void NMenu::eventhandle(NEvent* ev) 	//обработчик событий
 		//обработки (снимаем флаг done)
 		ev->done = false;
 	} //switch
-	if (ev->done) //если обработали, то нужно перерисоваться
-	    refresh();
     }
+    if (ev->done) //если обработали, то нужно перерисоваться
+	refresh();
 }
 
 
