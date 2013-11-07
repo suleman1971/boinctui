@@ -31,6 +31,7 @@ class NScrollView : public NView //область со скроллингом
     virtual ~NScrollView();
     void addstring(int attr, const char* fmt, ...);
     void addstring(NColorString* s) { content.push_back(s); needrefresh = true; }; //добавляет строку
+    void eventhandle(NEvent* ev); //обработчик событий
     void clearcontent(); //очищает строковый буфер
     virtual void drawcontent(); //отрисовывает буфер строк
     void scrollto(int delta); //сдвинуть отображение на drlta строк вверх или вниз

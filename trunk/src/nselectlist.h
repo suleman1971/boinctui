@@ -32,6 +32,7 @@ class NSelectList : public NScrollView //список со скроллинго�
     virtual void refresh();
     virtual void selectorup();
     virtual void selectordown();
+    virtual void setselectorpos(int n) { selectedindex = n; needrefresh = true; }; //передвинуть селектор на строку n
     void* getselectedobj(); //вернет указатель или NULL
     void setselectorbgcolor(short color) { selectorbgcolor = color; };
     //virtual bool objcmpeqv(void* obj1, void* obj2) { return obj1==obj2; };

@@ -209,7 +209,10 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		break;
 	    case KEY_F(9):
 		if (!menu->isenable())
+		{
 		    menu->enable();
+		    menu->action();
+		}
 		else
 		    menu->disable();
 		break;
@@ -429,12 +432,24 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    putevent(event); //отправить в очередь
 	    time(&evtimertime);
 	}
-	//есть символ в буфере
+	//есть символ в буфере -> нужно создать событие
 	int ic;
 	if ( (ic = getch()) != ERR ) //символ(ы) есть?
 	{
-	    NEvent* event = new NEvent(NEvent::evKB, ic); //создаем событие
-	    putevent(event); //отправить в очередь
+	    NEvent* event = NULL;
+	    if (KEY_MOUSE == ic)
+	    {
+		// mouse event
+		MEVENT mevent;
+		if (OK == getmouse(&mevent))
+		    event = new NMouseEvent(mevent.bstate, mevent.y, mevent.x); //создаем мышиное событие
+		else
+		    kLogPrintf("getmouse() err\n");
+	    }
+	    else // keyboard event
+		event = new NEvent(NEvent::evKB, ic); //создаем клавиатурное событие
+	    if (event != NULL)
+		putevent(event); //отправить в очередь
 	}
 	//есть события в очереди - выполняем
 	while(!evqueue.empty())
@@ -442,6 +457,10 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    NEvent* event = evqueue.front(); //получить первое событие из очереди
 	    evqueue.pop();
 	    this->eventhandle(event); //отправить событие обработчику
+	    #ifdef DEBUG
+	    if ((event->type != NEvent::evTIMER)&&(!event->done))
+		kLogPrintf("WARNING! lost event %s\n", event->tostring().c_str());
+	    #endif
 	    delete event; //удаляем отработанное событие
 	    //обновляем экран
 	    update_panels();

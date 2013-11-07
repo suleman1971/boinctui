@@ -17,6 +17,7 @@
 
 #include "nform.h"
 #include "mbstring.h"
+#include "kclog.h"
 
 
 NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
@@ -98,11 +99,50 @@ pos_form_cursor(frm); //восстановить позицию курсора (
 }
 
 
-void NForm::eventhandle(NEvent* ev) 	//обработчик событий
+bool NForm::clickatfield(int mrow, int mcol, FIELD* f) //true если клик внутри этого поля
+{
+    bool result = true;
+    int absbegrow = getabsbegrow();
+    int absbegcol = getabsbegcol();
+    kLogPrintf("frow=%d fcol=%d rows=%d cols=%d\n",f->frow,f->fcol,f->rows,f->cols);
+    if ((mrow < absbegrow + f->frow)||(mcol < absbegcol + f->fcol))
+	result = false;
+    if ((mrow > absbegrow + f->frow + f->rows - 1)||(mcol > absbegcol + f->fcol + f->cols - 1))
+	result = false;
+    return result;
+}
+
+
+void NForm::eventhandle(NEvent* ev)	//обработчик событий
 {
     NGroup::eventhandle(ev); //предок
     if ( ev->done )
 	return;
+
+    NMouseEvent* mevent = (NMouseEvent*)ev;
+    //одиночный или двойной клик
+    if ( ev->type == NEvent::evMOUSE )
+	ev->done = true;
+    if (( ev->type == NEvent::evMOUSE ) && (((mevent->cmdcode & BUTTON1_CLICKED))||((mevent->cmdcode & BUTTON1_DOUBLE_CLICKED))))
+    {
+	if (isinside(mevent->row, mevent->col))
+	{
+	    if (fields != NULL)
+	    {
+		int n = field_count(frm);
+		for (int i = 0; i < n; i++)
+		{
+		    if (clickatfield(mevent->row, mevent->col, fields[i]))
+		    {
+			set_current_field(frm, fields[i]);
+			form_driver(frm, REQ_END_LINE);
+			break;
+		    }
+		}
+	    }
+	}
+    }
+    //клавиатура
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;
