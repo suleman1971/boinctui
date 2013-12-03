@@ -115,19 +115,6 @@ int NView::getabsbegcol() //получить начальный столбец (
 }
 
 
-bool NView::isinside(int row, int col) //true если координаты внутри окна (row col абсолютные!)
-{
-    bool result = true;
-    int absbegrow = getabsbegrow();
-    int absbegcol = getabsbegcol();
-    if ((row < absbegrow)||(col < absbegcol))
-	result = false;
-    if ((row > absbegrow + rect.rows - 1)||(col > absbegcol+ rect.cols - 1))
-	result = false;
-    return result;
-}
-
-
 void NView::move(int begrow, int begcol)
 {
     rect.begrow = begrow;

@@ -37,7 +37,6 @@ class NForm : public NGroup
     int 	getfieldcount() { return fieldcount; };
     virtual void delfields(); //удаляет все поля
   protected:
-    bool clickatfield(int mrow, int mcol, FIELD* f); //true если клик внутри этого поля
     char* title;	//заголовок
     FIELD**	fields;
     int		fieldcount; //число полей включая NULL

@@ -170,21 +170,6 @@ void TaskInfoWin::eventhandle(NEvent* ev) 	//обработчик событий
     NGroup::eventhandle(ev); //предок
     if ( ev->done )
 	return;
-    //реакция на мышь
-    NMouseEvent* mevent = (NMouseEvent*)ev;
-    if ( ev->type == NEvent::evMOUSE )
-    {
-	//блокируем все что внутри
-	if (isinside(mevent->row, mevent->col))
-	    ev->done = true;
-	//закрываем при любом клике независимо от координат
-	if (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED))
-	{
-	    putevent(new NEvent(NEvent::evKB, 27));
-	    ev->done = true;
-	}
-    }
-    //клавиатура
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;

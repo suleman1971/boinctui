@@ -27,12 +27,12 @@ class TopMenu : public NMenu //верхний уровень меню
   public:
     TopMenu(Config* cfg);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
-    void enable()   { if (!enableflag) {enableflag = true;  set_menu_fore(menu, selectorattr); /*action();*/ } };
+    void enable()   { if (!enableflag) {enableflag = true;  set_menu_fore(menu, selectorattr); action(); } };
     void disable()  { if (enableflag) {enableflag = false; selectorattr = menu_fore(menu); set_menu_fore(menu, menu_back(menu)); destroysubmenu(); }; /*цвет указателя = цвет фона*/ };
     bool isenable() { return enableflag; };
     void setserver(Srv* srv) { this->srv = srv; }; //установить отображаемый сервер
-    virtual bool action(); //открыть субменю
   protected:
+    virtual bool action(); //открыть субменю
     int		selectorattr; //цвет указателя
     bool	enableflag; //true если меню активно
     Srv*	srv; //текущий отображаемый сервер

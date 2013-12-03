@@ -491,20 +491,6 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     if ( ev->done )
 	return;
     bool selectorvisiblebak = (selectedindex >= 0)&&(selectedindex < content.size()); //состояние селектора до
-    //одиночный или двойной клик
-    NMouseEvent* mevent = (NMouseEvent*)ev;
-    if (( ev->type == NEvent::evMOUSE ) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED)))
-    {
-	if (isinside(mevent->row, mevent->col))
-	{
-		//передвигаем слектор
-		setselectorpos(mevent->row - getabsbegrow() + startindex);
-		if (mevent->cmdcode & BUTTON1_DOUBLE_CLICKED) //даблклик
-		    putevent(new TuiEvent(evTASKINFO)); //событие для открытия raw task info
-		ev->done = true;
-	}
-    }
-    //клавиатура
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;
@@ -524,6 +510,8 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    default:
 		ev->done = false; //нет реакции на этот код
 	} //switch
+	if (ev->done) //если обработали, то нужно перерисоваться
+	    refresh();
     }
     if (ev->type == NEvent::evPROG) //прграммные
     {
@@ -559,10 +547,6 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	putevent(new TuiEvent(evTASKSELECTORON)); //селектор включился
     if (((selectedindex == -1)||(selectedindex == content.size()))&&(selectorvisiblebak))
 	putevent(new TuiEvent(evTASKSELECTOROFF)); //селектор выключился
-
-    if (ev->done) //если обработали, то нужно перерисоваться
-	refresh();
-
     //событие таймера
     if (ev->type == NEvent::evTIMER) //таймер
     {

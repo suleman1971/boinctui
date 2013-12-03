@@ -53,11 +53,6 @@ void HelpWin::eventhandle(NEvent* ev) 	//обработчик событий
     NGroup::eventhandle(ev); //предок
     if ( ev->done )
 	return;
-    //закрываем при любом клике независимо от координат
-    NMouseEvent* mevent = (NMouseEvent*)ev;
-    if (( ev->type == NEvent::evMOUSE ) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED)))
-	putevent(new TuiEvent(evKEYBIND));
-
     if ( ev->type == NEvent::evKB )
     {
 	ev->done = true;

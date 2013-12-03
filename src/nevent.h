@@ -18,16 +18,11 @@
 #ifndef NEVENT_H
 #define NEVENT_H
 
-#ifdef DEBUG
-    #include <string>
-    #include <sstream>
-#endif
-
 
 class NEvent //класс описывающий событие создаваемое например при нажатии клавиш
 {
   public:
-    enum	Type		{ evKB, evMOUSE, evPROG, evTIMER }; //evPROG событие генерируемое самой прораммой
+    enum 	Type 		{ evKB, evMOUSE, evPROG, evTIMER }; //evPROG событие генерируемое самой прораммой
     NEvent(NEvent::Type type, int keycode)	{ this->type = type; this->done = false; this->keycode = keycode;};
     NEvent::Type	type;
     bool		done;		//true если обработано
@@ -36,53 +31,7 @@ class NEvent //класс описывающий событие создавае
 	int		keycode;	//код клавиатуры
 	int		cmdcode;	//произвольный код команды
     };
-    #ifdef DEBUG
-    virtual std::string tostring()
-    {
-	std::stringstream s;
-	s << this << " " << type << "(";
-	switch (type)
-	{
-	    case evKB:
-		s << "evKB";
-		break;
-	    case evMOUSE:
-		s << "evMOUSE";
-		break;
-	    case evPROG:
-		s << "evPROG";
-		break;
-	    case evTIMER:
-		s << "evTIMER";
-		break;
-	};
-	s << ")";
-	return s.str();
-    };
-    #endif
 };
 
-
-class NMouseEvent : public NEvent
-{
-  public:
-    NMouseEvent(int bstate, int row, int col) : NEvent(evMOUSE, bstate) //bstate (see mmask_t ncurses.h)
-    {
-	this->col = col;
-	this->row = row;
-    };
-    int row;
-    int col;
-    #ifdef DEBUG
-    virtual std::string tostring()
-    {
-	std::stringstream s;
-	s << NEvent::tostring() << "{row=" << row << ",col=" << col << ",bstate=" << std::hex << cmdcode;
-	s << "}";
-	return s.str();
-    };
-    #endif
-
-};
 
 #endif //NEVENT_H

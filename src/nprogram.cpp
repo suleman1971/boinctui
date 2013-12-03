@@ -37,7 +37,5 @@ void NProgram::sig_winch(int signo) //вызывается при изменен
 void NProgram::putevent(NEvent* ev) //отправить событие по цепочке владельцев в очередь
 {
     evqueue.push(ev); //поместить в очередь
-    #ifdef DEBUG
-    kLogPrintf("NProgram::putevent(%s)\n",ev->tostring().c_str());
-    #endif
+    kLogPrintf("NProgram::putevent(NEvent* ev)\n");
 }
