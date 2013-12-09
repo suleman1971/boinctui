@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
 Build-Depends: autoconf, debhelper (>= 9), autotools-dev,
- libncursesw5-dev, libncurses5-dev, libgnutls-openssl-dev | libgnutls-dev, libexpat1-dev
+ libncursesw5-dev, libncurses5-dev, libgnutls-openssl-dev, libexpat1-dev
 Standards-Version: 3.9.4
 Vcs-Svn: https://boinctui.googlecode.com/svn/trunk/
 Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/
