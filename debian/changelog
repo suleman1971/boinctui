@@ -1,3 +1,13 @@
+boinctui (2.3.1-2) unstable; urgency=low
+
+  * hardening-wrapper removed from build dependence
+  * Build-Depend on libgnutls-openssl-dev instead of libgnutls-dev to allow
+    transitioning to newer GnuTLS. (Closes: #731171)
+  * minor bugfix: double linking during build package
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 09 Dec 2013 14:22:00 +0400
+
+
 boinctui (2.3.1-1) unstable; urgency=low
 
   * implemented detail task raw info window
