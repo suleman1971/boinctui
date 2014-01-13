@@ -49,10 +49,10 @@ class MainProg : public NProgram
     TopMenu*		menu;
     MainWin*		wmain;
     NStaticText*	wstatus;
-    Config* cfg;
+    //Config* cfg;
     SrvList* gsrvlist; //глобальный список серверов
     bool	done; //флаг требования завершения
-    void setcaption();
+//    void setcaption();
     time_t evtimertime; //time of last evTIMER
     unsigned int uistate; //маска состояния интерфейса
     void updatestatuslinecontent();

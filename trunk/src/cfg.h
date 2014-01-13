@@ -19,6 +19,8 @@
 #define CFG_H
 
 #include "resultdom.h"
+#include "nview.h"
+
 
 class Config
 {
@@ -29,6 +31,10 @@ class Config
     void  save();
     void  generatedefault();
     Item* getcfgptr() { if ( root!= NULL) return root->findItem("boinctui_cfg"); else return NULL; };
+    int   getivalue(Item* node, const char* name); //ищет name начиная с node
+    int   getivalue(const char* name) { return getivalue(getcfgptr(), name); }; //ищет name начиная с корня
+    void  setivalue(Item* node, const char* name, int value); //создаст в node подэл-т name со значением value
+    void  setivalue(const char* name, int value) { setivalue(getcfgptr(), name, value); }; //создаст в корне подэл-т name со значением value
     void  addhost(const char* host, const char* port, const char* pwd);
     bool  isdefault; //true если конфиг не найден и создан дефолтный
   protected:
@@ -36,5 +42,7 @@ class Config
     Item* root;  	//корень дерева конфига
 };
 
+
+extern Config* gCfg;
 
 #endif //CFG_H

@@ -120,9 +120,9 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ) //для сортир�
 //=============================================================================================
 
 
-SrvList::SrvList(Config* cfg)
+SrvList::SrvList(/*Config* cfg*/)
 {
-    this->cfg = cfg;
+//    this->cfg = cfg;
     refreshcfg();
 }
 
@@ -137,7 +137,7 @@ void SrvList::refreshcfg() //перечитать из конфига
 {
     clear(); //удаляем старые сервера (если есть)
 
-    Item* boinctui_cfg = cfg->getcfgptr();
+    Item* boinctui_cfg = gCfg->getcfgptr();
     if (boinctui_cfg == NULL)
 	return;
     std::vector<Item*> slist = boinctui_cfg->getItems("server");
@@ -262,16 +262,17 @@ void Srv::createconnect()
     lock();
     TConnect::createconnect();
     unlock();
+    loginfail = false;
     if (hsock != -1)
-	login();
+	loginfail = login();
 }
 
 
 bool Srv::login() //авторизоваться на сервере
 {
     bool result = false;
-    if (strlen(pwd) == 0)
-	return true; //пароль не задан (считаем что логин серверу не требуется)
+//    if (strlen(pwd) == 0)
+//	return true; //пароль не задан (считаем что логин серверу не требуется)
     //получить случайную строку (nonce)
     Item* r1 = req("<auth1/>");
     if (r1 == NULL)
@@ -298,7 +299,7 @@ bool Srv::login() //авторизоваться на сервере
     //вторая фаза авторизации
     Item* r2 = req("<auth2>\n<nonce_hash>%s</nonce_hash>\n</auth2>",shash);
     kLogPrintf("login() Boinc answer ---\n%s\n", r2->toxmlstring().c_str());
-    if ( r2->findItem("authorize") != NULL ) //авторизация успешна
+    if ( r2->findItem("unauthorized") != NULL ) //авторизация неуспешна
 	result = true;
     delete r2;
     return result;

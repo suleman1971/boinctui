@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include "ncolorstring.h"
-#include "kclog.h"
 
 
 NColorStringPart::NColorStringPart(int attr, const char* fmt, va_list vl)
@@ -81,3 +80,37 @@ int NColorString::getlen()  //вернет длинну в ЭКРАННЫХ СИ
     }
     return result;
 }
+
+
+NColorString& NColorString::operator=(const NColorString& v)
+{
+    clear();
+    std::list<NColorStringPart*>::const_iterator it;
+    for ( it = v.parts.begin(); it != v.parts.end(); it++ )
+    {
+	append((*it)->attr, (*it)->s.c_str());
+    }
+    return *this;
+}
+
+
+bool NColorString::operator==(const NColorString& v)
+{
+    bool result = true;
+    if (v.parts.size() != parts.size())
+	return false; //различается кол-во эл-тов
+    //сравниваем поэлементно
+    std::list<NColorStringPart*>::const_iterator it1;
+    std::list<NColorStringPart*>::const_iterator it2;
+    it2 = v.parts.begin();
+    for ( it1 = parts.begin(); it1 != parts.end(); it1++ )
+    {
+	if (*(*it1) == *(*it2))
+	    it2++;
+	else
+	    return false; //часть отличается
+    }
+    return result;
+}
+
+

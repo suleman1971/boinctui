@@ -31,7 +31,7 @@
 class MainWin : public NGroup
 {
   public:
-    MainWin(NRect rect, Config* cfg);
+    MainWin(NRect rect/*, Config* cfg*/);
     virtual void refresh();
     virtual void resize(int rows, int cols);
     void 	setserver(Srv* srv); //установить отображаемый сервер
@@ -42,7 +42,9 @@ class MainWin : public NGroup
     NStaticText* tablheader; 	//заголовок таблицы процессов
     InfoPanel*	panel1; 	//инф-ная панель
     NColorString* caption; 	//строка заголовка
+    void updatecaption();
   protected:
+    Srv*	srv;
     NHLine*	hline; 		//гориз линия завершающая таблицу процессов
     NVLine*	vline; 		//верт линия отделяющая инф панель
     std::vector<std::string>	colname; 	//список названий колонок

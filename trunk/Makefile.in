@@ -43,7 +43,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp
 clean:
 	rm -f $(ODIR)/*.o $(PACKAGE_TARNAME) config.log
 
-install: all
+install:
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(BINDIR)
 	$(INSTALL_PROGRAM) $(PACKAGE_TARNAME) $(DESTDIR)$(BINDIR)
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(DOCDIR)

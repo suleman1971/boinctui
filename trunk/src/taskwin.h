@@ -34,7 +34,7 @@ struct TaskInfo
 class TaskWin : public NSelectList
 {
   public:
-    TaskWin(NRect rect, Config* cfg);
+    TaskWin(NRect rect/*, Config* cfg*/);
     virtual ~TaskWin();
     void	updatedata(); 	//обновить данные с серверa
     void	clearcontent();
@@ -50,7 +50,7 @@ class TaskWin : public NSelectList
     unsigned int columnmask; //маска видмсости колонок
     int		taskslistmode; //0 все задачи 1 кроме завершенных 2 только активные
     int		taskssortmode; //0 нет сортировки 1 state 2 done 3 project 4 est 5 d/l 6 app 7 task
-    Config*	cfg;
+//    Config*	cfg;
 };
 
 

@@ -89,7 +89,10 @@ TaskInfoWin::TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, 
 	resize(getheight(), getmaxx(stdscr) - 10);
 	content->resize(content->getheight(), getwidth() - 4);
     }
-    box(win,0,0);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2), this->caption.c_str());
     refresh();
 }
