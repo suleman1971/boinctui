@@ -20,6 +20,9 @@
 #include "kclog.h"
 
 
+int asciilinedraw = 0; //1-рисовать рамки символами +----+
+
+
 void initcolorpairs()
 {
     //kLogPrintf("COLORS=%d    COLOR_PAIRS=%d\n",COLORS,COLOR_PAIRS);

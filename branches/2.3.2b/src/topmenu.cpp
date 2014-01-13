@@ -53,6 +53,7 @@
 #define M_SORT_BY_DL			"Sort by deadline"
 #define M_SORT_BY_APP			"Sort by application"
 #define M_SORT_BY_TASK			"Sort by task name"
+#define M_ASCII_LINE_DRAW		"ASCII line draw"
 //Названия пунктов меню "Projects"
 #define M_ADD_PROJECT			"Add project"
 #define M_CONNECT_MANAGER		"Connect to account manager"
@@ -89,10 +90,10 @@
 #define M_KEY_BINDINGS			"Hot keys list"
 
 
-TopMenu::TopMenu(Config* cfg) : NMenu(NRect(1,getmaxx(stdscr),0,0),true)
+TopMenu::TopMenu(/*Config* cfg*/) : NMenu(NRect(1,getmaxx(stdscr),0,0),true)
 {
     setserver(NULL);
-    this->cfg = cfg;
+    //this->cfg = cfg;
     additem(M_FILE,"");
     additem(M_VIEW,"");
     additem(M_PROJECTS,"");
@@ -120,7 +121,7 @@ bool TopMenu::action() //открыть субменю
     }
     if ( strcmp(item_name(current_item(menu)),M_VIEW) == 0 )
     {
-	insert(new ViewSubMenu(NRect(5,25,1, begincol), cfg));
+	insert(new ViewSubMenu(NRect(5,25,1, begincol)/*, cfg*/));
 	result = true;
     }
     if ( strcmp(menu->curitem->name.str,M_PROJECTS) == 0 )
@@ -251,22 +252,22 @@ bool FileSubMenu::action()
 //=============================================================================================
 
 
-ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
+ViewSubMenu::ViewSubMenu(NRect rect/*, Config* cfg*/) : NMenu(rect)
 {
     int colnum = 0;
-    additem(M_VIEW_NUMBER, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_STATE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_DONE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_PROJECT, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_ESTIMATE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_DEADLINE, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_APPNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
-    additem(M_VIEW_TASKNAME, iscolenable(cfg,colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_NUMBER, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_STATE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_DONE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_PROJECT, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_ESTIMATE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_DEADLINE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_APPNAME, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_TASKNAME, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem("","");
     int taskslistmode = 0;
-    if (cfg != NULL)
+    if (gCfg != NULL)
     {
-	Item* rootcfg = cfg->getcfgptr();
+	Item* rootcfg = gCfg->getcfgptr();
 	if (rootcfg != NULL)
 	{
 	    Item* tasks_list_mode = rootcfg->findItem("tasks_list_mode");
@@ -278,9 +279,9 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
     additem(M_ACTIVE_ONLY, (taskslistmode == 2) ? "(*)" : "( )");
     additem("","");
     int taskssortmode = 0;
-    if (cfg != NULL)
+    if (gCfg != NULL)
     {
-	Item* rootcfg = cfg->getcfgptr();
+	Item* rootcfg = gCfg->getcfgptr();
 	if (rootcfg != NULL)
 	{
 	    Item* tasks_sort_mode = rootcfg->findItem("tasks_sort_mode");
@@ -295,17 +296,19 @@ ViewSubMenu::ViewSubMenu(NRect rect, Config* cfg) : NMenu(rect)
     additem(M_SORT_BY_DL,       (taskssortmode == 5) ? "(*)" : "( )");
     //additem(M_SORT_BY_APP,      (taskssortmode == 6) ? "(*)" : "( )");  //not implemented yet
     additem(M_SORT_BY_TASK,     (taskssortmode == 7) ? "(*)" : "( )");
+    additem("","");
+    additem(M_ASCII_LINE_DRAW,  (asciilinedraw == 1) ? "[*]" : "[ ]");
     additem(NULL,NULL);
 }
 
 
-bool ViewSubMenu::iscolenable(Config* cfg, int n)
+bool ViewSubMenu::iscolenable(/*Config* cfg,*/ int n)
 {
     bool result = false;
     //читаем из конфига
-    if (cfg != NULL)
+    if (gCfg != NULL)
     {
-	Item* rootcfg = cfg->getcfgptr();
+	Item* rootcfg = gCfg->getcfgptr();
 	if (rootcfg != NULL)
 	{
 	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
@@ -384,6 +387,13 @@ bool ViewSubMenu::action()
     if ( strcmp(item_name(current_item(menu)), M_SORT_BY_TASK) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 7));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_ASCII_LINE_DRAW) == 0 )
+    {
+	asciilinedraw = !asciilinedraw;
+	putevent(new TuiEvent(evASCIIMODECHANGE));
 	return true;
     }
 

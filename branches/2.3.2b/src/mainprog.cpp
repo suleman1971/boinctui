@@ -31,17 +31,17 @@ MainProg::MainProg()
 {
     uistate = 0;
     done = false;
-    cfg = new Config(".boinctui.cfg");
-    gsrvlist = new SrvList(cfg);
+    gCfg = new Config(".boinctui.cfg");
+    gsrvlist = new SrvList(/*cfg*/);
     evtimertime = 0; //запускаем таймер с нуля
     //основное окно
-    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0), cfg); //создаем основное окно
+    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)/*, cfg*/); //создаем основное окно
     insert(wmain);
     wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-    menu = new TopMenu(cfg);
+    menu = new TopMenu(/*cfg*/);
     menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
     insert(menu);
-    setcaption();
+    wmain->updatecaption();
     //статус строка
     wstatus 	= new NStaticText(NRect(1, getmaxx(stdscr), getmaxy(stdscr)-1, 0)); //создаем окно статуса
     insert(wstatus);
@@ -53,18 +53,24 @@ MainProg::MainProg()
 MainProg::~MainProg()
 {
 //    delete gsrvlist;
-	cfg->save();
+	gCfg->save();
 //    delete cfg;
 }
 
-
+/*
 void MainProg::setcaption()
 {
     wmain->caption->clear();
     wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
+kLogPrintf("ISCONNECTED=%s", gsrvlist->getcursrv()->isconnected() ? "true":"false");
+    if (gsrvlist->getcursrv()->isconnected())
+	if (!gsrvlist->getcursrv()->loginsuccess)
+	    wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"[unauthorized] ");
+    else
+	wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD,"[offline] ");
     wmain->refresh();
 }
-
+*/
 
 void MainProg::smartresize()
 {
@@ -151,14 +157,14 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		wmain->setserver(gsrvlist->getcursrv());
 		menu->setserver(gsrvlist->getcursrv());
 		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
-		setcaption();
+		wmain->updatecaption();
 		break;
 	    case 'c':
 	    case 'C':
 		if (getitembyid(typeid(CfgForm).name()) == NULL)
 		{
 		    menu->disable();
-		    CfgForm* cfgform = new CfgForm(15,54,cfg);
+		    CfgForm* cfgform = new CfgForm(15,54/*,cfg*/);
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();
@@ -233,7 +239,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		gsrvlist->refreshcfg();
 		wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
 		menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-		setcaption();
+		wmain->updatecaption();
 		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		break;
 	    }
@@ -398,6 +404,12 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    updatestatuslinecontent();
 		}
 	    }
+	    case evASCIIMODECHANGE:
+	    {
+		gCfg->setivalue("line_draw_mode",asciilinedraw);
+		refresh();
+		break;
+	    }
 	} //switch
     }
 }
@@ -408,7 +420,7 @@ bool MainProg::mainloop() //основной цикл порождающий с�
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 
-    if (cfg->isdefault) //если конфига нет то открыть форму
+    if (gCfg->isdefault) //если конфига нет то открыть форму
 	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
     do
     {

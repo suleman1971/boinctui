@@ -24,6 +24,9 @@
 #include "kclog.h"
 
 
+Config* gCfg;
+
+
 Config::Config(const char* filename)
 {
     root = NULL;
@@ -41,6 +44,7 @@ Config::Config(const char* filename)
     }
     //загружаем если файл уже есть или генерируем дефолтный
     load();
+    asciilinedraw = getivalue("line_draw_mode");
 }
 
 
@@ -148,3 +152,34 @@ void Config::generatedefault()
     addhost("127.0.0.1","31416","");
 }
 
+
+int Config::getivalue(Item* node, const char* name) //ищет name начиная с node
+{
+    int result = 0;
+    if (node != NULL)
+    {
+	Item* item = node->findItem(name);
+	if (item != NULL)
+	    result = item->getivalue();
+    }
+    return result;
+}
+
+
+void Config::setivalue(Item* node, const char* name, int value) //создаст в node подэл-т name со значением value
+{
+    Item* basenode = node;
+    if (basenode == NULL)
+	basenode = root; //если узел не указан используем корневой
+    if (basenode == NULL)
+	return; //ничего не делаем
+    Item* item = basenode->findItem(name);
+    //эл-та нет - нужно создать
+    if (item == NULL)
+    {
+	item = new Item(name);
+	basenode->addsubitem(item);
+    }
+    //устнавливаем значение
+    item->setivalue(value);
+}
