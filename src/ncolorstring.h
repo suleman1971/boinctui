@@ -22,6 +22,7 @@
 #include <string>
 #include <list>
 #include "mbstring.h"
+#include "kclog.h"
 
 
 class NColorStringPart
@@ -30,6 +31,8 @@ class NColorStringPart
     NColorStringPart(int attr, const char* s) { this->s = s; this->attr = attr;};
     NColorStringPart(int attr, const char* fmt, va_list vl);
     int getlen() { return mbstrlen(s.c_str()); }; //вернет длинну в ЭКРАННЫХ СИМВОЛАХ
+    bool operator==(const NColorStringPart& v) { return (s == v.s)&&(attr == v.attr); };
+    NColorStringPart& operator=(const NColorStringPart& v) { s=v.s; attr=v.attr; return *this;};
     std::string s;
     int	attr;
 };
@@ -38,15 +41,20 @@ class NColorStringPart
 class NColorString
 {
   public:
+    NColorString() { };
     NColorString(int attr, const char* fmt, ...);
     NColorString(int attr, const char* fmt, va_list vl);
+    NColorString(const NColorString& v) { *this=v; };
     ~NColorString();
     void append(int attr, const char* fmt, ...);
     void vappend(int attr, const char* fmt, va_list vl);
     std::list<NColorStringPart*> parts;
     int getlen(); //вернет длинну в ЭКРАННЫХ СИМВОЛАХ
     void clear() { while(!parts.empty()) { delete parts.front(); parts.remove(parts.front());} }; //очищаем строку
-  protected:
+    NColorString& operator=(const NColorString& v);
+    bool operator==(const NColorString& v);
+    bool operator!=(const NColorString& v) { return !(*this==v); };
+protected:
     void append(NColorStringPart* part) { parts.push_back(part); }; //добавить подстроку к строке
 };
 

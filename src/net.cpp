@@ -32,6 +32,7 @@
 
 void TConnect::createconnect(/*const char* shost, const char* sport*/)
 {
+    kLogPrintf("connecting...");
     //this->shost = strdup(shost);
     //this->sport = strdup(sport);
     struct sockaddr_in boincaddr;
@@ -57,12 +58,14 @@ void TConnect::createconnect(/*const char* shost, const char* sport*/)
     else
     {
 	this->hsock = hsock;
+	kLogPrintf("OK\n");
     }
 }
 
 
 void TConnect::disconnect()
 {
+    kLogPrintf("disconnecting...\n");
     if (hsock != -1)
 	close(hsock);
     hsock = -1;
@@ -110,7 +113,7 @@ char* TConnect::waitresult() //получить ответ от сервера (
     {
         if ((bytesRcvd = recv(hsock, bufpart, sizeof(bufpart), 0)) <= 0 )
 	{
-	    kLogPrintf("received filed %s:%s\n",shost,sport);
+	    kLogPrintf("recv fail %s:%s\n",shost,sport);
 	    disconnect();
 	    return NULL;
 	}

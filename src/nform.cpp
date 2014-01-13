@@ -88,7 +88,10 @@ void NForm::delfields()
 
 void NForm::refresh()
 {
-    box(frm->win, ACS_VLINE, ACS_HLINE);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(frm->win, ACS_VLINE, ACS_HLINE);
     if(title != NULL)
     {
 	mvwprintw(frm->win,0,getwidth()/2-mbstrlen(title)/2,"%s",title); //посередине

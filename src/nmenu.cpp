@@ -86,7 +86,10 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
 	    set_menu_format(menu, lines, 1);
 	    resize(lines+2,menu->width+3); //изменяем размер под кол-во эл-тов
 	    set_menu_sub(menu,derwin(win,getheight()-2,getwidth()-2,1,1));
-	    box(win,0,0); //рамка
+	    if(asciilinedraw == 1)
+		wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+	    else
+		box(win,0,0); //рамка
 	}
 	else //горизонтальное
 	{

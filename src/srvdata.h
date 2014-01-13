@@ -90,12 +90,12 @@ class Srv : public TConnect //описание соединения с серв�
     PtrList	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
     bool	ccstatusdomneedupdate; //если true тред обновит ccstatusdom без ожидания
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
-    bool  login(); 		//авторизоваться на сервере
     virtual void  createconnect();
     void  setactive(bool b); //включить/выключить тред обновления данных
     bool  isactive() {return active;};
     void lock() { pthread_mutex_lock(&mutex); };
     void unlock() { pthread_mutex_unlock(&mutex); };
+    bool	loginfail; //true если получен unauthorize
   protected:
     void updatestate();		//обновить состояние <get_state>
     void updatemsgs();		//обновить список сообщений <get_messages>
@@ -104,6 +104,7 @@ class Srv : public TConnect //описание соединения с серв�
     void updateccstatus();	//обновить состояние <get_cc_status>
     void updateacctmgrinfo();//обновить статистику <acct_mgr_info>
     time_t gettimeelapsed(time_t t); //вернет соличество секунд между t и тек. временем
+    bool  login(); 		//авторизоваться на сервере
     char* pwd;
   private:
     unsigned int 	takt; //номер оборота цикла updatethread()
@@ -117,7 +118,7 @@ class Srv : public TConnect //описание соединения с серв�
 class SrvList //список всех серверов
 {
   public:
-    SrvList(Config* cfg);
+    SrvList(/*Config* cfg*/);
     virtual ~SrvList();
     //Srv* addserver(const char* shost, const char* sport) { return new Srv(shost, sport); }; //добавить сервер (вернет указаталь на сервер)
     void requestdata() {}; //опросить все сервера
@@ -130,7 +131,7 @@ class SrvList //список всех серверов
     void addserver(Srv* c) { servers.push_back(c); };
     std::list<Srv*> servers; //список соединений
     std::list<Srv*>::iterator cursrv; //текущиq сервер
-    Config*	cfg;
+//    Config*	cfg;
 };
 
 

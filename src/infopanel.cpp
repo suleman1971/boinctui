@@ -111,12 +111,27 @@ void InfoPanel::refresh()
     //wattrset(win,0);
     if ( (!compact)||(lastdayuser != lastdayhost) )
     {
-	mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",lastdayuser);
-	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",lastdayhost);
+	if ( asciilinedraw == 1)
+	{
+	    wmove(win,line++,0); wprintw(win,"+->user   %10.0f\n",lastdayuser);
+	    wmove(win,line++,0); wprintw(win,"+->host   %10.0f\n",lastdayhost);
+	}
+	else
+	{
+	    mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",lastdayuser);
+	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",lastdayhost);
+	}
     }
     else
     {
-	mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",lastdayhost);
+	if( asciilinedraw == 1)
+	{
+	    wmove(win,line++,0); wprintw(win,"-->daily  %10.0f\n",lastdayhost);
+	}
+	else
+	{
+	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",lastdayhost);
+	}
     }
     //по проектам
     mvwprintw(win, line++,0,"\n");
@@ -158,12 +173,27 @@ void InfoPanel::refresh()
 	mvwprintw(win,line++,0,"%-s %s\n",buf, getdayname(projects[i].laststattime).c_str());
 	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
 	{
-	    mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",projects[i].userlastday);
-	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",projects[i].hostlastday);
+	    if (asciilinedraw == 1)
+	    {
+		wmove(win,line++,0); wprintw(win,"+->user   %10.0f\n",projects[i].userlastday);
+		wmove(win,line++,0); wprintw(win,"+->host   %10.0f\n",projects[i].hostlastday);
+	    }
+	    else
+	    {
+		mvwaddch(win,line++,0,ACS_LTEE);     waddch(win,ACS_HLINE); wprintw(win,">user   %10.0f\n",projects[i].userlastday);
+		mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">host   %10.0f\n",projects[i].hostlastday);
+	    }
 	}
 	else
 	{
-	    mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",projects[i].userlastday);
+	    if (asciilinedraw == 1)
+	    {
+		wmove(win,line++,0); wprintw(win,"-->daily  %10.0f\n",projects[i].userlastday);
+	    }
+	    else
+	    {
+		mvwaddch(win,line++,0,ACS_LLCORNER); waddch(win,ACS_HLINE); wprintw(win,">daily  %10.0f\n",projects[i].userlastday);
+	    }
 	}
     }
     if ( line < getheight() )

@@ -17,12 +17,13 @@
 
 #include "mainwin.h"
 #include "tuievent.h"
+#include "kclog.h"
 
 
 #define INFPANWIDTH  20 //ширина инф панели
 
 
-MainWin::MainWin(NRect rect, Config* cfg) : NGroup(rect)
+MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
 {
     colname.push_back("  #  ");
     colname.push_back("state ");
@@ -34,7 +35,7 @@ MainWin::MainWin(NRect rect, Config* cfg) : NGroup(rect)
     colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
     //tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
-    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1), cfg); //создаем окно процессов внутри wmain
+    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
     setcoltitle();
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1)); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+2, 1), NULL); //горизонтальная линия
@@ -69,6 +70,7 @@ void MainWin::resize(int rows, int cols)
 
 void 	MainWin::setserver(Srv* srv) //установить отображаемый сервер
 {
+    this->srv = srv;
     wmsg->setserver(srv);
     wtask->setserver(srv);
     panel1->setserver(srv);
@@ -90,7 +92,10 @@ void MainWin::setcoltitle()
 void MainWin::refresh()
 {
     wattrset(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    box(win, ACS_VLINE, ACS_HLINE);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(win, ACS_VLINE, ACS_HLINE);
     //рисуем заголовок
     wmove(win,0,(getwidth()/2)-(caption->getlen()+1)/2);
     std::list<NColorStringPart*>::iterator it;
@@ -104,6 +109,21 @@ void MainWin::refresh()
     //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
     //wattroff(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     NGroup::refresh();
+}
+
+
+void MainWin::updatecaption()
+{
+    NColorString oldcaption = *caption;
+    caption->clear();
+    caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
+    if (srv->loginfail)
+	caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
+    if (oldcaption != *caption)
+    {
+	kLogPrintf("caption changed!\n");
+	refresh();
+    }
 }
 
 
@@ -125,6 +145,11 @@ void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
 		wtask->refresh();
 	    }
 	} //switch
+    }
+    //событие таймера
+    if (ev->type == NEvent::evTIMER) //таймер
+    {
+	updatecaption();
     }
 }
 

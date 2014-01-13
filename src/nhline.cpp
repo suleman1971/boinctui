@@ -22,6 +22,9 @@ void NHLine::refresh()
 {
     wbkgd(win,bgcolor);
     wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
-    whline(win, ACS_HLINE, getwidth()-0);
+    if ( asciilinedraw == 1)
+	whline(win, '-', getwidth()-0);
+    else
+	whline(win, ACS_HLINE, getwidth()-0);
     NView::refresh();
 };

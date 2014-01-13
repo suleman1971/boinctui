@@ -22,6 +22,9 @@ void NVLine::refresh()
 {
     wbkgd(win,bgcolor);
     wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
-    wvline(win, ACS_VLINE, getheight()-0);
+    if (asciilinedraw == 1)
+	wvline(win, '|', getheight()-0);
+    else
+	wvline(win, ACS_VLINE, getheight()-0);
     NView::refresh();
 };

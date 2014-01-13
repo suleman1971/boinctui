@@ -120,7 +120,10 @@ NMessageBox::NMessageBox(const char* text) : NGroup(NRect(3, 40, 1, 1))
     modalflag = true;
     resize(contentheight + 6,getwidth());
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
-    box(win,0,0);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(win,0,0);
     //content->setalign(1);
     move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2); //центрируем
 

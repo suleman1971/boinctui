@@ -28,6 +28,7 @@ class NGroup;
 
 void initcolorpairs();
 int getcolorpair(int fcolor, int bcolor); //получить пару для комбинации цветов
+extern int asciilinedraw; //1-рисовать рамки символами +----+
 
 
 class NView //базовый визуальный класс

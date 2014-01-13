@@ -30,7 +30,10 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
     caption = strdup(" BOINCTUI ");
     resize(10,getwidth());
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
-    box(win,0,0);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
     char buf[1024];
     snprintf(buf,sizeof(buf),"%s ver %s","BOINC Client manager", XSTR(VERSION));

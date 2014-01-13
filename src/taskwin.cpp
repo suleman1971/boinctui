@@ -225,16 +225,16 @@ std::string gethumanreadabletimestr(time_t time) //получить в виде 
 }
 
 
-TaskWin::TaskWin(NRect rect, Config* cfg) : NSelectList(rect) 
+TaskWin::TaskWin(NRect rect/*, Config* cfg*/) : NSelectList(rect)
 {
     setselectorbgcolor(COLOR_CYAN);
     columnmask = ~0;
     taskslistmode = 0;
     taskssortmode = 1;
     //читаем опции из конфига если нет то создаем
-    if (cfg != NULL)
+    if (gCfg != NULL)
     {
-	Item* rootcfg = cfg->getcfgptr();
+	Item* rootcfg = gCfg->getcfgptr();
 	if (rootcfg != NULL)
 	{
 	    Item* column_view_mask = rootcfg->findItem("column_view_mask");
@@ -265,7 +265,7 @@ TaskWin::TaskWin(NRect rect, Config* cfg) : NSelectList(rect)
 	    taskssortmode = tasks_sort_mode->getivalue();
 	}
     }
-    this->cfg = cfg;
+//    this->cfg = cfg;
 };
 
 
@@ -279,9 +279,9 @@ TaskWin::~TaskWin()
 void TaskWin::saveopttoconfig() //сохранить маску и т.д. в дереве конфига
 {
     //пишем в конфиг
-    if (cfg != NULL)
+    if (gCfg != NULL)
     {
-	Item* rootcfg = cfg->getcfgptr();
+	Item* rootcfg = gCfg->getcfgptr();
 	if (rootcfg != NULL)
 	{
 	    Item* column_view_mask = rootcfg->findItem("column_view_mask");

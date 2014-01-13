@@ -21,9 +21,9 @@
 #include "tuievent.h"
 
 
-CfgForm::CfgForm(int rows, int cols, Config* cfg) : NForm(rows,cols)
+CfgForm::CfgForm(int rows, int cols/*, Config* cfg*/) : NForm(rows,cols)
 {
-    this->cfg = cfg;
+//    this->cfg = cfg;
 //    fields = NULL;
     genfields(false);
     set_form_fields(frm, fields);
@@ -36,7 +36,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     delfields();
     this->extfields = extfields;
     //читаем из конфига
-    Item* boinctui_cfg = cfg->getcfgptr();
+    Item* boinctui_cfg = gCfg->getcfgptr();
     if (boinctui_cfg == NULL)
 	return;
     std::vector<Item*> slist = boinctui_cfg->getItems("server");
@@ -160,7 +160,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 		form_driver(frm, REQ_NEXT_FIELD); //костыль чтобы текущее поле не потеряло значение
 		kLogPrintf("ENTER\n");
 		updatecfg(); //обновить данные в cfg
-		cfg->save(); //сохранить на диск
+		gCfg->save(); //сохранить на диск
 		//gsrvlist->refreshcfg();
 		//ev->keycode = 27; //костыль чтобы осн программа сдестркутила форму конфига
 		NEvent* event = new TuiEvent(evCFGCH);//NEvent(NEvent::evPROG, 1); //создаем програмное событие
@@ -183,7 +183,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 
 void	CfgForm::updatecfg() //сохраняет данные из формы в cfg
 {
-    Item* boinctui_cfg = cfg->getcfgptr();
+    Item* boinctui_cfg = gCfg->getcfgptr();
     if (boinctui_cfg == NULL)
 	return;
     if (fields == NULL)
@@ -202,6 +202,6 @@ void	CfgForm::updatecfg() //сохраняет данные из формы в c
 	char* sport = rtrim(field_buffer(fields[nf+1],0));
 	char* spwd  = rtrim(field_buffer(fields[nf+2],0));
 	kLogPrintf("SERVER %d [%s:%s <%s>]\n", i, shost, sport, spwd);
-	cfg->addhost(shost, sport, spwd);
+	gCfg->addhost(shost, sport, spwd);
     }
 }

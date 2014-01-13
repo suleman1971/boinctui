@@ -26,7 +26,10 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     modalflag = true;
     resize(17,60);
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
-    box(win,0,0);
+    if(asciilinedraw == 1)
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    else
+	box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
     text1 = new NStaticText(NRect(getheight()-2,getwidth()-2,/*rect.begrow+*/1,/*rect.begcol+*/1));
     int attr1 = getcolorpair(COLOR_YELLOW, COLOR_BLACK) | A_BOLD;

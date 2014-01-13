@@ -29,6 +29,7 @@ void MsgWin::updatedata() //обновить данные с сервера
     if (srv->msgdom.empty())
     {
 	clearcontent();
+lastmsgno = 0;
 	return;
     }
     Item* tmpmsgdom = srv->msgdom.hookptr();
