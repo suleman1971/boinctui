@@ -900,20 +900,23 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 	//get data from remote server
 	if ( me->statedom.empty() || ( (me->takt % STATE_TIME_INTERVAL) == 0 ) )
 	    me->updatestate(); //<get_state>
-	if ( me->msgdom.empty() || ( (me->takt % MSG_TIME_INTERVAL) == 0 ) )
-	    me->updatemsgs(); //<get_message_count>/<get_messages>
-	if ( me->statisticsdom.empty() || ( (me->takt % STATISTICS_TIME_INTERVAL) == 0 ) )
-	    me->updatestatistics(); //<get_statistics>
-	if ( me->dusagedom.empty() || ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 ) )
-	    me->updatediskusage(); //<get_disk_usage>
-	if ( me->ccstatusdom.empty() || ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 ) || me->ccstatusdomneedupdate )
+	if (me->isconnected()&&(!me->loginfail)) //если нет коннекта то пропускаем прочие запросы
 	{
-	    me->updateccstatus(); //<get_cc_status>
-	    me->ccstatusdomneedupdate = false;
+	    if ( me->msgdom.empty() || ( (me->takt % MSG_TIME_INTERVAL) == 0 ) )
+		me->updatemsgs(); //<get_message_count>/<get_messages>
+	    if ( me->statisticsdom.empty() || ( (me->takt % STATISTICS_TIME_INTERVAL) == 0 ) )
+		me->updatestatistics(); //<get_statistics>
+	    if ( me->dusagedom.empty() || ( (me->takt % DISKUSAGE_TIME_INTERVAL) == 0 ) )
+		me->updatediskusage(); //<get_disk_usage>
+	    if ( me->ccstatusdom.empty() || ( (me->takt % CCSTATUS_TIME_INTERVAL) == 0 ) || me->ccstatusdomneedupdate )
+	    {
+		me->updateccstatus(); //<get_cc_status>
+		me->ccstatusdomneedupdate = false;
+	    }
+	    if (me->acctmgrinfodom.needupdate)
+		me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
 	}
-	if (me->acctmgrinfodom.needupdate)
-	    me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
-	
+	//спим 1 секунду проверяя me->ccstatusdomneedupdate
 	for (int i = 0; i < 10; i++)
 	{
 	    usleep(100000); //100 milisec
