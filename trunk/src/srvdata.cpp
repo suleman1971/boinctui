@@ -193,6 +193,7 @@ Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost
     this->pwd = strdup(pwd);
     lastmsgno = 0;
     active = false;
+    loginfail = false;
     ccstatusdomneedupdate = false;
     pthread_mutex_init(&mutex, NULL);
 }
