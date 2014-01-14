@@ -65,10 +65,11 @@ void TConnect::createconnect(/*const char* shost, const char* sport*/)
 
 void TConnect::disconnect()
 {
-    kLogPrintf("disconnecting...\n");
+    kLogPrintf("disconnecting %s:%s ...",shost,sport);
     if (hsock != -1)
 	close(hsock);
     hsock = -1;
+    kLogPrintf("OK\n");
 }
 
 
