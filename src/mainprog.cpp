@@ -52,25 +52,9 @@ MainProg::MainProg()
 
 MainProg::~MainProg()
 {
-//    delete gsrvlist;
 	gCfg->save();
-//    delete cfg;
 }
 
-/*
-void MainProg::setcaption()
-{
-    wmain->caption->clear();
-    wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",gsrvlist->getcursrv()->gethost(),gsrvlist->getcursrv()->getport());
-kLogPrintf("ISCONNECTED=%s", gsrvlist->getcursrv()->isconnected() ? "true":"false");
-    if (gsrvlist->getcursrv()->isconnected())
-	if (!gsrvlist->getcursrv()->loginsuccess)
-	    wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"[unauthorized] ");
-    else
-	wmain->caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD,"[offline] ");
-    wmain->refresh();
-}
-*/
 
 void MainProg::smartresize()
 {

@@ -118,12 +118,14 @@ void MainWin::updatecaption()
     caption->clear();
     caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
     if (srv->loginfail)
-	caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
-    if (oldcaption != *caption)
+        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
+    else
     {
-	kLogPrintf("caption changed!\n");
-	refresh();
+	if (!srv->isconnected())
+	    caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"offline!");
     }
+    if (oldcaption != *caption)
+	refresh();
 }
 
 
