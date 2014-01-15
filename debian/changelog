@@ -2,14 +2,15 @@ boinctui (2.3.2b-1) UNRELEASED; urgency=low
 
   * implemented mouse support
 
-  * optional ASCII line drawing (usefull for wrong terminals like putty etc.)
+  * optional ASCII line drawing (useful for wrong terminals like putty etc.)
 
-  * message "unauthorize" add to caption then authorization failed on boinc-client
+  * message "unauthorize" add to caption then authorization failed 
+    on boinc-client
 
   * bugfix: last item of long menu has incomplet submenu
 
 
- -- Sergey Suslov <suleman1971@gmail.com>  Mon, 07 Nov 2013 10:24:00 +0400
+ -- Sergey Suslov <suleman1971@gmail.com>  Wed, 15 Jan 2014 13:36:00 +0400
 
 boinctui (2.3.1-1) unstable; urgency=low
 
