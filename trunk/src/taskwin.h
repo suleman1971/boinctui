@@ -37,7 +37,7 @@ class TaskWin : public NSelectList
     TaskWin(NRect rect/*, Config* cfg*/);
     virtual ~TaskWin();
     void	updatedata(); 	//обновить данные с серверa
-    void	clearcontent();
+    virtual void clearcontent();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     void*	setserver(Srv* srv) { this->srv = srv; startindex = 0; clearcontent(); selectedindex = -1; };
     bool iscolvisible(int n) { return ((1 << n)&columnmask); }; //true если n-ная колонка видимая
