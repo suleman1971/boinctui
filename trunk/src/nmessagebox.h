@@ -29,6 +29,7 @@ class NMButton : public NStaticText //кнопка внутри NMessageBox
 {
   public:
     NMButton(const char* text, NEvent* pevent, ...);
+    ~NMButton() { if (pevent) delete pevent; };
     void eventhandle(NEvent* ev);	//обработчик событий
   private:
     NEvent* pevent; //евент генерируемый кнопкой при нажатии
