@@ -24,6 +24,7 @@ NMenu::NMenu(NRect rect, bool horis) : NGroup(rect)
 {
     mitems = NULL;
     ishoris = horis;
+    posted = false;
     menu = new_menu(mitems);
     setbackground(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
     setforeground(getcolorpair(COLOR_BLACK,COLOR_WHITE));
@@ -37,6 +38,8 @@ NMenu::~NMenu()
 {
     kLogPrintf("NMenu::~NMenu()\n");
     unpostmenu();
+    if (!ishoris)
+	delwin(menu_sub(menu));
     free_menu(menu);
     //освобождаем строки
     std::list<char*>::iterator it;

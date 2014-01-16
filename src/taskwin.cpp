@@ -304,7 +304,10 @@ void TaskWin::clearcontent()
     for (it = objects.begin(); it != objects.end(); it++) //очищаем строки ассоцииронанные с визуальными
     {
 	if ((*it) != NULL)
-	    free (*it);
+	{
+	    TaskInfo* d = (TaskInfo*)(*it);
+	    delete d;
+	}
     }
     objects.clear();
     NSelectList::clearcontent();
