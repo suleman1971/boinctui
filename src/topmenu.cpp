@@ -479,10 +479,6 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	srv->statedom.releaseptr(tmpstatedom);
     }
     additem(NULL,NULL);
-
-
-
-    additem(NULL,NULL);
 }
 
 
