@@ -28,13 +28,9 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     frm = new_form(NULL);
     scale_form(frm,&rows,&cols);
     addfield(NULL);
-    set_form_fields(frm, fields);
     set_form_win(frm, win);
     set_form_sub(frm, derwin(win, rows, cols, 2,2));
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
-//    framewin = win;
-//    win = frm->sub;
-//post_form(frm);
     title = NULL;
     needrefresh = true;
     //перемещаем в центр экрана
@@ -45,7 +41,6 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
 
 NForm::~NForm()
 {
-//    win = framewin; //востанавливаем для правильной деструкции
     unpost_form(frm);
     free_form(frm);
     delfields();
@@ -67,6 +62,8 @@ FIELD* NForm::addfield(FIELD* field)
     fields = (FIELD**)realloc(fields, (fieldcount+1)*sizeof(FIELD*)); //выделяем память под массив полей
     fields[fieldcount] = field;
     fieldcount++;
+    if (field == NULL)
+    	set_form_fields(frm, fields);
     return field;
 }
 
@@ -75,13 +72,20 @@ void NForm::delfields()
 {
     if (fields != NULL)
     {
-	int n = field_count(frm);
+	set_form_fields(frm, NULL);
+	int n = fieldcount - 1; //последний NULL
 	for (int i = 0; i < n; i++)
-	    free_field(fields[i]);
+	{
+	    if (fields[i] != NULL)
+	    {
+		int retcode = free_field(fields[i]);
+		if (retcode != E_OK)
+		    kLogPrintf("NForm::delfields(): free_field(%p) retcode=%d\n", fields[i], retcode);
+	    }
+	}
 	free(fields);
 	fields = NULL;
 	fieldcount = 0;
-	set_form_fields(frm, NULL);
     }
 }
 

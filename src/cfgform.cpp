@@ -23,8 +23,6 @@
 
 CfgForm::CfgForm(int rows, int cols/*, Config* cfg*/) : NForm(rows,cols)
 {
-//    this->cfg = cfg;
-//    fields = NULL;
     genfields(false);
     set_form_fields(frm, fields);
     post_form(frm);
@@ -46,23 +44,16 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     nhost = slist.size(); //число хостов
     if (extfields)
 	nhost++; //новый добавочный хост
-/*
-    int fcount = nhost*3+1+1+1; //число серверов по 3 поля на каждый +1 для стат текста заголовка +1 для клавиш +1 для NULL
-    fields = (FIELD**)malloc((fcount)*sizeof(FIELD*)); //выделяем память под массив полей
-*/
     std::vector<Item*>::iterator it;
     int i  = 0; //номер хоста
-//    int nf = 0; //номер поля
     int nl = 2; //номер экранной строки
     //статический заголовок полей хостов
     FIELD* field   = addfield(new_field(1, 44, nl, 5, 0, 0));
     field_opts_off(field, O_ACTIVE); //статический текст
     set_field_buffer(field, 0, "host             port   pwd");
     set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-//    nf++;
     nl = nl + 1;
     //поля для хостов
-    //for (it = slist.begin(); it != slist.end(); it++, i++) //цикл по хостам
     for (i = 0; i < nhost; i++) //цикл по хостам
     {
 	//поле для хоста
@@ -80,7 +71,6 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	}
 	if (i == 0)
 	    set_current_field(frm, field); //фокус на поле
-//	nf++;
 	//поле для порта
 	field = addfield(new_field(1, 5, nl, 17+5, 0, 0));
 	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
@@ -92,7 +82,6 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	    if (port != NULL)
 		set_field_buffer(field, 0, port->getsvalue());
 	}
-//	nf++;
 	//поле для пароля
 	field = addfield(new_field(1, 20, nl, 29, 0, 0));
 	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
@@ -105,7 +94,6 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	    if (pwd != NULL)
 		set_field_buffer(field, 0, pwd->getsvalue());
 	}
-//	nf++;
 	nl = nl + 2;
     }
     //клавиши упр-я
@@ -117,7 +105,6 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     else
 	set_field_buffer(field, 0, "Esc-Cancel   Enter-Accept   Ins-Add host");
     set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-//    nf++;
     nl = nl + 2;
     //финализация списка полей
     addfield(NULL);
@@ -146,9 +133,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 		if (!extfields)
 		{
 		    unpost_form(frm);
-		    //delfields();
 		    genfields(true);
-		    set_form_fields(frm, fields);
 		    post_form(frm);
 		    refresh();
 		    kLogPrintf("INSERT NEW HOST\n");

@@ -29,7 +29,6 @@ class NForm : public NGroup
   public:
     NForm(int lines, int rows);
     virtual ~NForm();
-    //int eventloop();
     virtual void refresh();
     virtual void settitle(const char* title);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
@@ -42,7 +41,6 @@ class NForm : public NGroup
     FIELD**	fields;
     int		fieldcount; //число полей включая NULL
     FORM* frm; 		//форма ncurses
-//    WINDOW* framewin; //исходное окно  (рамка)
 };
 
 
