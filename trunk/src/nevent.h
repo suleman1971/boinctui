@@ -23,12 +23,15 @@
     #include <sstream>
 #endif
 
+//#include "kclog.h"
+
 
 class NEvent //класс описывающий событие создаваемое например при нажатии клавиш
 {
   public:
     enum	Type		{ evKB, evMOUSE, evPROG, evTIMER }; //evPROG событие генерируемое самой прораммой
     NEvent(NEvent::Type type, int keycode)	{ this->type = type; this->done = false; this->keycode = keycode;};
+    virtual ~NEvent() { /*kLogPrintf("~NEvent()\n");*/ };
     NEvent::Type	type;
     bool		done;		//true если обработано
     union
@@ -71,6 +74,7 @@ class NMouseEvent : public NEvent
 	this->col = col;
 	this->row = row;
     };
+    virtual ~NMouseEvent() { /*kLogPrintf("~NMouseEvent()\n");*/ };
     int row;
     int col;
     #ifdef DEBUG

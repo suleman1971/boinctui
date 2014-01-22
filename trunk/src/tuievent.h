@@ -74,6 +74,7 @@ class TuiEvent : public NEvent //класс программных событи�
     {
 	this->idata1 = mode;
     };
+    virtual ~TuiEvent() { /*kLogPrintf("~TuiEvent()\n");*/ };
     Srv*		srv;
     std::string		sdata1; //произвольная строка
     std::string		sdata2; //произвольная строка
