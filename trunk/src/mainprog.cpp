@@ -52,7 +52,8 @@ MainProg::MainProg()
 
 MainProg::~MainProg()
 {
-	gCfg->save();
+    gCfg->save();
+    delete gsrvlist;
 }
 
 
