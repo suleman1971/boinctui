@@ -94,6 +94,11 @@ TaskInfoWin::TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, 
     else
 	box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2), this->caption.c_str());
+
+    scrollbar = new NScrollBar(NRect(content->getheight()+2,1, content->getbegrow()-1, getwidth()-1), 0, 0, ACS_VLINE);
+    content->setscrollbar(scrollbar);
+    insert(scrollbar);
+
     refresh();
 }
 
@@ -112,6 +117,7 @@ void TaskInfoWin::updatedata()
     maxlen2 = 0;
     if (client_state != NULL)
     {
+	int oldstartindex = content->getstartindex();
 	content->clearcontent();
         std::vector<Item*> results = client_state->getItems("result");
 	std::vector<Item*>::iterator it;
@@ -148,6 +154,7 @@ void TaskInfoWin::updatedata()
 		break;
 	    }
 	} //цикл списка задач
+	content->setstartindex(oldstartindex);
 	needrefresh = true;
     }
     srv->statedom.releaseptr(tmpstatedom);
