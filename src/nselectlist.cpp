@@ -85,6 +85,10 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 	    wclrtoeol(win); //очищаем до конца строки
 	}
     }
+    if (scrollbar) //если есть связанный скроллбар то обновляем его
+    {
+	scrollbar->setpos(0,content.size(),startindex, startindex+getheight());
+    }
 }
 
 

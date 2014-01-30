@@ -300,6 +300,7 @@ void TaskWin::saveopttoconfig() //сохранить маску и т.д. в д�
 
 void TaskWin::clearcontent()
 {
+    int oldindex = getstartindex();
     std::vector<void*>::iterator it;
     for (it = objects.begin(); it != objects.end(); it++) //очищаем строки ассоцииронанные с визуальными
     {
@@ -311,6 +312,7 @@ void TaskWin::clearcontent()
     }
     objects.clear();
     NSelectList::clearcontent();
+    setstartindex(oldindex);
 }
 
 

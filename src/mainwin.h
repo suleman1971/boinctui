@@ -24,6 +24,7 @@
 #include "nstatictext.h"
 #include "nhline.h"
 #include "nvline.h"
+#include "nscrollbar.h"
 #include "infopanel.h"
 #include "srvdata.h"
 
@@ -40,6 +41,8 @@ class MainWin : public NGroup
     TaskWin* 	wtask;		//окно задач
     MsgWin* 	wmsg;		//окно эвентов
     NStaticText* tablheader; 	//заголовок таблицы процессов
+    NScrollBar*	msgscrollbar;	//скроллбар панели сообщений
+    NScrollBar* taskscrollbar;	//скроллбар панели задач
     InfoPanel*	panel1; 	//инф-ная панель
     NColorString* caption; 	//строка заголовка
     void updatecaption();

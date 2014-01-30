@@ -24,6 +24,7 @@
 #include "ngroup.h"
 #include "nscrollview.h"
 #include "tuievent.h"
+#include "nscrollbar.h"
 
 
 class TaskInfoWin : public NGroup  //стандартный диалог вида Ok/Cancel или Yes/No
@@ -41,6 +42,7 @@ class TaskInfoWin : public NGroup  //стандартный диалог вид�
     std::string		taskname;
     Srv* srv;
     NScrollView*	content;
+    NScrollBar*		scrollbar;
 };
 
 

@@ -34,20 +34,25 @@ MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
     colname.push_back("  application                   ");
     colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
-    //tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
+    tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
     wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
     setcoltitle();
+    taskscrollbar = new NScrollBar(NRect(wtask->getheight()+2,1, wtask->getbegrow()-2, getwidth()-INFPANWIDTH-2), ACS_TTEE | A_BOLD, 0, ACS_VLINE | A_BOLD); //скроллбар панели задач
+    wtask->setscrollbar(taskscrollbar);
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1)); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+2, 1), NULL); //горизонтальная линия
-    vline = new NVLine(NRect(getheight()-2, 1, 1 , getwidth()-INFPANWIDTH-2), NULL); //вертикальная линия
-
+//    vline = new NVLine(NRect(wtask->getheight()+1/*getheight()-2*/, 1, 1, getwidth()-INFPANWIDTH-2), NULL); //вертикальная линия
+    msgscrollbar = new NScrollBar(NRect(wmsg->getheight()+2,1, wmsg->getbegrow()-1, getwidth()-INFPANWIDTH-2/*vline->getbegcol()*/),/*ACS_RTEE*/ACS_VLINE | A_BOLD,ACS_BTEE | A_BOLD, ACS_VLINE | A_BOLD); //скроллбар панели сообщений
+    wmsg->setscrollbar(msgscrollbar);
     panel1 = new InfoPanel(NRect(getheight()-2,INFPANWIDTH,1,getwidth()-INFPANWIDTH-1));
     caption = new NColorString(0,"");
     insert(tablheader);
     insert(wtask);
     insert(wmsg);
     insert(hline);
-    insert(vline);
+//    insert(vline);
+    insert(taskscrollbar);
+    insert(msgscrollbar);
     insert(panel1);
 }
 
@@ -61,8 +66,12 @@ void MainWin::resize(int rows, int cols)
     wmsg->move(wtask->getheight()+3, 1);
     hline->resize(1, getwidth()-2-(INFPANWIDTH+1)); //горизонтальная линия
     hline->move(wtask->getheight()+2, 1);
-    vline->resize(getheight()-2, 1);
-    vline->move(1 , getwidth()-INFPANWIDTH-2);
+//    vline->resize(wtask->getheight()+1/*getheight()-2*/, 1);
+//    vline->move(1 , getwidth()-INFPANWIDTH-2);
+    msgscrollbar->resize(wmsg->getheight()+2,1);
+    msgscrollbar->move(wmsg->getbegrow()-1, getwidth()-INFPANWIDTH-2/*vline->getbegcol()*/);
+    taskscrollbar->resize(wtask->getheight()+2,1);
+    taskscrollbar->move(wtask->getbegrow()-2, getwidth()-INFPANWIDTH-2);
     panel1->resize(getheight()-2,INFPANWIDTH);
     panel1->move(1,getwidth()-INFPANWIDTH-1);
 }

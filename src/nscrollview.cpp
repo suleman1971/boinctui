@@ -40,6 +40,7 @@ void NScrollView::clearcontent()
 	delete (*it);
     }
     content.clear();
+    startindex=0;
     needrefresh = true;
 }
 
@@ -68,6 +69,10 @@ void NScrollView::drawcontent() //отрисовывает буфер строк
 	    wmove(win,line,0);
 	    wclrtoeol(win); //очищаем до конца строки
 	}
+    }
+    if (scrollbar) //если есть связанный скроллбар то обновляем его
+    {
+	scrollbar->setpos(0,content.size(),startindex, startindex+getheight());
     }
 }
 
@@ -114,6 +119,19 @@ void NScrollView::setautoscroll(bool b) //true чтобы включить ав�
     if (oldstartindex != startindex) //позиция изменилась нужно перерисовываться
 	needrefresh = true;
 };
+
+
+void NScrollView::setstartindex(int n) //установить отображение со строки n
+{
+    if ((content.size()-n) < getheight()) //последняя строка видима на экране
+    {
+	startindex = content.size()-getheight(); //поднять вверх
+	if (startindex < 0) //но не выше нулевой
+	    startindex = 0;
+    }
+    else
+	startindex = n;
+}
 
 
 void NScrollView::eventhandle(NEvent* ev) //обработчик событий
