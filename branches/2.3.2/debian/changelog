@@ -1,0 +1,165 @@
+boinctui (2.3.2-1) unstable; urgency=low
+
+  * implemented mouse support
+
+  * scrollable widgets has scrollbars now
+
+  * optional ASCII line drawing mode (useful for wrong terminals 
+    like putty etc.)
+
+  * message "unauthorize" add to caption then authorization failed 
+    on boinc-client
+
+  * bugfix: last item of long menu has incomplet submenu
+
+  * bugfix: many memory leaks
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 04 Feb 2014 14:32:00 +0400
+
+
+boinctui (2.3.1-1) unstable; urgency=low
+
+  * implemented detail task raw info window
+
+  * network requests moved to separete threads (ui not freeze then 
+    network hang)
+
+  * confirmation dialogs for some operations (abort task, detach 
+    project etc.)
+
+  * "Projects" menu restructured
+
+  * shortcut "A" added for abort selected task
+
+  * status line context depended
+
+  * configuration form automatically show at first boinctui start
+
+  * at "sort by estimate time" mode completed tasks moved to the end of list
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 15 Jul 2013 10:53:00 +0400
+
+
+boinctui (2.2.1-1) unstable; urgency=low
+
+  [ Steffen Moeller (sponsoring) ]
+
+  * package is no longer native, created new orig.tar.gz
+
+  * added watch file
+
+  * provided man page as debian/boinctui.1 
+    and removed respective lintian override
+
+  * changelog: closing ITP with 'initial release' notion,
+    flagging earlier versions as unreleased.
+
+  [ Sergey Suslov ]
+
+  * bugfix: double free memory (potential crash after edit host 
+    list via Config form)
+
+  * "Sort by deadline" was added into View menu
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Fri, 25 Jan 2013 10:48:00 +0400
+
+
+boinctui (2.2.0) UNRELEASED; urgency=low
+
+  * tasks list can be sorted by some columns
+
+  * implemented toggle "all tasks"/"hide done tasks"/"active only"
+
+  * migrate from openssl to gnutls-openssl
+
+  * bugfixes:
+    - unexpected crash in configuration form
+    - sometimes statistics panel doesn't update immediately after
+      switch between hosts
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 21 Jan 2013 16:42:00 +0400
+
+
+boinctui (2.1.1) UNRELEASED; urgency=low
+
+  *bugfix: Configuration host list form's fields don't allow long strings
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 17 Jan 2013 10:15:00 +0400
+
+
+boinctui (2.1.0) UNRELEASED; urgency=low
+
+  *"application name" column was added to task list
+
+  * each column in task list can on/off via menu "View"
+
+  * optional key "--without-ncursesw" was added to configure script. This key can disable utf8 and
+    perform linking with plain ncurses
+
+  * implemented support account managers (BAM etc). Attach/Detach/Syncronize
+
+  * implemented add/detach project directly (without account manager) as existing user or as new user
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 08 Jan 2013 15:55:55 +0400
+
+
+boinctui (1.2.0-0) UNRELEASED; urgency=low
+
+  * bugfixes:
+    - percent done was always 0% on same locale setting
+    - workaround for negative estimate time
+
+  * Percent done for GPU tasks are color highlight (green for CUDA tasks, magenta for OpenCL)
+
+  * implemented GPU activity operations:
+    - run GPU always.
+    - run GPU based on preferences.
+    - suspend GPU always.
+
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 25 Dec 2012 12:32:00 +0400
+
+
+boinctui (1.1.0-0) UNRELEASED; urgency=low
+
+  * bugfixes:
+    - any color combinations are invisible on any terminals
+    - incorrect visualization on any white background terminals
+
+  * implemented network activity operations:
+    - run always.
+    - run based on preferences.
+    - suspend always.
+
+  * implemented "Run benchmarks"
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Wed, 19 Dec 2012 19:49:00 +0400
+
+
+boinctui (1.0.0-0) UNRELEASED; urgency=low
+
+  * implemented project operations:
+    - suspend.
+    - resume.
+    - reset.
+    - no new tasks.
+    - allow new tasks.
+
+  * add "abort task" in task menu
+
+  * implemented "Activity" features:
+    - run always.
+    - run based on preferences.
+    - suspend always.
+
+  * any bugfixes.
+
+  * color schem optimization.
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 11 Dec 2012 12:42:00 +0400
+
+boinctui (0.0.1-0) UNRELEASED; urgency=low
+
+  * Initial Release (Closes: #696702).
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Sat, 24 Nov 2012 21:17:15 +0400

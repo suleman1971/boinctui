@@ -1,0 +1,29 @@
+Source: boinctui
+Section: net
+Priority: optional
+Maintainer: Sergey Suslov <suleman1971@gmail.com>
+Build-Depends: autoconf, debhelper (>= 9), autotools-dev,
+ libncursesw5-dev, libncurses5-dev, libgnutls-dev, libexpat1-dev
+Standards-Version: 3.9.5
+Vcs-Svn: https://boinctui.googlecode.com/svn/trunk/
+Vcs-Browser: http://boinctui.googlecode.com/svn/trunk/
+Homepage: http://boinctui.googlecode.com
+
+Package: boinctui
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: boinc-client
+Description: Fullscreen text mode manager for Boinc client
+ boinctui is a fullscreen text mode control tool for BOINC client
+ It can manage local and remote clients (via boinc RPC), and allows 
+ you to switch between  clients with a hot key. 
+ boinctui uses curses library and provides the following features:
+  * Fullscreen curses based text user interface
+  * Switch between several BOINC clients hosts via hot key
+  * View task list (run, queue, suspend e.t.c state)
+  * View message list
+  * Suspend/Resume/Abort tasks
+  * Update/Suspend/Resume/Reset/No New Task/Allow New Task for projects
+  * Toggle activity state GPU and CPU tasks
+  * Run benchmarks
+  * Manage BOINC client on remote hosts via boinc_gui protocol 
