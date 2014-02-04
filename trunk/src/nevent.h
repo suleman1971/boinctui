@@ -47,7 +47,7 @@ class NEvent //класс описывающий событие создавае
 	switch (type)
 	{
 	    case evKB:
-		s << "evKB";
+		s << "evKB keycode=" << keycode;
 		break;
 	    case evMOUSE:
 		s << "evMOUSE";

@@ -47,7 +47,7 @@ void NScrollBar::setpos(int vmin, int vmax, int vpos1, int vpos2)
 	    vpos1 = vmin;
 	if (vpos2 > vmax)
 	    vpos2 = vmax;
-	kLogPrintf("NScrollBar::setpos(vmin=%d, vmax=%d, vpos1=%d, vpos2=%d)\n",vmin, vmax, vpos1, vpos2);
+	//kLogPrintf("NScrollBar::setpos(vmin=%d, vmax=%d, vpos1=%d, vpos2=%d)\n",vmin, vmax, vpos1, vpos2);
 	//если видимая часть больше или равна контенту то выключаем
 //	setvisible(!((vpos1<=vmin)&&(vpos2>=vmax)));
 	setvisible(!((vpos1==vmin)&&(vpos2==vmax)));
@@ -104,7 +104,7 @@ void NScrollBar::refresh()
 	}
 	if (vpos2==vmax)
 	    len2=len-rowpos1+1;
-	kLogPrintf("len=%d vmin=%d vmax=%d vpos1=%d vpos2=%d  scale=%f rowmin=%d rowmax=%d rowpos1=%d len2=%d\n",len, vmin,vmax,vpos1,vpos2,scale,rowmin,rowmax,rowpos1,len2);
+	//kLogPrintf("len=%d vmin=%d vmax=%d vpos1=%d vpos2=%d  scale=%f rowmin=%d rowmax=%d rowpos1=%d len2=%d\n",len, vmin,vmax,vpos1,vpos2,scale,rowmin,rowmax,rowpos1,len2);
 	//рисуем выделение
 	mvwvline(win,rowpos1,0,' ' | getcolorpair(COLOR_CYAN,COLOR_WHITE), len2);
     }
