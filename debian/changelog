@@ -1,16 +1,21 @@
-boinctui (2.3.2b-1) UNRELEASED; urgency=low
+boinctui (2.3.2-1) unstable; urgency=low
 
   * implemented mouse support
 
-  * optional ASCII line drawing (useful for wrong terminals like putty etc.)
+  * scrollable widgets has scrollbars now
+
+  * optional ASCII line drawing mode (useful for wrong terminals 
+    like putty etc.)
 
   * message "unauthorize" add to caption then authorization failed 
     on boinc-client
 
   * bugfix: last item of long menu has incomplet submenu
 
+  * bugfix: many memory leaks
 
- -- Sergey Suslov <suleman1971@gmail.com>  Wed, 15 Jan 2014 13:36:00 +0400
+ -- Sergey Suslov <suleman1971@gmail.com>  Tue, 04 Feb 2014 14:32:00 +0400
+
 
 boinctui (2.3.1-1) unstable; urgency=low
 

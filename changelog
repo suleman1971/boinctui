@@ -1,3 +1,20 @@
+boinctui (2.3.2)
+
+  * implemented mouse support
+
+  * scrollable widgets has scrollbars now
+
+  * optional ASCII line drawing mode (useful for wrong terminals 
+    like putty etc.)
+
+  * message "unauthorize" add to caption then authorization failed 
+    on boinc-client
+
+  * bugfix: last item of long menu has incomplet submenu
+
+  * bugfix: many memory leaks
+
+
 boinctui (2.3.1)
 
   * implemented detail task raw info window

@@ -104,6 +104,14 @@ void MsgWin::eventhandle(NEvent* ev) 	//обработчик событий
 			setautoscroll(true);	//включаем автоскроллинг
 		}
 		break;
+	    case KEY_HOME:
+		scrollto(-content.size());
+		setautoscroll(false);
+		break;
+	    case KEY_END:
+		scrollto(content.size());
+		setautoscroll(false);
+		break;
 	    default:
 		ev->done = false; //нет реакции на этот код
 	} //switch
