@@ -21,6 +21,7 @@
 #include <menu.h>
 #include <stdlib.h>
 #include "ngroup.h"
+#include "nscrollbar.h"
 
 
 class NMenu : public NGroup
@@ -30,7 +31,7 @@ class NMenu : public NGroup
     virtual ~NMenu();
     virtual void refresh();
     void	 additem(const char* name, const char* comment); //добавить эл-т в меню
-    void 	 eventhandle(NEvent* ev); 	//обработчик событий
+    virtual void eventhandle(NEvent* ev); 	//обработчик событий
     void	 setbackground(int attr) { set_menu_back(menu, attr); wattrset(win, attr);  bgattr = attr; wbkgdset(win,attr); };
     void	 setforeground(int attr) { set_menu_fore(menu, attr); fgattr = attr; };
     void	 postmenu()   { if (!posted) {post_menu(menu); posted = true;} };
@@ -48,6 +49,7 @@ class NMenu : public NGroup
     bool	ishoris;//true если меню горизонтальное
   private:
     bool	posted; //true после post_menu()
+    NScrollBar*	scrollbar;
 };
 
 #endif //NMENU_H

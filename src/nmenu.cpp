@@ -31,12 +31,19 @@ NMenu::NMenu(NRect rect, bool horis) : NGroup(rect)
     set_menu_grey(menu, getcolorpair(COLOR_RED,COLOR_BLACK)); //цвет разделителей
     set_menu_win(menu, win);
     postmenu();
+    if (horis)
+	scrollbar = NULL;
+    else
+    {
+	scrollbar = new NScrollBar(NRect(getheight(),1, 1, getwidth()-1), 0, 0, ACS_VLINE | A_BOLD);
+	insert(scrollbar);
+    }
 }
 
 
 NMenu::~NMenu()
 {
-    kLogPrintf("NMenu::~NMenu()\n");
+    //kLogPrintf("NMenu::~NMenu()\n");
     unpostmenu();
     if (!ishoris)
 	delwin(menu_sub(menu));
@@ -64,10 +71,20 @@ NMenu::~NMenu()
 
 void NMenu::destroysubmenu() //закрыть субменю
 {
-    while (!items.empty())
+    std::list<NView*>::iterator it;
+    bool done = false;
+    while (!done)
     {
-	delete items.front();
-	remove (items.front());
+	done = true;
+	for (it = items.begin(); it != items.end(); it++)
+	{
+	    if (scrollbar==*it)
+		continue; //подпорка
+	    delete *it;
+	    remove (*it);
+	    done = false;
+	    break;
+	}
     }
 }
 
@@ -93,6 +110,13 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
 		wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 	    else
 		box(win,0,0); //рамка
+	    if (scrollbar)
+	    {
+		scrollbar->resize(getheight()-2,1);
+		scrollbar->move(1,getwidth()-1);
+		scrollbar->setpos(0,itemnames.size(),top_row(menu),top_row(menu)+getheight()-2);
+		scrollbar->refresh();
+	    }
 	}
 	else //горизонтальное
 	{
@@ -142,6 +166,11 @@ void NMenu::refresh()
 	}
 	while (x < getwidth() - 1);
 	//wattrset(win,0);
+    }
+    if (scrollbar)
+    {
+	scrollbar->setpos(0,itemnames.size(),top_row(menu),top_row(menu)+getheight()-2);
+	scrollbar->refresh();
     }
     NGroup::refresh();
 }

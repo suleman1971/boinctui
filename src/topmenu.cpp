@@ -485,7 +485,7 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 bool ProjectsSubMenu::action()
 {
     bool result = false;
-    if (!items.empty()) //если уже открыто выходим
+    if (items.size() > 1) //если уже открыто выходим (>1 из-за скроллбара)
 	return false;
     //формируем код операции для подменю
     bool actiondone = false;
@@ -540,7 +540,7 @@ void ProjectsSubMenu::eventhandle(NEvent* ev) 	//обработчик событ
         switch(ev->keycode)
 	{
 	    case 27:
-		if ( !items.empty() )
+		if ( items.size() > 1 ) //1 из-за скроллбара
 		    destroysubmenu();
 		else
 		    ev->done = false; //пусть обрабатывает владелец
@@ -815,7 +815,7 @@ void ProjectAllListSubMenu::eventhandle(NEvent* ev) 	//обработчик со
 		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
 		break;
 	    case 27:
-		if ( !items.empty() )
+		if ( items.size() > 1 ) //1 из-за кроллбара
 		    destroysubmenu();
 		else
 		    ev->done = false; //пусть обрабатывает владелец
@@ -883,7 +883,7 @@ void ProjectAccMgrSubMenu::eventhandle(NEvent* ev) 	//обработчик со�
 		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
 		break;
 	    case 27:
-		if ( !items.empty() )
+		if ( items.empty() > 1 ) //1 из-за скроллбара
 		    destroysubmenu();
 		else
 		    ev->done = false; //пусть обрабатывает владелец
