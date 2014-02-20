@@ -33,29 +33,31 @@ void callbackData(void *userdata, const char *content, int len); //коллбэ�
 char* stripinvalidtag(char* xml, int len) 	//ГРЯЗНЫЙ ХАК нужен чтобы до парсинга удалить кривые теги
 						//в сообщениях вида <a href=.. </a> иначе будет ошибка парсинга
 {
-    const char* teg1 = "<body>";
-    const char* teg2 = "</body>";
+    const char* teg1 = "<a href=";
+    const char* teg2 = "</a>";
     int bytesdone = 0; //просмотрено байт
     char* pos = (char*)xml;
-    while (pos < xml + len)
+    do
     {
 	char* x1 = strstr(pos, teg1);
+        if (x1 !=NULL)
+    	    memset(x1,' ',sizeof(teg1)); //забиваем пробелами
         char* x2 = strstr(pos, teg2);
+        if (x2 !=NULL)
+    	memset(x2,' ',sizeof(teg2)); //забиваем пробелами
         if ((x1 != NULL)&&(x2 != NULL))
-	{
-	    for(char* p = x1 + strlen(teg1); p < x2; p++)
-	    {
-		if ((*p == '<')||(*p == '>')) //убираем html теги
-		    *p = ' ';
-	    }
-	    pos = (x1>x2)? x1:x2; //берем наибольшую
-	    pos++;
-	}
-	else
-	    break;
+    	    pos = (x1<x2)? x1:x2; //берем наименьшую
+        else
+        {
+    	    if (x1 != NULL)
+    		pos = x1;
+    	    else
+    		pos = x2;
+        }
     }
+    while ((pos != NULL)&&(pos-xml < len)); //больше тегов не найдено
     return xml;
-}
+};
 
 
 Item* xmlparse(const char* xml, int len) //xml строка с xml len ее размер в байтах
