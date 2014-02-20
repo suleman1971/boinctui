@@ -1,3 +1,10 @@
+boinctui (2.3.4)
+
+  * bugfix: message list was shrink after any html tags in message body
+
+  * bugfix: unusable scrollbar in some of menues
+
+
 boinctui (2.3.3)
 
   * implemented mouse support
