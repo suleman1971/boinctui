@@ -1,4 +1,13 @@
-boinctui (2.3.3-1) unstable; urgency=low
+boinctui (2.3.4-1) unstable; urgency=low
+
+  * bugfix: message list was shrink after any html tags in message body
+
+  * bugfix: unusable scrollbar in some of menues
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 20 Feb 2014 13:25:00 +0400
+
+
+boinctui (2.3.3-1) UNRELEASED; urgency=low
 
   * implemented mouse support
 
