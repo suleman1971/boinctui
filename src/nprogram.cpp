@@ -16,6 +16,7 @@
 // =============================================================================
 
 #include <signal.h>
+#include <unistd.h>
 #include "nprogram.h"
 #include "kclog.h"
 
@@ -27,17 +28,74 @@ NProgram::NProgram() : NGroup(NRect(getmaxy(stdscr), getmaxx(stdscr), 0, 0))
 {
     NProgram::needresize = false;
     signal(SIGWINCH, NProgram::sig_winch); //обработчик сигнала ресайза терминала
+    #ifdef EVENTTHREAD
+    pthread_mutex_init(&mutex,NULL);
+    stopflag = false;
+    if ( 0 != pthread_create(&thread, NULL, evcreationthread, this))
+	kLogPrintf("NProgram::NProgram() pthread_create() error\n");
+    #endif
 }
+
 
 void NProgram::sig_winch(int signo) //вызывается при изменении размеров терминала
 {
     NProgram::needresize = true;
 }
 
+
 void NProgram::putevent(NEvent* ev) //отправить событие по цепочке владельцев в очередь
 {
+    #ifdef EVENTTHREAD
+    lock();
+    #endif
     evqueue.push(ev); //поместить в очередь
+    #ifdef EVENTTHREAD
+    unlock();
+    #endif
     #ifdef DEBUG
     kLogPrintf("NProgram::putevent(%s)\n",ev->tostring().c_str());
     #endif
 }
+
+
+#ifdef EVENTTHREAD
+void* NProgram::evcreationthread(void* args) //трейд опрашивающий клавиатуру и мышь
+{
+    NProgram* me = (NProgram*)args;
+    kLogPrintf("NProgram::evcreationthread started\n");
+    time_t evtimertime; //time of last evTIMER
+    time(&evtimertime);
+    evtimertime=evtimertime-2; //костыль для уменьшения задержки первой отрисовки
+    while(!me->stopflag)
+    {
+	//если настало время посылаем evTIMER
+	if (time(NULL) - evtimertime > EVTIMERINTERVAL)
+	{
+	    NEvent* event = new NEvent(NEvent::evTIMER, 0); //создаем событие таймера
+	    me->putevent(event); //отправить в очередь
+	    time(&evtimertime);
+	}
+	//есть символ в буфере -> нужно создать событие
+	int ic;
+	if ( (ic = getch()) != ERR ) //символ(ы) есть?
+	{
+	    NEvent* event = NULL;
+	    if (KEY_MOUSE == ic)
+	    {
+		// mouse event
+		MEVENT mevent;
+		if (OK == getmouse(&mevent))
+		    event = new NMouseEvent(mevent.bstate, mevent.y, mevent.x); //создаем мышиное событие
+		else
+		    kLogPrintf("getmouse() err\n");
+	    }
+	    else // keyboard event
+		event = new NEvent(NEvent::evKB, ic); //создаем клавиатурное событие
+	    if (event != NULL)
+		me->putevent(event); //отправить в очередь
+	}
+    }
+    kLogPrintf("NProgram::evcreationthread stopped\n");
+    pthread_exit(0);
+}
+#endif

@@ -99,14 +99,18 @@ void NScrollView::resize(int rows, int cols)
 
 void NScrollView::scrollto(int delta)//сдвинуть отображение на drlta строк вверх или вниз
 {
-    int oldstartindex = startindex;
-    startindex = startindex + delta;
-    if ( startindex < 0 )
-	startindex = 0;
-    if ( startindex > content.size()-getheight() )
-	startindex = content.size()-getheight()/* + 1*/; //+1 чтобы оставлять пустую строку
-    if (oldstartindex != startindex) //позиция изменилась нужно перерисовываться
-	needrefresh = true;
+    if (content.size()>getheight())
+    {
+	//kLogPrintf("NScrollView::scrollto(%d) startindex=%d content.size()=%d getheight()=%d\n",delta, startindex, content.size(), getheight());
+	int oldstartindex = startindex;
+	startindex = startindex + delta;
+	if ( startindex < 0 )
+	    startindex = 0;
+	if ( startindex > content.size()-getheight() )
+	    startindex = content.size()-getheight()/* + 1*/; //+1 чтобы оставлять пустую строку
+	if (oldstartindex != startindex) //позиция изменилась нужно перерисовываться
+	    needrefresh = true;
+    }
 };
 
 
@@ -115,7 +119,11 @@ void NScrollView::setautoscroll(bool b) //true чтобы включить ав�
     int oldstartindex = startindex;
     autoscroll = b;
     if (b)
+    {
 	startindex = content.size()-getheight();
+	if ( startindex < 0 )
+	    startindex = 0;
+    }
     if (oldstartindex != startindex) //позиция изменилась нужно перерисовываться
 	needrefresh = true;
 };
