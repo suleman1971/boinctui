@@ -34,7 +34,7 @@ NScrollBar::NScrollBar(NRect rect, chtype chtop, chtype chbottom, chtype chinact
 void NScrollBar::setpos(int vmin, int vmax, int vpos1, int vpos2)
 {
     //если видимая часть больше или равна контенту то выключаем
-    setvisible(!((vpos1==vmin)&&(vpos2==vmax)));
+    setvisible(!((vpos1<=vmin)&&(vpos2>=vmax)));
     if ((this->vmin!=vmin)||(this->vmax!=vmax)||(this->vpos1!=vpos1)||(this->vpos2!=vpos2))
     {
 	this->vmin=vmin;

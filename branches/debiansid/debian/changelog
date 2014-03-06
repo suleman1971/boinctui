@@ -1,3 +1,10 @@
+boinctui (2.3.4-2) unstable; urgency=low
+
+  * bugfix: wrong scrollbar in task window
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 06 Mar 2014 10:42:18 +0400
+
+
 boinctui (2.3.4-1) unstable; urgency=low
 
   * Build-Depend on libgnutls-openssl-dev instead of libgnutls-dev to allow

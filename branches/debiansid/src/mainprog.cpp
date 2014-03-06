@@ -24,9 +24,6 @@
 #include "nmessagebox.h"
 
 
-#define EVTIMERINTERVAL 2 //число секунд через которые генерируется evTIMER
-
-
 MainProg::MainProg()
 {
     uistate = 0;
@@ -422,6 +419,7 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    wmain->refresh();
 	    wstatus->refresh();
 	}
+	#ifndef EVENTTHREAD
 	//если настало время посылаем evTIMER
 	if (time(NULL) - evtimertime > EVTIMERINTERVAL)
 	{
@@ -448,11 +446,11 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	    if (event != NULL)
 		putevent(event); //отправить в очередь
 	}
+	#endif
 	//есть события в очереди - выполняем
-	while(!evqueue.empty())
+	while(!evqueueempty())
 	{
-	    NEvent* event = evqueue.front(); //получить первое событие из очереди
-	    evqueue.pop();
+	    NEvent* event = popevent(); //получить первое событие из очереди
 	    this->eventhandle(event); //отправить событие обработчику
 	    #ifdef DEBUG
 	    if ((event->type != NEvent::evTIMER)&&(!event->done))
@@ -465,6 +463,9 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	}
 	//разблокируем SIGWINCH
 	sigprocmask(SIG_UNBLOCK, &newset, 0); 
+	#ifdef EVENTTHREAD
+	usleep(10000); //10 milisec
+	#endif
     }
     while(!done);
 }
