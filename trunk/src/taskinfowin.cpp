@@ -44,6 +44,16 @@ std::string raw2hr (Item* item)
 	}//switch
     }
 
+    if ( 0 == strcmp(item->getname(), "scheduler_state") )
+    {
+	int i = item->getivalue();
+	switch (i)
+	{
+	    case 1: result  << "preempted"; break;
+	    case 2: result  << "scheduled"; break;
+	}//switch
+    }
+
     if ( 0 == strcmp(item->getname(), "state") )
     {
 	int i = item->getivalue();
