@@ -1,7 +1,7 @@
 // =============================================================================
 // This file is part of boinctui.
 // http://boinctui.googlecode.com
-// Copyright (C) 2012,2013 Sergey Suslov
+// Copyright (C) 2012-2014 Sergey Suslov
 //
 // boinctui is free software; you can redistribute it and/or modify it  under
 // the terms of the GNU General Public License as published by the
@@ -15,8 +15,121 @@
 // <http://www.gnu.org/licenses/>.
 // =============================================================================
 
+#include <sstream>
+#include <iomanip>
 #include "kclog.h"
 #include "taskinfowin.h"
+
+
+std::string raw2hr (Item* item)
+{
+    std::stringstream result;
+    if ( 0 == strcmp(item->getname(), "fraction_done") )
+    {
+	double d = item->getdvalue();
+	result << std::setprecision(4) << d*100 << " %";
+    }
+
+    if ( 0 == strcmp(item->getname(), "active_task_state") )
+    {
+	int i = item->getivalue();
+	switch (i)
+	{
+	    case 0: result  << "uninitialized"; break;
+	    case 1: result  << "executing"; break;
+	    case 9: result  << "suspended"; break;
+	    case 5: result  << "abort pending"; break;
+	    case 8: result  << "quit pending"; break;
+	    case 10: result << "copy panding"; break;
+	}//switch
+    }
+
+    if ( 0 == strcmp(item->getname(), "state") )
+    {
+	int i = item->getivalue();
+	switch (i)
+	{
+	    case 0: result  << "new"; break;
+	    case 1: result  << "downloading"; break;
+	    case 2: result  << "downloaded"; break;
+	    case 3: result  << "compute error"; break;
+	    case 4: result  << "uploading"; break;
+	    case 5: result  << "uploaded"; break;
+	    case 6: result  << "aborted"; break;
+	    case 7: result  << "upload failed"; break;
+	}//switch
+    }
+
+    if ( 0 == strcmp(item->getname(), "exit_status") )
+    {
+	int i = item->getivalue();
+	switch (i)
+	{
+	    case 192: result << "exit statfile write"; break;
+	    case 193: result << "exit signal"; break;
+	    case 194: result << "aborted by client"; break;
+	    case 195: result << "exit child failed"; break;
+	    case 196: result << "exit disk limit exceeded"; break;
+	    case 197: result << "exit time limit exceeded"; break;
+	    case 198: result << "exit mem limit exceeded"; break;
+	    case 199: result << "exit client exiting"; break;
+	    case 200: result << "exit unstarted late"; break;
+	    case 201: result << "exit missing coproc"; break;
+	    case 202: result << "exit aborted by project"; break;
+	    case 203: result << "aborted via gui"; break;
+	    case 204: result << "exit unknown"; break;
+	}//switch
+    }
+
+    if
+    (
+	!strcmp(item->getname(), "received_time") ||
+	!strcmp(item->getname(), "report_deadline") ||
+	!strcmp(item->getname(), "completed_time")
+    )
+    {
+	time_t t = (time_t)item->getdvalue();
+	std::string s = ctime(&t);
+	if (s.size() > 0)
+	    s.resize(s.size()-1); //убрать символ \n в конце
+	result << s;
+    }
+
+    if
+    (
+	!strcmp(item->getname(), "estimated_cpu_time_remaining") ||
+	!strcmp(item->getname(), "current_cpu_time") ||
+	!strcmp(item->getname(), "final_cpu_time") ||
+	!strcmp(item->getname(), "final_elapsed_time") ||
+	!strcmp(item->getname(), "checkpoint_cpu_time") ||
+	!strcmp(item->getname(), "elapsed_time")
+    )
+    {
+	time_t t = (time_t)item->getdvalue();
+	time_t t2;
+	int days = t / (24 * 3600);
+	t2 = t - (days * 24 * 3600);
+	int hours = t2 / 3600;
+	t2 = t2 - hours * 3600;
+	int mins = t2 / 60;
+	int secs = t2 - mins * 60;
+	if (days)
+	    result << days << "d " << hours << "h " << mins << "m " << secs << "s";
+	else
+	{
+	    if (hours)
+		result << hours << "h " << mins << "m " << secs << "s";
+	    else
+	    {
+		if (mins)
+		    result << mins << "m " << secs << "s";
+		else
+		    result << secs << "s";
+	    }
+	}
+    }
+    return result.str();
+}
 
 
 void Tree2Text(Item* item, std::vector<std::pair<std::string, std::string> >& vout, int& maxlen1, int& maxlen2)
@@ -33,14 +146,19 @@ void Tree2Text(Item* item, std::vector<std::pair<std::string, std::string> >& vo
 	}
 	else
 	{
+	    std::string sval = (*it2)->getsvalue();
+	    std::string svalhr = raw2hr(*it2);
+	    if (svalhr.length())
+		sval = sval + " (" + svalhr + ")";
 	    if (strlen((*it2)->getname()) > maxlen1)
 		maxlen1 = strlen((*it2)->getname());
-	    if (strlen((*it2)->getsvalue()) > maxlen2)
-		maxlen2 = strlen((*it2)->getsvalue());
-	    vout.push_back(std::pair<std::string, std::string>((*it2)->getname(), (*it2)->getsvalue()));
+	    if (sval.length()/*strlen((*it2)->getsvalue())*/ > maxlen2)
+		maxlen2 = sval.length() /*strlen((*it2)->getsvalue())*/;
+	    vout.push_back(std::pair<std::string, std::string>((*it2)->getname(), sval/*(*it2)->getsvalue()*/));
 	}
     }
 }
+
 
 //поиск в векторе v переменной с именем varname. Вернет значение или ""
 std::string FindVar(std::vector<std::pair<std::string, std::string> >& v, std::string& varname)
