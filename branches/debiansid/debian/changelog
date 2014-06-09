@@ -1,3 +1,12 @@
+boinctui (2.3.5-1) unstable; urgency=low
+
+  * implemented human readable values in raw task info window
+
+  * bugfix: incorrect dead line time for expired tasks
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Mon, 09 Jun 2014 09:51:45 +0400
+
+
 boinctui (2.3.4-2) unstable; urgency=low
 
   * bugfix: wrong scrollbar in task window

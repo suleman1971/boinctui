@@ -1,3 +1,9 @@
+boinctui (2.3.5)
+
+  * implemented human readable values in raw task info window
+
+  * bugfix: incorrect dead line time for expired tasks
+
 boinctui (2.3.4)
 
   * bugfix: message list was shrink after any html tags in message body
