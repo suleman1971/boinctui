@@ -164,8 +164,10 @@ std::string getresultstatestr(Item* result)
     {
 	if (state->getivalue() == 3)
 	    return "DoneEr"; //была завершена с ошибкой
-	else
-	    return "Done";
+	if (state->getivalue() == 6)
+	    return "Abort"; //была прервана
+//	else
+	return "Done";
     }
     if (result->findItem("suspended_via_gui") != NULL) //задача suspend via gui
 	return "GSusp.";
@@ -179,6 +181,8 @@ std::string getresultstatestr(Item* result)
 		return "Err";
         case 4:
 		return "Upld";
+        case 6:
+		return "Abort";
     }
     if (active_task_state != NULL)
     {
@@ -380,8 +384,8 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ( sstate == "Dwnld")
 		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
 		int stateattr = attr;
-		if ( sstate == "DoneEr")
-		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK);
+		if (( sstate == "DoneEr") || ( sstate == "Abort"))
+		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK)/* | A_BOLD*/;
 		//проверяем нужно-ли отображать эту задачу
 		if
 		( !(
@@ -413,8 +417,9 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    if (strstr(plan_class->getsvalue(),"intel") != NULL ) //NEED CHECK !!!
 			attrgpu = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
 		}
-		if (( sstate != "Run" )&&( sstate != "Done"))
-		    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
+		if (( sstate != "Run" )||( sstate != "Done"))
+		//    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
+		    attrgpu = attrgpu | A_BOLD; //включаем болд для незапущенных
 		if(iscolvisible(column++))
 		    cs->append(attrgpu, "  %6s", sdone);
 		//колонка 3 имя проекта
@@ -451,7 +456,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 			double beforedl = dtime - time(NULL); //число секунд до дедлайна
 			if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
 			    attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
-			cs->append(attr2," %4s", gethumanreadabletimestr(beforedl).c_str());
+			cs->append(attr2," %4s", (beforedl>0) ? gethumanreadabletimestr(beforedl).c_str() : "dead");
 		    }
 		    else
 			cs->append(attr2," %4s", "?");
