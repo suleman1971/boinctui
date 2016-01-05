@@ -37,6 +37,7 @@ class Config
     void  setivalue(const char* name, int value) { setivalue(getcfgptr(), name, value); }; //создаст в корне подэл-т name со значением value
     void  addhost(const char* host, const char* port, const char* pwd);
     bool  isdefault; //true если конфиг не найден и создан дефолтный
+    std::string errmsg; //строка ошибки возникшей при загрузке файла конфига
   protected:
     char* fullname;	//полное имя файла
     Item* root;  	//корень дерева конфига

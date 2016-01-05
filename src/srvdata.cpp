@@ -248,7 +248,8 @@ Item* Srv::req(const char* fmt, ...) //выполнить запрос (верн
 	    b =  (char*)stripinvalidtag(b, strlen(b)); //убираем кривые теги
 	// === разбираем ответ ===
 	lock();
-	Item* dom = xmlparse(b, strlen(b)); //парсим xml
+    std::string errmsg;
+	Item* dom = xmlparse(b, strlen(b), errmsg); //парсим xml
 	unlock();
 	free(result); //рез-т в тесктовом виде больше не нужен
 	return dom;
