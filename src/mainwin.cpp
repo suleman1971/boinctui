@@ -125,14 +125,19 @@ void MainWin::updatecaption()
 {
     NColorString oldcaption = *caption;
     caption->clear();
-    caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
-    if (srv->loginfail)
-        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
-    else
+    if (srv)
     {
-	if (!srv->isconnected())
-	    caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"offline!");
+        caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
+        if (srv->loginfail)
+            caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
+        else
+        {
+    	    if (!srv->isconnected())
+    	        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"offline!");
+        }
     }
+    else
+        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"no servers");
     if (oldcaption != *caption)
 	refresh();
 }
