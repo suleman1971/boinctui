@@ -1,3 +1,9 @@
+boinctui (2.3.6)
+
+  * bugfix: crach due boinctui.cfg incorrect.
+
+  * more informative time format at task panel
+
 boinctui (2.3.5)
 
   * implemented human readable values in raw task info window
