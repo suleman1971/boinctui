@@ -1,3 +1,9 @@
+boinctui (2.4.0)
+
+  * resizable message panel
+
+  * bugfix: more accurately daily scores visualization
+
 boinctui (2.3.6)
 
   * bugfix: crach due boinctui.cfg incorrect.

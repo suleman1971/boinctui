@@ -92,6 +92,8 @@ void MainProg::updatestatuslinecontent()
     {
 	wstatus->setstring(attrYG, " PgUp/PgDn");
 	wstatus->appendstring(attrWG, " Scroll Msg |");
+	wstatus->appendstring(attrYG, " +/-");
+	wstatus->appendstring(attrWG, " Resize Msg |");
 	wstatus->appendstring(attrYG, " Up/Dn");
 	wstatus->appendstring(attrWG, " Select |");
 	if (uistate & stUISELECTOR)

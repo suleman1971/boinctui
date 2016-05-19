@@ -19,7 +19,11 @@
 #define NVIEW_H
 
 #include <typeinfo>
-#include <panel.h>
+#ifdef HAVE_LIBNCURSESW
+    #include <ncursesw/panel.h>
+#else
+    #include <panel.h>
+#endif
 #include "nrect.h"
 #include "nevent.h"
 

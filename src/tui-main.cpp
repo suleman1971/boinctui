@@ -16,7 +16,11 @@
 // =============================================================================
 
 #include <locale.h>
-#include <curses.h>
+#ifdef HAVE_LIBNCURSESW
+    #include <ncursesw/curses.h>
+#else
+    #include <curses.h>
+#endif
 #include <malloc.h>
 #include "kclog.h"
 #include "mainprog.h"

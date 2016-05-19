@@ -20,7 +20,11 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <form.h>
+#ifdef HAVE_LIBNCURSESW
+    #include <ncursesw/form.h>
+#else
+    #include <form.h>
+#endif
 #include "ngroup.h"
 
 

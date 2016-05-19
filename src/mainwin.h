@@ -52,6 +52,8 @@ class MainWin : public NGroup
     NVLine*	vline; 		//верт линия отделяющая инф панель
     std::vector<std::string>	colname; 	//список названий колонок
     void	setcoltitle();
+    int		wtaskheightpercent; //высота в процентах*100 списка задач относительно всего окна (10000 == 100%)
+    void saveopttoconfig(); //сохранить высоту списка задач и т.д. в дереве конфига
 };
 
 #endif //MAINWIN_H

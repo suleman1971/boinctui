@@ -90,14 +90,14 @@ void InfoPanel::refresh()
     bool compact = true; //компактный вывод статистики если user=host
     int line,col;
     getyx(win,line,col);
-    if ( (!compact)||(usertotal != hosttotal) )
+    if ( (!compact)||(abs(usertotal - hosttotal) > 1) )
     {
 	mvwprintw(win,line++,0,"user total%10.0f\n",usertotal);
 	mvwprintw(win,line++,0,"host total%10.0f\n",hosttotal);
     }
     else
 	mvwprintw(win,line++,0,"total     %10.0f\n",usertotal);
-    if ( (!compact)||(useravg != hostavg) )
+    if ( (!compact)||(abs(useravg - hostavg) > 1) )
     {
 	mvwprintw(win,line++,0,"user avg  %10.0f\n",useravg);
 	mvwprintw(win,line++,0,"host avg  %10.0f\n",hostavg);
@@ -109,7 +109,7 @@ void InfoPanel::refresh()
     strftime(buf, sizeof(buf),"%-e %b",ltime); //"%-e %b %-k:%M"
     mvwprintw(win,line++,0,"%-s %s\n", buf, getdayname(laststattime).c_str()); //дата/время последней статистики
     //wattrset(win,0);
-    if ( (!compact)||(lastdayuser != lastdayhost) )
+    if ( (!compact)||(abs(lastdayuser - lastdayhost) > 1) )
     {
 	if ( asciilinedraw == 1)
 	{
@@ -141,11 +141,11 @@ void InfoPanel::refresh()
 	int needlines = 2;
 	if (!projects[i].sstatus.empty())
 	    needlines++;
-	if ( (!compact)||(projects[i].user != projects[i].host) )
+	if ( (!compact)||(abs(projects[i].user - projects[i].host) > 1) )
 	    needlines += 2;
 	else
 	    needlines++;
-	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
+	if ( (!compact)||(abs(projects[i].userlastday - projects[i].hostlastday) > 1) )
 	    needlines += 2;
 	else
 	    needlines++;
@@ -161,7 +161,7 @@ void InfoPanel::refresh()
 	    mvwprintw(win,line++,0,"%s\n",projects[i].sstatus.c_str());
 	}
 	wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
-	if ( (!compact)||(projects[i].user != projects[i].host) )
+	if ( (!compact)||(abs(projects[i].user - projects[i].host) > 1) )
 	{
 	    mvwprintw(win,line++,0,"user total%10.0f\n",projects[i].user);
 	    mvwprintw(win,line++,0,"host total%10.0f\n",projects[i].host);
@@ -171,7 +171,7 @@ void InfoPanel::refresh()
 	ltime = localtime(&projects[i].laststattime);
 	strftime(buf, sizeof(buf),"%-e %b",ltime); //"%-e %b %-k:%M"
 	mvwprintw(win,line++,0,"%-s %s\n",buf, getdayname(projects[i].laststattime).c_str());
-	if ( (!compact)||(projects[i].userlastday != projects[i].hostlastday) )
+	if ( (!compact)||(abs(projects[i].userlastday - projects[i].hostlastday) > 1) )
 	{
 	    if (asciilinedraw == 1)
 	    {
