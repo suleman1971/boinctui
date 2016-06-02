@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: boinctui
-Source: https://code.google.com/p/boinctui/source/checkout
+Source: https://github.com/suleman1971/boinctui.git
 
 Files: *
 Copyright: 2012 Sergey Suslov <suleman1971@gmail.com>

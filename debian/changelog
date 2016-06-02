@@ -7,6 +7,15 @@ boinctui (2.4.0-0) unstable; urgency=low
  -- Sergey Suslov <suleman1971@gmail.com>  Thu, 02 Jun 2016 09:56:09 +0400
 
 
+boinctui (2.3.6-2) unstable; urgency=low
+
+  * fix debian/watch url
+
+  * fix some lintian warnings
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Sun, 13 Mar 2016 21:07:04 +0400
+
+
 boinctui (2.3.6-1) unstable; urgency=low
 
   * bugfix: crach due boinctui.cfg incorrect (Closes: #783224)

@@ -4,6 +4,7 @@ boinctui (2.4.0)
 
   * bugfix: more accurately daily scores visualization
 
+
 boinctui (2.3.6)
 
   * bugfix: crach due boinctui.cfg incorrect.
