@@ -926,7 +926,7 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 	}
 	me->takt++;
     }
-    kLogPrintf("%s:%s::updatethread() stoped\n",me->gethost(),me->getport());
+    kLogPrintf("%s:%s::updatethread() stopped\n",me->gethost(),me->getport());
     return NULL;
 }
 

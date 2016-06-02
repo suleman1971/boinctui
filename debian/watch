@@ -1,2 +1,2 @@
 version=3
-http://sf.net/boinctui/boinctui_(.+)\.tar\.gz
+opts=pgpsigurlmangle=s/$/.asc/ http://sf.net/boinctui/boinctui_(.+)\.tar\.gz
