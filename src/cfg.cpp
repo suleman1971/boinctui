@@ -63,37 +63,41 @@ void Config::load()
     isdefault = true;
     if (fullname == NULL)
     {
-	generatedefault();
-	return;
+	    generatedefault();
+	    return;
     }
 
     struct stat st;
     int retcode = lstat(fullname, &st);
     if (retcode != 0) //файла нет?
     {
-	//делаем дефолтный
-	generatedefault();
-	return;
+	    //делаем дефолтный
+	    generatedefault();
+	    return;
     }
     //читаем файл
     FILE* pfile;
     pfile = fopen(fullname,"r");
     if (pfile!=NULL)
     {
-	kLogPrintf("SIZE=%ld\n",st.st_size);
-	char* buf = (char*)malloc(st.st_size + 1);
-	size_t n = fread (buf,1,st.st_size,pfile);
-	buf[n]=0;
-	kLogPrintf("%s\n",buf);
-	root = xmlparse(buf, st.st_size);
-	fclose (pfile);
-	isdefault = false;
+        kLogPrintf("SIZE=%ld\n",st.st_size);
+	    char* buf = (char*)malloc(st.st_size + 1);
+	    size_t n = fread (buf,1,st.st_size,pfile);
+	    buf[n]=0;
+	    kLogPrintf("%s\n",buf);
+	    root = xmlparse(buf, st.st_size, errmsg);
+        if (!errmsg.empty())
+            errmsg = fullname + std::string("\n") +  errmsg;
+	    fclose (pfile);
+        isdefault = false;
     }
 }
 
 
 void Config::save()
 {
+    if (!errmsg.empty())
+        return; //если была ошибка при загрузке то файл не перезаписываем
     if (fullname == NULL)
 	return;
     if (root == NULL)

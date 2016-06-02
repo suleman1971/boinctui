@@ -1,8 +1,27 @@
+boinctui (2.4.0-0) unstable; urgency=low
+
+  * resizable message panel
+
+  * bugfix: more accurately daily scores visualization
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 02 Jun 2016 09:56:09 +0400
+
+
+boinctui (2.3.6-1) unstable; urgency=low
+
+  * bugfix: crach due boinctui.cfg incorrect (Closes: #783224)
+
+  * more informative time format at task panel
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 21 Jan 2016 10:49:30 +0400
+
+
 boinctui (2.3.5-2) unstable; urgency=low
 
   * bugfix: Overwrites orig.tar.gz in build scripts. (Closes: #790230)
 
  -- Sergey Suslov <suleman1971@gmail.com>  Mon, 29 Jun 2015 20:12:39 +0400
+
 
 boinctui (2.3.5-1) unstable; urgency=low
 

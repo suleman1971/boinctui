@@ -18,7 +18,11 @@
 #ifndef NMENU_H
 #define NMENU_H
 
-#include <menu.h>
+#ifdef HAVE_LIBNCURSESW
+    #include <ncursesw/menu.h>
+#else
+    #include <menu.h>
+#endif
 #include <stdlib.h>
 #include "ngroup.h"
 #include "nscrollbar.h"

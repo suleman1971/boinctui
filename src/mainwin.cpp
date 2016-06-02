@@ -25,6 +25,23 @@
 
 MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
 {
+    //читаем опции из конфига если нет то создаем
+    wtaskheightpercent = 5000;
+    if (gCfg != NULL)
+    {
+	Item* rootcfg = gCfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* wtask_height_percent = rootcfg->findItem("wtask_height_percent");
+	    if (wtask_height_percent == NULL) //создать
+	    {
+		wtask_height_percent = new Item("wtask_height_percent");
+		wtask_height_percent->setivalue(wtaskheightpercent);
+		rootcfg->addsubitem(wtask_height_percent);
+	    }
+	    wtaskheightpercent = wtask_height_percent->getivalue();
+	}
+    }
     colname.push_back("  #  ");
     colname.push_back("state ");
     colname.push_back("   done%%");
@@ -35,7 +52,12 @@ MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
     colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
     tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
-    wtask = new TaskWin(NRect(getheight()/2, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
+    int wtaskheight = getheight() * wtaskheightpercent / 10000.0;
+    if (wtaskheight < 5)
+	wtaskheight = 5;
+    if (wtaskheight > getheight() - 10)
+	wtaskheight = getheight() - 10;
+    wtask = new TaskWin(NRect(wtaskheight/*getheight()/2*/, getwidth()-2-(INFPANWIDTH)-1, 2, 1)); //создаем окно процессов внутри wmain
     setcoltitle();
     taskscrollbar = new NScrollBar(NRect(wtask->getheight()+2,1, wtask->getbegrow()-2, getwidth()-INFPANWIDTH-2), ACS_TTEE | A_BOLD, 0, ACS_VLINE | A_BOLD); //скроллбар панели задач
     wtask->setscrollbar(taskscrollbar);
@@ -61,7 +83,14 @@ void MainWin::resize(int rows, int cols)
 {
     NGroup::resize(rows, cols);
     tablheader->resize(1, getwidth()-2-(INFPANWIDTH)-1);
-    wtask->resize(getheight()/2, getwidth()-2-(INFPANWIDTH)-1); //размер окна задач
+
+    int wtaskheight = getheight() * wtaskheightpercent / 10000.0;
+    if (wtaskheight < 5)
+	wtaskheight = 5;
+    if (wtaskheight > getheight() - 10)
+	wtaskheight = getheight() - 10;
+    wtask->resize(wtaskheight/*getheight()/2*/, getwidth()-2-(INFPANWIDTH)-1); //размер окна задач
+
     wmsg->resize(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1));
     wmsg->move(wtask->getheight()+3, 1);
     hline->resize(1, getwidth()-2-(INFPANWIDTH+1)); //горизонтальная линия
@@ -74,6 +103,22 @@ void MainWin::resize(int rows, int cols)
     taskscrollbar->move(wtask->getbegrow()-2, getwidth()-INFPANWIDTH-2);
     panel1->resize(getheight()-2,INFPANWIDTH);
     panel1->move(1,getwidth()-INFPANWIDTH-1);
+}
+
+
+void MainWin::saveopttoconfig() //сохранить высоту списка задач и т.д. в дереве конфига
+{
+    //пишем в конфиг
+    if (gCfg != NULL)
+    {
+	Item* rootcfg = gCfg->getcfgptr();
+	if (rootcfg != NULL)
+	{
+	    Item* wtask_height_percent = rootcfg->findItem("wtask_height_percent");
+	    if (wtask_height_percent != NULL)
+		wtask_height_percent->setivalue(wtaskheightpercent);
+	}
+    }
 }
 
 
@@ -125,14 +170,19 @@ void MainWin::updatecaption()
 {
     NColorString oldcaption = *caption;
     caption->clear();
-    caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
-    if (srv->loginfail)
-        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
-    else
+    if (srv)
     {
-	if (!srv->isconnected())
-	    caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"offline!");
+        caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
+        if (srv->loginfail)
+            caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
+        else
+        {
+    	    if (!srv->isconnected())
+    	        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"offline!");
+        }
     }
+    else
+        caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"no servers");
     if (oldcaption != *caption)
 	refresh();
 }
@@ -144,7 +194,38 @@ void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
 
     if ( ev->done )
 	return;
-
+    if (ev->type == NEvent::evKB) //клавиатурные
+    {
+        switch(ev->keycode)
+	{
+	    case '-': //меняем размер окна логов
+	    case '+': //меняем размер окна логов
+	    {
+		int wtaskheight = getheight() * wtaskheightpercent / 10000.0; //высота в строках
+		//игнорировать событие если дошли до ограничителей
+		if ((ev->keycode == '+')&&(wtaskheight < 5))
+		    break;
+		if ((ev->keycode == '-')&&(wtaskheight > getheight() -10))
+		    break;
+		//расчитать новый процентный размер окна
+		int delta = 10000.0/getheight();
+		if (ev->keycode == '+')
+		    delta*=-1;
+		wtaskheightpercent+=delta;
+		if (wtaskheightpercent > 10000)
+		    wtaskheightpercent = 10000;
+		wtaskheightpercent-=10;
+		if (wtaskheightpercent < 0)
+		    wtaskheightpercent = 0;
+		//сохранить новое значение в конфиге
+		saveopttoconfig();
+		//ресайз и перерисовка
+		resize(getheight(),getwidth());
+		refresh();
+		break;
+	    }
+	}
+    }
     if (ev->type == NEvent::evPROG) //прграммные
     {
 	switch(ev->cmdcode)

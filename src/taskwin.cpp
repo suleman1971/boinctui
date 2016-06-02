@@ -211,6 +211,35 @@ std::string getresultstatestr(Item* result)
 std::string gethumanreadabletimestr(time_t time) //получить в виде строки прогнозируемое время завершения задачи
 {
     std::stringstream s;
+    time_t value = time; //секунды
+    if (value == 0)
+        s << "- ";
+    else
+    {
+        if (value <= 99)
+            s << value << "s"; //возвращаем только секунды
+        else
+        {
+            value = value / 60; //минуты
+            if (value <= 99)
+                s << value << "m"; //возвращаем только минуты
+            else
+            {
+                value = value / 60; //часы
+                if (value <= 99)
+                    s << value << "h"; //возвращаем только часы
+                else
+                {
+                    value = value / 24; //дни
+                    if (value <= 99)
+                        s << value << "d"; //возвращаем только дни
+                    else
+                        s << "inf"; // возвращаем "inf" дни не умещаются в два разряда
+                }
+            }
+        }
+    }        
+    /*
     tm* t = gmtime(&time);
     if ( t->tm_yday > 0 )
 	s << t->tm_yday << "d";
@@ -225,6 +254,7 @@ std::string gethumanreadabletimestr(time_t time) //получить в виде 
 		    s << t->tm_sec << "s";
 		else
 		    s << "- ";
+    */
 	return s.str();
 }
 

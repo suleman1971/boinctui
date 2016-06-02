@@ -38,7 +38,8 @@ enum TuiEventType
     evTASKINFO,		//генерируется когда нужно открыть окно детальной информации о задаче
     evTASKSELECTORON,	//генерируется когда селектор задач становится видимым
     evTASKSELECTOROFF,	//генерируется когда селектор задач становится скрытым
-    evASCIIMODECHANGE	//генерируется при переключении режима ASCII рамок
+    evASCIIMODECHANGE,	//генерируется при переключении режима ASCII рамок
+    evPOPUPMSG          //генерируется когда нужно открыть попап сообщение
 };
 
 
@@ -73,6 +74,11 @@ class TuiEvent : public NEvent //класс программных событи�
     TuiEvent(TuiEventType type ,int mode) : NEvent(evPROG, type) //событие режим видимости задач
     {
 	this->idata1 = mode;
+    };
+    TuiEvent(TuiEventType type, const char* caption, const char* msg) : NEvent(evPROG, type) //событие попап сообщения
+    {
+        this->sdata1 = caption;
+        this->sdata2 = msg;
     };
     virtual ~TuiEvent() { /*kLogPrintf("~TuiEvent()\n");*/ };
     Srv*		srv;

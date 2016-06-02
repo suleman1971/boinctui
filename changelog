@@ -1,8 +1,22 @@
+boinctui (2.4.0)
+
+  * resizable message panel
+
+  * bugfix: more accurately daily scores visualization
+
+boinctui (2.3.6)
+
+  * bugfix: crach due boinctui.cfg incorrect.
+
+  * more informative time format at task panel
+
+
 boinctui (2.3.5)
 
   * implemented human readable values in raw task info window
 
   * bugfix: incorrect dead line time for expired tasks
+
 
 boinctui (2.3.4)
 

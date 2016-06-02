@@ -92,6 +92,8 @@ void MainProg::updatestatuslinecontent()
     {
 	wstatus->setstring(attrYG, " PgUp/PgDn");
 	wstatus->appendstring(attrWG, " Scroll Msg |");
+	wstatus->appendstring(attrYG, " +/-");
+	wstatus->appendstring(attrWG, " Resize Msg |");
 	wstatus->appendstring(attrYG, " Up/Dn");
 	wstatus->appendstring(attrWG, " Select |");
 	if (uistate & stUISELECTOR)
@@ -135,11 +137,14 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 	    case 'n':
 	    case 'N':
 		menu->disable();
+        if (gsrvlist->getcursrv())
+        {
 		gsrvlist->nextserver();
 		wmain->setserver(gsrvlist->getcursrv());
 		menu->setserver(gsrvlist->getcursrv());
 		evtimertime = 0; //для перезапуска таймера для форсированонй перерисовки
 		wmain->updatecaption();
+        }
 		break;
 	    case 'c':
 	    case 'C':
@@ -239,6 +244,18 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		updatestatuslinecontent();
 		break;
 	    }
+        case evPOPUPMSG:
+        {
+		    TuiEvent* ev1 = (TuiEvent*)ev;
+		    NMessageBox* mbox = new NMessageBox((ev1->sdata1 + "\n" +  ev1->sdata2).c_str());
+		    NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки Ok 
+		    mbox->addbutton(new NMButton("Ok",buttonNev, 'O','o',27,'\n',0));
+		    insert(mbox);
+		    uistate = uistate | stUIMODALFORM;
+            break;
+        }
+
+
 	    case evKEYBIND: //событие KeyBinding win
 	    {
 		if (!destroybyid(typeid(HelpWin).name()))
@@ -402,8 +419,13 @@ bool MainProg::mainloop() //основной цикл порождающий с�
     sigset_t newset;
     sigemptyset(&newset);
     sigaddset(&newset, SIGWINCH); //маска для сигнала 
-    if (gCfg->isdefault) //если конфига нет то открыть форму
-	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
+    if (!gCfg->errmsg.empty())
+        putevent(new TuiEvent(evPOPUPMSG, "Config error:", gCfg->errmsg.c_str()));
+    else
+    {
+        if (gCfg->isdefault) //если конфига нет то открыть форму
+	        putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
+    }
     do
     {
 	//блокировка сигнала изменения окна SIGWINCH на время отрисовки (из-за нереентерабельности курсес)
