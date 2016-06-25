@@ -17,7 +17,7 @@
 
 #include <string.h>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include "kclog.h"
 #include "nmessagebox.h"
 
@@ -172,4 +172,3 @@ void NMessageBox::eventhandle(NEvent* ev) 	//обработчик событий
 	    ev->done = true;
     }
 }
-
