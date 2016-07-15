@@ -1,3 +1,8 @@
+boinctui (2.4.1)
+
+  * bugfix: gcc6 build fail
+
+
 boinctui (2.4.0)
 
   * resizable message panel

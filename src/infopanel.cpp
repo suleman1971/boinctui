@@ -17,6 +17,9 @@
 
 #include <string.h>
 #include <algorithm>
+#if __GNUC__ >= 6
+   #include <cmath>
+#endif
 #include "kclog.h"
 #include "infopanel.h"
 #include "net.h"

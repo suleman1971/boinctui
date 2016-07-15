@@ -1,3 +1,9 @@
+boinctui (2.4.1-1) unstable; urgency=low
+
+  * bugfix: gcc6 build fail (Closes: #831150)
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Fri, 15 Jul 2016 12:12:12 +0400
+
 boinctui (2.4.0-1) unstable; urgency=low
 
   * resizable message panel
