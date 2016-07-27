@@ -1,3 +1,11 @@
+boinctui (2.4.2)
+
+  * bugfix: than boinctui connected to new version boinc-client,
+    messages at log window has wrong format
+
+  * timestamp end project name shown in message list only than they
+    have changed
+
 boinctui (2.4.1)
 
   * bugfix: gcc6 build fail

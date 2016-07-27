@@ -29,7 +29,7 @@ void MsgWin::updatedata() //обновить данные с сервера
     if (srv->msgdom.empty())
     {
 	clearcontent();
-lastmsgno = 0;
+	lastmsgno = 0;
 	return;
     }
     Item* tmpmsgdom = srv->msgdom.hookptr();
@@ -48,6 +48,9 @@ lastmsgno = 0;
     {
 	std::vector<Item*> mlist = msgs->getItems("msg");
 	std::vector<Item*>::iterator it;
+	char tbufold[128];
+	memset(tbufold, 0, sizeof(tbufold));
+	std::string sprojectold="";
 	for (it = mlist.begin(); it != mlist.end(); it++) //цикл по сообщениям
 	{
 	    Item* number = (*it)->findItem("seqno"); 	//номер текущего сообщения
@@ -65,9 +68,24 @@ lastmsgno = 0;
 		std::string sproject = "_no_";
 		if (project != NULL)
 		    sproject = project->getsvalue();
-		addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
-		content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
-		addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", body->getsvalue()); //само сообщение
+		if ((strcmp(tbuf, tbufold) != 0)||(sproject != sprojectold)) //выводим имя и время проекта если они отличаются от предидущего
+		{
+		    //addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
+		    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) ,"%s ", tbuf); //время сообщения
+		    strcpy(tbufold, tbuf);
+		    content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
+		    sprojectold = sproject;
+		}
+		char* s = strdup(body->getsvalue());
+		char* ss = s;
+		if (strncmp(s, " ![CDATA[",9) == 0) //удаляем обертку " !CDATA[...]] " если она есть
+		{
+		    int slen = strlen(s);
+		    s[slen-3] = '\0';
+		    ss = ss + 9;
+		}
+		addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", ss/*body->getsvalue()*/); //само сообщение
+		free(s);
 	    }
 	}
     }
