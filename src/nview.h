@@ -19,7 +19,7 @@
 #define NVIEW_H
 
 #include <typeinfo>
-#ifdef HAVE_LIBNCURSESW
+#if HAVE_LIBNCURSESW == 1 && NCURSESW_HAVE_SUBDIR == 1
     #include <ncursesw/panel.h>
 #else
     #include <panel.h>

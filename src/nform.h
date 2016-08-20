@@ -20,7 +20,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#ifdef HAVE_LIBNCURSESW
+#if HAVE_LIBNCURSESW == 1 && NCURSESW_HAVE_SUBDIR == 1
     #include <ncursesw/form.h>
 #else
     #include <form.h>

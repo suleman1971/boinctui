@@ -18,7 +18,7 @@
 #ifndef NMENU_H
 #define NMENU_H
 
-#ifdef HAVE_LIBNCURSESW
+#if HAVE_LIBNCURSESW == 1 && NCURSESW_HAVE_SUBDIR == 1
     #include <ncursesw/menu.h>
 #else
     #include <menu.h>

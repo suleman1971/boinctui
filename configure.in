@@ -83,17 +83,29 @@ AC_ARG_WITH(
     ]
 )
 
+
 AC_ARG_WITH(
     [ncursesw],
     [AS_HELP_STRING([--without-ncursesw],[use ncurses instead ncursesw])],
     [
 	AC_CHECK_HEADERS( \
-	[ curses.h form.h panel.h] ,  , [AC_MSG_ERROR([Couldn't find some curses header])] )
+	[ curses.h form.h panel.h menu.h] ,  , [AC_MSG_ERROR([Couldn't find some curses header])] )
     ],
     [
 	#use ncursesw (default case)
 	AC_CHECK_HEADERS( \
-	[ ncursesw/curses.h ncursesw/form.h ncursesw/panel.h] ,  , [AC_MSG_ERROR([Couldn't find some ncursesw/*.h header])] )
+	    [ ncursesw/curses.h ncursesw/form.h ncursesw/panel.h ncursesw/menu.h] ,
+	    [
+		AC_DEFINE(NCURSESW_HAVE_SUBDIR,1)
+	    ],
+	    #curses headers are in default include dir?
+	    AC_CHECK_HEADERS( \ 
+		[ curses.h form.h panel.h] , 
+		[],
+		[
+		    AC_MSG_ERROR([Couldn't find some ncursesw header])
+		] )
+	    [AC_MSG_ERROR([Couldn't find some ncursesw/*.h header])] )
     ]
 )
 

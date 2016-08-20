@@ -16,7 +16,7 @@
 // =============================================================================
 
 #include <locale.h>
-#ifdef HAVE_LIBNCURSESW
+#if HAVE_LIBNCURSESW == 1 && NCURSESW_HAVE_SUBDIR == 1
     #include <ncursesw/curses.h>
 #else
     #include <curses.h>
