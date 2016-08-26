@@ -83,11 +83,11 @@ AC_ARG_WITH(
     ]
 )
 
-
 AC_ARG_WITH(
     [ncursesw],
     [AS_HELP_STRING([--without-ncursesw],[use ncurses instead ncursesw])],
     [
+	#use old curses
 	AC_CHECK_HEADERS( \
 	[ curses.h form.h panel.h menu.h] ,  , [AC_MSG_ERROR([Couldn't find some curses header])] )
     ],
@@ -98,9 +98,9 @@ AC_ARG_WITH(
 	    [
 		AC_DEFINE(NCURSESW_HAVE_SUBDIR,1)
 	    ],
-	    #curses headers are in default include dir?
+	    #cursesw headers are in default include dir?
 	    AC_CHECK_HEADERS( \ 
-		[ curses.h form.h panel.h] , 
+		[ curses.h form.h panel.h menu.h] ,
 		[],
 		[
 		    AC_MSG_ERROR([Couldn't find some ncursesw header])
