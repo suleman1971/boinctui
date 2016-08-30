@@ -25,7 +25,7 @@ int asciilinedraw = 0; //1-рисовать рамки символами +----+
 
 void initcolorpairs()
 {
-    //kLogPrintf("COLORS=%d    COLOR_PAIRS=%d\n",COLORS,COLOR_PAIRS);
+    kLogPrintf("COLORS=%d    COLOR_PAIRS=%d\n",COLORS,COLOR_PAIRS);
     //COLORS 0..7
     //COLOR_PAIRS 64  [(0),1..63] 0-predfined
     int npair; //номер генерируемой пары

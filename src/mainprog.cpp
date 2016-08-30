@@ -49,6 +49,7 @@ MainProg::MainProg()
 
 MainProg::~MainProg()
 {
+    kLogPrintf("MainProg::~MainProg()\n");
     gCfg->save();
     delete gsrvlist;
 }

@@ -129,6 +129,7 @@ SrvList::SrvList(/*Config* cfg*/)
 
 SrvList::~SrvList()
 {
+    kLogPrintf("SrvList::~SrvList() servers.size()=%d\n",servers.size());
     clear();
 }
 
@@ -165,11 +166,14 @@ void SrvList::refreshcfg() //перечитать из конфига
 
 void SrvList::clear() //удалить все соединения
 {
+    kLogPrintf("SrvList::clear()\n");
     std::list<Srv*>::iterator it;
     cursrv = servers.begin();
     for (it = servers.begin(); it != servers.end(); it++) //чистим все соединения
     {
+	kLogPrintf("+delete server\n");
 	delete (*it);
+	kLogPrintf("-server deleted success\n");
     }
     servers.clear();
 }
@@ -201,11 +205,17 @@ Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost
 
 Srv::~Srv()
 {
-    setactive(false); //завершаем опросный тред (если он есть)
-    pthread_join(thread, NULL); //ждем пока тред остановится
+    kLogPrintf("+Srv::~Srv() host=%s:%s\n",shost,sport);
+    if (isactive())
+    {
+	setactive(false); //завершаем опросный тред (если он есть)
+	kLogPrintf("waiting stop...\n");
+	pthread_join(thread, NULL); //ждем пока тред остановится
+    }
     if (allprojectsdom != NULL) delete allprojectsdom;
     if (pwd != NULL) delete pwd;
     pthread_mutex_destroy(&mutex);
+    kLogPrintf("-Srv::~Srv()\n");
 }
 
 
