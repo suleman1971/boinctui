@@ -41,7 +41,6 @@ void initcurses()
     #endif
     timeout(100); //ожидание для getch() 100 милисекунд
     start_color();
-    initcolorpairs();
 }
 
 

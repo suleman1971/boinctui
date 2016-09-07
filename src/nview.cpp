@@ -18,36 +18,46 @@
 #include "nview.h"
 #include "ngroup.h"
 #include "kclog.h"
+#include <map>
 
 
 int asciilinedraw = 0; //1-рисовать рамки символами +----+
 
 
-void initcolorpairs()
-{
-    kLogPrintf("COLORS=%d    COLOR_PAIRS=%d\n",COLORS,COLOR_PAIRS);
-    //COLORS 0..7
-    //COLOR_PAIRS 64  [(0),1..63] 0-predfined
-    int npair; //номер генерируемой пары
-    for ( int b = 0; b < COLORS; b++ ) //фон
-    {
-	for ( int f = 0; f < COLORS; f++ ) //текст
-	{
-	    npair = 1 + b * COLORS + f;
-	    if ( npair < COLOR_PAIRS )
-		init_pair(npair, f, b);
-	}
-    }
-}
-
-
 int getcolorpair(int fcolor, int bcolor) //получить пару для комбинации цветов
 {
-    int npair = 1 + bcolor * COLORS + fcolor;
-    if ( npair <= COLOR_PAIRS)
-	return COLOR_PAIR(npair);
+    //for 8-color terminals
+    //COLORS 0..7
+    //COLOR_PAIRS 64  [(0),1..63] 0-predefined
+    //for xterm-256-color
+    //COLORS=256 [0..255]
+    //COLOR_PAIRS 256  [(0),1..255] 0-predefined
+
+    static std::map<std::pair<int, int>, int> colorpairs;
+
+    //kLogPrintf("getcolorpair(%d,%d) size=%d", fcolor, bcolor, colorpairs.size());
+    std::pair<int,int> colorpair = std::make_pair(fcolor, bcolor);
+    int npair = 0;
+    std::map<std::pair<int, int>, int>::const_iterator it = colorpairs.find(colorpair);
+    if (it != colorpairs.end())
+    {
+	//kLogPrintf(" pair already in map");
+	npair = (*it).second;
+    }
     else
-	return COLOR_PAIR(0);
+    {
+	//kLogPrintf(" insert NEW pair");
+	npair = colorpairs.size() + 1;
+	if (npair < COLOR_PAIRS )
+	{
+	    init_pair(npair, fcolor, bcolor);
+	    colorpairs.insert(std::make_pair(colorpair, npair));
+	}
+	else
+	    npair = 0;
+    }
+    //kLogPrintf(" ->%d\n", npair);
+    return COLOR_PAIR(npair);
 }
 
 
