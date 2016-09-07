@@ -190,12 +190,20 @@ void MainWin::updatecaption()
 
 void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
 {
+    static int keycodebak = 0;
+    static int keycodebakbak = 0;
+
     NGroup::eventhandle(ev); //предок
 
     if ( ev->done )
 	return;
     if (ev->type == NEvent::evKB) //клавиатурные
     {
+	//костыль для работы +- на нумпаде независимо от numlock (прямая интерпретация ESC последовательности)
+	if ((keycodebakbak == 27) && (keycodebak == 79) && (ev->keycode == 107))
+	    ev->keycode = '+';
+	if ((keycodebakbak == 27) && (keycodebak == 79) && (ev->keycode == 109))
+	    ev->keycode = '-';
         switch(ev->keycode)
 	{
 	    case '-': //меняем размер окна логов
@@ -225,6 +233,8 @@ void MainWin::eventhandle(NEvent* ev) 	//обработчик событий
 		break;
 	    }
 	}
+	keycodebakbak = keycodebak;
+	keycodebak = ev->keycode;
     }
     if (ev->type == NEvent::evPROG) //прграммные
     {

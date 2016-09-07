@@ -1,3 +1,14 @@
+boinctui (2.4.3)
+
+  * bugfix: invisible colors at xterm-256color
+
+  * bugfix: random crash until program exiting
+
+  * bugfix: numpad '+' '-' do not work without numlock mode
+
+  * bugfix: build crash if ncursesw headers are placed not in ncursesw subdir
+
+
 boinctui (2.4.2)
 
   * bugfix: than boinctui connected to new version boinc-client,

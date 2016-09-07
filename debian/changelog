@@ -1,3 +1,16 @@
+boinctui (2.4.3-1) unstable; urgency=low
+
+  * bugfix: invisible colors at xterm-256color
+
+  * bugfix: random crash until program exiting
+
+  * bugfix: numpad '+' '-' do not work without numlock mode
+
+  * bugfix: build crash if ncursesw headers are placed not in ncursesw subdir
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Wed, 07 Sep 2016 11:10:22 +0400
+
+
 boinctui (2.4.2-1) unstable; urgency=low
 
   * bugfix: than boinctui connected to new version boinc-client,
