@@ -29,12 +29,12 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     scale_form(frm,&rows,&cols);
     addfield(NULL);
     set_form_win(frm, win);
-    set_form_sub(frm, derwin(win, rows, cols, 2,2));
+    set_form_sub(frm, derwin(win, rows-1, cols-1, 0,0));
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
     title = NULL;
     needrefresh = true;
     //перемещаем в центр экрана
-    this->move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
+    //this->move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
     curs_set(1); //курсор
 }
 

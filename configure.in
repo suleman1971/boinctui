@@ -105,7 +105,7 @@ AC_ARG_WITH(
 		[
 		    AC_MSG_ERROR([Couldn't find some ncursesw header])
 		] )
-	    [AC_MSG_ERROR([Couldn't find some ncursesw/*.h header])] )
+	)
     ]
 )
 

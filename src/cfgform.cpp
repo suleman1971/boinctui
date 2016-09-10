@@ -24,7 +24,7 @@
 CfgForm::CfgForm(int rows, int cols/*, Config* cfg*/) : NForm(rows,cols)
 {
     genfields(false);
-    set_form_fields(frm, fields);
+    //set_form_fields(frm, fields);
     post_form(frm);
 }
 
@@ -109,7 +109,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     //финализация списка полей
     addfield(NULL);
     //пересчитываем высоту формы, чтобы влезли все поля и центрируем
-    resize(nl + 1,getwidth());
+    resize(nl + 2,getwidth());
     move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
 }
 

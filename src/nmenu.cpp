@@ -121,6 +121,7 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
 	else //горизонтальное
 	{
 	    set_menu_format(menu, 1, itemnames.size());
+	    set_menu_sub(menu,derwin(win,getheight(),getwidth(),0,0));
 	    menu_opts_off(menu, O_ROWMAJOR);
 	    menu_opts_off(menu, O_SHOWDESC);
 	    set_menu_mark(menu, "  ");
