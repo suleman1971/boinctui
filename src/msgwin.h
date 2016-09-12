@@ -21,12 +21,13 @@
 #include "nscrollview.h"
 #include "resultdom.h"
 #include "srvdata.h"
+#include <string>
 
 
 class MsgWin : public NScrollView
 {
   public:
-    MsgWin(NRect rect):NScrollView(rect) { };
+    MsgWin(NRect rect):NScrollView(rect) { sprojectold=""; stimestampold=""; };
     //virtual ~MsgWin() { };
     void	updatedata(); 	//обновить данные с сервера
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
@@ -34,6 +35,8 @@ class MsgWin : public NScrollView
   protected:
     Srv*	srv;		//текущий отображаемый сервер
     int 	lastmsgno; 	//номер последнего полученного сообщения
+    std::string sprojectold;	//это для группировки по времени
+    std::string stimestampold;	//и имени проекта
 };
 
 
