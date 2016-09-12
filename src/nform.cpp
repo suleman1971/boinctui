@@ -29,7 +29,7 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     scale_form(frm,&rows,&cols);
     addfield(NULL);
     set_form_win(frm, win);
-    set_form_sub(frm, derwin(win, rows-1, cols-1, 0,0));
+    set_form_sub(frm, derwin(win, rows-2, cols-2, 1,1));
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
     title = NULL;
     needrefresh = true;

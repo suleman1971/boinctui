@@ -34,13 +34,14 @@ AddAccMgrForm::AddAccMgrForm(int rows, int cols,  Srv* srv, const char* mgrname)
     if (srv !=NULL)
 	account_manager = srv->findaccountmanager(mgrname);
     //поля
-    int row = 1;
+    int row = 0;
     genfields(row,account_manager);
     //пересчитываем высоту формы, чтобы влезли все поля и центрируем
-    resize(row + 2,getwidth());
-    move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
+    int r,c =0;
+    scale_form(frm, &r, &c);
+    kLogPrintf("field_count=%d scale_form()->%d,%d\n", field_count(frm), r, c);
+    resize(r+3,c+2);
 
-    set_form_fields(frm, fields);
     set_current_field(frm, fields[0]); //фокус на поле
 
     post_form(frm);
@@ -56,7 +57,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
 	delfields();
 	//сообщение об ошибке
 	errmsgfield = getfieldcount();
-	f = addfield(new_field(1, getwidth()-2, line++, 1, 0, 0));
+	f = addfield(new_field(1, getwidth()-2, line++, 0, 0, 0));
 	set_field_buffer(f, 0, "Errr");
 	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD);
 	field_opts_off(f, O_ACTIVE); //статический текст

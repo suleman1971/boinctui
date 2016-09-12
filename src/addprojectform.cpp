@@ -22,6 +22,12 @@
 #include "tuievent.h"
 
 
+//стрингификатор
+#define XSTR(S)		STR(S)
+#define STR(S)		#S
+#define ERROREX(msg)   throw __FILE__ ":" XSTR(__LINE__) "[" msg "]";
+
+
 char* strupcase(char* s) //в верхний регистр
 {
     char	*p;
@@ -49,16 +55,21 @@ AddProjectForm::AddProjectForm(int rows, int cols,  Srv* srv, const char* projna
     Item* project = NULL;
     if (srv !=NULL)
 	project = srv->findprojectbynamefromall(projname);
-    int row = 1;
+    int row = 0;
     //поля
-    genfields(row,project);
+    try
+    {
+	genfields(row,project);
+    }
+    catch(const char* err)
+    {
+	kLogPrintf("ERROR EXCAPTION %s\n",err);
+    }
     //пересчитываем высоту формы, чтобы влезли все поля и центрируем
-    resize(row + 2,getwidth());
-    move(getmaxy(stdscr)/2-getheight()/2,getmaxx(stdscr)/2-getwidth()/2);
-
-    set_form_fields(frm, fields);
-    set_current_field(frm, fields[0]); //фокус на поле
-
+    int r,c =0;
+    scale_form(frm, &r, &c);
+    kLogPrintf("field_count=%d scale_form()->%d,%d\n", field_count(frm), r, c);
+    resize(r+3,c+2);
     post_form(frm);
     this->refresh();
 }
@@ -72,66 +83,94 @@ void AddProjectForm::genfields(int& line, Item* project) //создаст мас
     {
 	//сообщение об ошибке
 	errmsgfield = getfieldcount();
-	f = addfield(new_field(1, getwidth()-2, line++, 1, 0, 0));
-	set_field_buffer(f, 0, "Errr");
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-	field_opts_off(f, O_VISIBLE); //по умолчанию невидима
+	f = addfield(new_field(1, getwidth()-2, line++, 0, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, "Errr"))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_VISIBLE)) //по умолчанию невидима
+	    ERROREX();
 	//url
 	Item* url = project->findItem("url");
 	std::string s = "url          : ";
 	if (url !=NULL)
 	    projurl = url->getsvalue();
 	s = s + projurl;
-	f = addfield(new_field(1, getwidth()-4, line++, 2, 0, 0));
-	set_field_buffer(f, 0, s.c_str());
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-
+	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	//area
 	Item* general_area = project->findItem("general_area");
 	s = "General area : ";
 	if (general_area !=NULL)
 	    s = s + general_area->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 2, 0, 0));
-	set_field_buffer(f, 0, s.c_str());
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-
+	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	//specific area
 	Item* specific_area = project->findItem("specific_area");
 	s = "Specific area: ";
 	if (specific_area !=NULL)
 	    s = s + specific_area->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 2, 0, 0));
-	set_field_buffer(f, 0, s.c_str());
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-
+	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	//home
 	s = "Home         : ";
 	Item* home = project->findItem("home");
 	if (home !=NULL)
 	    s = s + home->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 2, 0, 0));
-	set_field_buffer(f, 0, s.c_str());
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-
+	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	//description
-	s = "";
+	s = "Description  : ";
 	line++;
 	Item* description = project->findItem("description");
 	if (description !=NULL)
 	    s = s + description->getsvalue();
-	f = addfield(new_field(3, getwidth()-4, line++, 2, 0, 0));
-	set_field_buffer(f, 0, s.c_str());
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
-	line = line + 3;
-
+	int h = s.size()/(getwidth() - 4) + 1;
+	if (h > 4)
+	    h = 4;
+	f = addfield(new_field(h, getwidth()-4, line, 1, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
+	line += h+1;
 	//platforms
 	Item* platforms = project->findItem("platforms");
+	s = "Platforms    : ";
 	if (platforms !=NULL)
 	{
 	    std::vector<Item*> namelist = platforms->getItems("name"); //список названий платформ
@@ -139,64 +178,115 @@ void AddProjectForm::genfields(int& line, Item* project) //создаст мас
 	    for (it = namelist.begin(); it!=namelist.end(); it++)
 	    {
 		Item* name = (*it)->findItem("name");
-		//NStaticText* text6 = new NStaticText(NRect(1, getwidth()-4, row++, 2));
-		s = name->getsvalue();
-		f = addfield(new_field(1, getwidth()-4, line++, 2, 0, 0));
-		set_field_buffer(f, 0, s.c_str());
-		set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-		field_opts_off(f, O_ACTIVE); //статический текст
+		if (it != namelist.begin())
+		    s = s + ',';
+		s = s + name->getsvalue();
 	    }
 	}
+	h = s.size()/(getwidth() - 4) + 1;
+	if (h > 5)
+	    h = 5;
+	f = addfield(new_field(h, getwidth()-4, ++line, 1, 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, s.c_str()))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
+	line += h + 1;
     }
     //email
     line++;
-    f = addfield(new_field(1, 10, line, 2 , 0, 0));
-    set_field_buffer(f, 0, "email");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    field_opts_off(f, O_ACTIVE); //статический текст
+    f = addfield(new_field(1, 10, line, 1 , 0, 0));
+    if (!f)
+	ERROREX();
+    if (E_OK != set_field_buffer(f, 0, "email"))
+	ERROREX();
+    if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	ERROREX();
+    if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	ERROREX();
     emailfield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
-    field_opts_off(f, O_AUTOSKIP);
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+    if (!f)
+	ERROREX();
+    if (E_OK != field_opts_off(f, O_AUTOSKIP))
+	ERROREX();
+    if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD))
+	ERROREX();
     //password
     line++;
-    f = addfield(new_field(1, 10, line, 2 , 0, 0));
-    set_field_buffer(f, 0, "password");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    field_opts_off(f, O_ACTIVE); //статический текст
+    f = addfield(new_field(1, 10, line, 1 , 0, 0));
+    if (!f)
+	ERROREX();
+    if (E_OK != set_field_buffer(f, 0, "password"))
+	ERROREX();
+    if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	ERROREX();
+    if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	ERROREX();
     passwfield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-    field_opts_off(f, O_AUTOSKIP);
+    if (!f)
+	ERROREX();
+    if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD))
+	ERROREX();
+    if (E_OK != field_opts_off(f, O_AUTOSKIP))
+	ERROREX();
     if (!userexist)
     {
 	//user name
 	line++;
-	f = addfield(new_field(1, 10, line, 2 , 0, 0));
-	set_field_buffer(f, 0, "username");
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
+	f = addfield(new_field(1, 10, line, 1 , 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, "username"))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	usernamefield = getfieldcount();
 	f = addfield(new_field(1, 40, line++, 15, 0, 0));
-	field_opts_off(f, O_AUTOSKIP);
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+	if (!f)
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_AUTOSKIP))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD))
+	    ERROREX();
 	//team name
 	line++;
-	f = addfield(new_field(1, 10, line, 2 , 0, 0));
-	set_field_buffer(f, 0, "teamname");
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-	field_opts_off(f, O_ACTIVE); //статический текст
+	f = addfield(new_field(1, 10, line, 1 , 0, 0));
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_buffer(f, 0, "teamname"))
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	    ERROREX();
 	teamfield = getfieldcount();
 	f = addfield(new_field(1, 40, line++, 15, 0, 0));
-	set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	field_opts_off(f, O_AUTOSKIP);
+	if (!f)
+	    ERROREX();
+	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD))
+	    ERROREX();
+	if (E_OK != field_opts_off(f, O_AUTOSKIP))
+	    ERROREX();
     }
     //подсказки
     line++;
     f = addfield(new_field(1, getwidth()-25, line++, 20 , 0, 0));
-    set_field_buffer(f, 0, "Enter-Ok    Esc-Cancel");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
-    field_opts_off(f, O_ACTIVE); //статический текст
+    if (!f)
+	ERROREX();
+    if (E_OK != set_field_buffer(f, 0, "Enter-Ok    Esc-Cancel"))
+	ERROREX();
+    if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+	ERROREX();
+    if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+	ERROREX();
     //финализация списка полей
     addfield(NULL);
 }
