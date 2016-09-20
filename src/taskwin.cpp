@@ -169,6 +169,11 @@ std::string getresultstatestr(Item* result)
 //	else
 	return "Done";
     }
+    if (result->findItem("too_large") != NULL) //нет памяти "Waiting for memory"
+    {
+	if (active_task_state->getivalue() == 9)
+	    return "WMem"; //"Waiting for memory"
+    }
     if (result->findItem("suspended_via_gui") != NULL) //задача suspend via gui
 	return "GSusp.";
     switch(state->getivalue())
@@ -414,7 +419,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if ( sstate == "Dwnld")
 		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
 		int stateattr = attr;
-		if (( sstate == "DoneEr") || ( sstate == "Abort"))
+		if (( sstate == "DoneEr" ) || ( sstate == "Abort" ) || ( sstate == "WMem" ))
 		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK)/* | A_BOLD*/;
 		//проверяем нужно-ли отображать эту задачу
 		if
