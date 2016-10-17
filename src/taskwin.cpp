@@ -171,7 +171,7 @@ std::string getresultstatestr(Item* result)
     }
     if (result->findItem("too_large") != NULL) //нет памяти "Waiting for memory"
     {
-	if (active_task_state->getivalue() == 9)
+	//if (active_task_state->getivalue() == 9)
 	    return "WMem"; //"Waiting for memory"
     }
     if (result->findItem("suspended_via_gui") != NULL) //задача suspend via gui
