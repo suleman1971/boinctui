@@ -944,6 +944,7 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 void  Srv::setactive(bool b) //включить/выключить тред обновления данных
 {
     if (isactive() != b)
+    {
 	if (b)
 	{
 	    active = true;
@@ -954,5 +955,6 @@ void  Srv::setactive(bool b) //включить/выключить тред об
 	{
 	    active = false; //сигнализирует треду остановиться
 	}
+    }
 }
 

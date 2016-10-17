@@ -39,7 +39,7 @@ class TaskWin : public NSelectList
     void	updatedata(); 	//обновить данные с серверa
     virtual void clearcontent();
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
-    void*	setserver(Srv* srv) { this->srv = srv; startindex = 0; clearcontent(); selectedindex = -1; };
+    void	setserver(Srv* srv) { this->srv = srv; startindex = 0; clearcontent(); selectedindex = -1; };
     bool iscolvisible(int n) { return ((1 << n)&columnmask); }; //true если n-ная колонка видимая
     void coldisable(int n) { columnmask = columnmask & (~(1 << n)); saveopttoconfig();}; //установить флаг невидимости n-ной колонки
     void colenable(int n) { columnmask = columnmask | (1 << n); saveopttoconfig();}; //установить флаг видимости n-ной колонки

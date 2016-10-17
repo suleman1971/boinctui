@@ -31,7 +31,7 @@ class MsgWin : public NScrollView
     //virtual ~MsgWin() { };
     void	updatedata(); 	//обновить данные с сервера
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
-    void* 	setserver(Srv* srv) { if (this->srv != srv) { this->srv = srv; clearcontent(); lastmsgno = 0; } };
+    void	setserver(Srv* srv) { if (this->srv != srv) { this->srv = srv; clearcontent(); lastmsgno = 0; } };
   protected:
     Srv*	srv;		//текущий отображаемый сервер
     int 	lastmsgno; 	//номер последнего полученного сообщения

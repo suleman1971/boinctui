@@ -721,6 +721,7 @@ bool ProjectListSubMenu::action()
     }
     //создаем событие закрывающее меню
     putevent(new NEvent(NEvent::evKB, KEY_F(9)));
+    return true;
 }
 
 
@@ -794,6 +795,7 @@ bool ProjectAllListSubMenu::action()
 	int beginrow = 2 + item_index(current_item(menu)) - top_row(menu); //смещение на экране по вертикали
 	insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname));
     }
+    return true;
 }
 
 
@@ -862,6 +864,7 @@ bool ProjectAccMgrSubMenu::action()
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //создаем событие закрывающее меню
     if (srv != NULL)
 	putevent(new TuiEvent(evADDACCMGR, srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
+    return true;
 }
 
 
@@ -883,7 +886,7 @@ void ProjectAccMgrSubMenu::eventhandle(NEvent* ev) 	//обработчик со�
 		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
 		break;
 	    case 27:
-		if ( items.empty() > 1 ) //1 из-за скроллбара
+		if ( !items.empty()/* > 1*/ ) //1 из-за скроллбара
 		    destroysubmenu();
 		else
 		    ev->done = false; //пусть обрабатывает владелец
@@ -921,6 +924,7 @@ bool ProjectUserExistSubMenu::action()
 	if ( strcmp(item_name(current_item(menu)),M_PROJECT_NEW_USER) == 0 )
 	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), false));
     }
+    return true;
 }
 
 

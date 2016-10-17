@@ -67,7 +67,7 @@ class InfoPanel : public NView
     InfoPanel(NRect rect) : NView(rect) {};
     void updatedata();
     virtual void refresh();
-    void*	setserver(Srv* srv) { this->srv = srv; };
+    void	setserver(Srv* srv) { this->srv = srv; };
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
     Srv*	srv;
