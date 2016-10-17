@@ -206,7 +206,11 @@ std::string getresultstatestr(Item* result)
 	    case 10:
 		return "Copy";
 	    default:
-		return "A"+active_task_state->getivalue();
+	    {
+		std::stringstream ss;
+		ss << "A" <<  active_task_state->getivalue();
+		return ss.str();
+	    }
 	}
     }
     return "Wait";

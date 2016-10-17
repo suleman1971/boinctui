@@ -158,7 +158,7 @@ void NMessageBox::eventhandle(NEvent* ev) 	//обработчик событий
 	return;
     //одиночный или двойной клик
     NMouseEvent* mevent = (NMouseEvent*)ev;
-    if (( ev->type == NEvent::evMOUSE )/* && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED))*/)
+    if (/*(*/ ev->type == NEvent::evMOUSE /*) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED))*/)
     {
 	//блокируем все мышиные мнутри окна
 //	if (isinside(mevent->row, mevent->col))

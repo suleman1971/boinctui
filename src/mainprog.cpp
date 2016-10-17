@@ -29,13 +29,13 @@ MainProg::MainProg()
     uistate = 0;
     done = false;
     gCfg = new Config(".boinctui.cfg");
-    gsrvlist = new SrvList(/*cfg*/);
+    gsrvlist = new SrvList();
     evtimertime = 0; //запускаем таймер с нуля
     //основное окно
-    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)/*, cfg*/); //создаем основное окно
+    wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно
     insert(wmain);
     wmain->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
-    menu = new TopMenu(/*cfg*/);
+    menu = new TopMenu();
     menu->setserver(gsrvlist->getcursrv()); //отображать первый в списке сервер
     insert(menu);
     wmain->updatecaption();
@@ -491,4 +491,5 @@ bool MainProg::mainloop() //основной цикл порождающий с�
 	#endif
     }
     while(!done);
+    return true;
 }
