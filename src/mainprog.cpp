@@ -152,7 +152,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		if (getitembyid(typeid(CfgForm).name()) == NULL)
 		{
 		    menu->disable();
-		    CfgForm* cfgform = new CfgForm(15,54/*,cfg*/);
+		    CfgForm* cfgform = new CfgForm(40,54/*,cfg*/);
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();
@@ -286,7 +286,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			AddProjectForm* addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
+			AddProjectForm* addform = new AddProjectForm(60,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
 			insert(addform);
 			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
 			uistate = uistate | stUIMODALFORM;
@@ -305,7 +305,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			AddAccMgrForm* addmgrform = new AddAccMgrForm(30,65,ev1->srv,ev1->sdata1.c_str());
+			AddAccMgrForm* addmgrform = new AddAccMgrForm(60,65,ev1->srv,ev1->sdata1.c_str());
 			insert(addmgrform);
 			addmgrform->move(getmaxy(stdscr)/2-addmgrform->getheight()/2,getmaxx(stdscr)/2-addmgrform->getwidth()/2); //центрируем
 			uistate = uistate | stUIMODALFORM;
