@@ -26,10 +26,11 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     fieldcount = 0;
     modalflag = true;
     frm = new_form(NULL);
-    scale_form(frm,&rows,&cols);
+//////////////////    scale_form(frm,&rows,&cols);
     addfield(NULL);
     set_form_win(frm, win);
-    set_form_sub(frm, derwin(win, rows-2, cols-2, 1,1));
+    subwin = derwin(win, rows-2, cols-2, 1,1);
+    set_form_sub(frm, subwin);
     wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
     title = NULL;
     needrefresh = true;
@@ -47,6 +48,14 @@ NForm::~NForm()
     if (title != NULL)
 	free(title);
     curs_set(0); //курсор
+    delwin(subwin);
+}
+
+
+void NForm::resize(int rows, int cols)
+{
+    NView::resize(rows, cols);
+    wresize(subwin, rows-2, cols-2);
 }
 
 

@@ -34,6 +34,7 @@ class NForm : public NGroup
     NForm(int lines, int rows);
     virtual ~NForm();
     virtual void refresh();
+    virtual void resize(int rows, int cols);
     virtual void settitle(const char* title);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     virtual FIELD* addfield(FIELD* field);
@@ -45,6 +46,7 @@ class NForm : public NGroup
     FIELD**	fields;
     int		fieldcount; //число полей включая NULL
     FORM* frm; 		//форма ncurses
+    WINDOW* 	subwin;	//подокно curses
 };
 
 
