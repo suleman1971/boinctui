@@ -1,3 +1,14 @@
+boinctui (2.4.4)
+
+  * add "Waiting for memory" task state
+
+  * bugfix: invisible forms at archlinux
+
+  * bugfix: log timestamp groupping
+
+  * bugfix: fix clang build
+
+
 boinctui (2.4.3)
 
   * bugfix: invisible colors at xterm-256color
