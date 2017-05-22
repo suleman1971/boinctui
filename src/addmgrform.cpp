@@ -131,7 +131,7 @@ void AddAccMgrForm::eventhandle(NEvent* ev) 	//обработчик событи
 	    case '\n': //ENTER
 	    {
 		form_driver(frm, REQ_NEXT_FIELD); //костыль чтобы текущее поле не потеряло значение
-		char* username = strlowcase(rtrim(field_buffer(fields[usernamefield],0)));
+		char* username = rtrim(field_buffer(fields[usernamefield],0));
 		char* passw = rtrim(field_buffer(fields[passwfield],0));
 		kLogPrintf("AddAccMgrForm OK username=[%s] passw=[%s]\n", username, passw);
 		if (srv!=NULL)
