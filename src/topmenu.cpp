@@ -31,6 +31,7 @@
 //Названия пунктов меню "File"
 #define M_NEXT_HOST			"Next BOINC host"
 #define M_CONFIG_HOSTS			"Configure host list"
+#define M_VIEW_STATS			"View Statistics"
 #define M_RUN_BENCHMARKS		"Run CPU benchmarks"
 #define M_QUIT				"Quit boinctui"
 //Названия пунктов меню "View"
@@ -228,6 +229,7 @@ FileSubMenu::FileSubMenu(NRect rect) : NMenu(rect)
 {
     additem(M_NEXT_HOST,"  N");
     additem(M_CONFIG_HOSTS,"  C");
+    additem(M_VIEW_STATS,"  V");
     additem(M_RUN_BENCHMARKS,"");
     additem(M_QUIT,"  Q");
     additem(NULL,NULL);
@@ -241,6 +243,8 @@ bool FileSubMenu::action()
 	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
     if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
+    if ( strcmp(item_name(current_item(menu)),M_VIEW_STATS) == 0 )
+	putevent(new NEvent(NEvent::evKB, 'V')); //создаем событие иммитирующее нажатие 'V'
     if ( strcmp(item_name(current_item(menu)),M_RUN_BENCHMARKS) == 0 )
 	putevent(new TuiEvent(evBENCHMARK)); //NEvent(NEvent::evPROG, 5)); //создаем событие запускающее бенчмарк
     if ( strcmp(item_name(current_item(menu)),M_QUIT) == 0 )

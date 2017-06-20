@@ -38,6 +38,7 @@ class NScrollView : public NView //область со скроллингом
     void scrollto(int delta); //сдвинуть отображение на drlta строк вверх или вниз
     void setstartindex(int n); //установить отображение со строки n
     int  getstartindex() { return startindex; }; //получить номер первой видимой строки
+    int  getmaxcontentwidth(); //вернет максимальную длину строки (в экранных символях) в content
     bool getautoscroll() { return autoscroll; }; //true если включен режим автоскроллинга
     void setautoscroll(bool b); //true чтобы включить автоскроллинг
     void setscrollbar(NScrollBar* scrollbar) { this->scrollbar = scrollbar; };

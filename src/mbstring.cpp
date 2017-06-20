@@ -29,6 +29,8 @@ int mbstrlen(const char* s) //вернет размер строки utf8 в С�
     do
     {
 	int symlen = mblen(p,bsize-nbytes);
+	if (symlen <= 0) 
+	    break;
 	nbytes = nbytes + symlen;
 	result++;
 	p = p + symlen; //адрес начала след символа

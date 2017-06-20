@@ -142,6 +142,21 @@ void NScrollView::setstartindex(int n) //установить отображен
 }
 
 
+int  NScrollView::getmaxcontentwidth() //вернет максимальную длину строки (в экранных символях) в content
+{
+    int result = 0;
+    std::vector<NColorString*>::iterator it;
+    for(it = content.begin(); it != content.end(); it++)
+    {
+	if (result < (*it)->getlen())
+	{
+	    result = (*it)->getlen();
+	}
+    }
+    return result;
+}
+
+
 void NScrollView::eventhandle(NEvent* ev) //обработчик событий
 {
     NView::eventhandle(ev); //предок

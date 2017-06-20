@@ -22,6 +22,7 @@
 #include "mainprog.h"
 #include "tuievent.h"
 #include "nmessagebox.h"
+#include "statwin.h"
 
 
 MainProg::MainProg()
@@ -76,10 +77,25 @@ void MainProg::updatestatuslinecontent()
     int attrYG = A_BOLD | getcolorpair(COLOR_YELLOW,COLOR_GREEN);
     int attrWG = A_BOLD | getcolorpair(COLOR_WHITE,COLOR_GREEN);
     int attrBG = A_BOLD | getcolorpair(COLOR_BLACK,COLOR_GREEN) | A_BOLD;
+
     if (uistate & stUIMODALFORM)
     {
 	wstatus->setstring(attrYG, " Esc");
 	wstatus->appendstring(attrWG, " Cancel");
+    }
+    if (uistate & stUISTATWIN)
+    {
+	wstatus->setstring(attrYG, " Esc");
+	wstatus->appendstring(attrWG, " Cancel");
+	wstatus->appendstring(attrWG, " |");
+	wstatus->appendstring(attrYG, " PgUp/PgDn");
+	wstatus->appendstring(attrWG, " V.Scroll");
+	wstatus->appendstring(attrWG, " |");
+	wstatus->appendstring(attrYG, " Left/Right");
+	wstatus->appendstring(attrWG, " H.Scroll");
+	wstatus->appendstring(attrWG, " |");
+	wstatus->appendstring(attrYG, " U");
+	wstatus->appendstring(attrWG, " Host/User score");
     }
     if (uistate & stUITASKINFO)
     {
@@ -118,6 +134,8 @@ void MainProg::updatestatuslinecontent()
 	wstatus->appendstring(attrWG, " |");
 	wstatus->appendstring(attrYG, " F9");
 	wstatus->appendstring(attrWG, " Menu |");
+	wstatus->appendstring(attrYG, " V");
+	wstatus->appendstring(attrWG, " Statistics |");
     }
 }
 
@@ -168,6 +186,22 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		    gsrvlist->getcursrv()->optask(tinfo->projecturl.c_str(), tinfo->taskname.c_str(),"suspend_result");
 		break;
 	    }
+	    case 'V':
+	    case 'v':
+	    {
+		if (!destroybyid(typeid(StatWin).name()))
+		{
+		    menu->disable();
+		    StatWin* statwin = new StatWin(gsrvlist->getcursrv());
+		    insert(statwin);
+		    statwin->move(getmaxy(stdscr)/2-statwin->getheight()/2,getmaxx(stdscr)/2-statwin->getwidth()/2); //центрируем
+		    uistate = uistate | stUISTATWIN;
+		}
+		else
+		    uistate = uistate & ~stUISTATWIN;
+		updatestatuslinecontent();
+		break;
+	    }
 	    case 'R':
 	    case 'r':
 	    {
@@ -193,6 +227,8 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		//деструктим все какие есть модельные окна
 		destroybyid(typeid(CfgForm).name()); //деструктим форму
 		destroybyid(typeid(NMessageBox).name()); //деструктим форму
+		if (destroybyid(typeid(StatWin).name())) //деструктим форму
+		    uistate = uistate & ~stUISTATWIN;
 		if (destroybyid(typeid(TaskInfoWin).name())) //деструктим форму
 		{
 		    wmain->wtask->setselectorenable(true);

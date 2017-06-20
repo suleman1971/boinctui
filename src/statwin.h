@@ -39,24 +39,47 @@ struct ProjStat
 {
     std::string		name;	//имя проекта
     std::list<DayStat>  days;	//дни
+    static bool CmpAboveH( ProjStat stat1, ProjStat stat2 ) //для сортировки проектов true если ...
+    {
+	std::list<DayStat>::iterator it;
+	double stat1sum = 0;
+	double stat2sum = 0;
+	for (it = stat1.days.begin(); it != stat1.days.end(); it++)
+	    stat1sum += (*it).scorehost;
+	for (it = stat2.days.begin(); it != stat2.days.end(); it++)
+	    stat2sum += (*it).scorehost;
+	return stat1sum > stat2sum;
+    };
+    static bool CmpAboveU( ProjStat stat1, ProjStat stat2 ) //для сортировки проектов true если ...
+    {
+	std::list<DayStat>::iterator it;
+	double stat1sum = 0;
+	double stat2sum = 0;
+	for (it = stat1.days.begin(); it != stat1.days.end(); it++)
+	    stat1sum += (*it).scoreuser;
+	for (it = stat2.days.begin(); it != stat2.days.end(); it++)
+	    stat2sum += (*it).scoreuser;
+	return stat1sum > stat2sum;
+    };
 };
 
 
 class StatWin : public NGroup //окно общей стстистики
 {
   public:
-    StatWin(const char* caption, Srv* srv);
+    StatWin(Srv* srv);
     void eventhandle(NEvent* ev);	//обработчик событий
     void updatedata();
   private:
-    int maxlen1;
-    int maxlen2;
+    int hpos; //индекс первого отображаемого проекта (для гориз скроллинга)
+    bool hostmode; //true - статистика для хоста (дефолт) false-для юзера
     std::vector<std::pair<std::string, std::string> > ssbak; //прошлое значение
     std::string		caption;
     Srv* srv;
     NScrollView*	content;
     NScrollBar*		scrollbar;
     std::vector<ProjStat> projects; //матрица статистики
+    void updatecaption();
 };
 
 

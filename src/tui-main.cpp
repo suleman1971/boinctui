@@ -32,6 +32,7 @@ void initcurses()
 {
     locale = setlocale(LC_ALL, NULL);
     setlocale(LC_ALL, "");
+    setlocale(LC_MESSAGES, "");
     initscr();
     noecho();
     curs_set(0);

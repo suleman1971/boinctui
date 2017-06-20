@@ -35,6 +35,7 @@
 #define stUISELECTOR	1 //бит означающий что селектор задач включен
 #define stUIMODALFORM	2 //бит означающий что активна модальная форма
 #define stUITASKINFO	4 //бит означающий что активно окно и-и о задаче
+#define stUISTATWIN	8 //бит означающий что активно окно детальной статистики (StatWin)
 
 
 class MainProg : public NProgram

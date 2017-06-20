@@ -1,3 +1,10 @@
+boinctui (2.5.0-1) unstable; urgency=low
+
+  * implemented Statistics window
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 01 Jun 2017 15:12:19 +0400
+
+
 boinctui (2.4.4-1) unstable; urgency=low
 
   * add "Waiting for memory" task state
