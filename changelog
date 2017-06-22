@@ -2,6 +2,11 @@ boinctui (2.5.0)
 
   * implemented Statistics window
 
+  * user can to add any account manager manualy, in addition to BAM and
+    GridRepublic, via "Add new account manager" menu item
+
+  * bugfix: account manager authorization failed, when using uppercase
+    symbols in password
 
 boinctui (2.4.4)
 

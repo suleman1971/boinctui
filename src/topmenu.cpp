@@ -60,6 +60,8 @@
 #define M_CONNECT_MANAGER		"Connect to account manager"
 #define M_SYNCHRONIZE_MANAGER		"Synchronize with manager"
 #define M_DISCONNECT_MANAGER		"Stop using account manager"
+//Меню списка менеджеров
+#define M_ADD_NEW_MGR			"Add new account manager"
 //Названия пунктов подменю "Projects/Имя проекта"
 #define M_UPDATE_PROJECT		"Update project"
 #define M_SUSPEND_PROJECT		"Suspend project"
@@ -841,6 +843,7 @@ void ProjectAllListSubMenu::eventhandle(NEvent* ev) 	//обработчик со
 ProjectAccMgrSubMenu::ProjectAccMgrSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 {
     this->srv = srv;
+    //стандартные менеджеры
     if (srv != NULL)
     {
 	srv->updateallprojects();
@@ -859,6 +862,22 @@ ProjectAccMgrSubMenu::ProjectAccMgrSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    }
 	}
     }
+    //менеджеры из конфига
+    Item* boinctui_cfg = gCfg->getcfgptr();
+    if (boinctui_cfg != NULL)
+    {
+	std::vector<Item*> mgrlist = boinctui_cfg->getItems("accmgr");
+	std::vector<Item*>::iterator it;
+	for (it = mgrlist.begin(); it != mgrlist.end(); it++)
+	{
+	    Item* name = (*it)->findItem("name");
+	    if (name != NULL)
+		additem(name->getsvalue(),"");
+	}
+    }
+    //пункт добавить новый менеджер
+    additem("","");
+    additem(M_ADD_NEW_MGR,"");
     additem(NULL,NULL);
 }
 
@@ -867,7 +886,12 @@ bool ProjectAccMgrSubMenu::action()
 {
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //создаем событие закрывающее меню
     if (srv != NULL)
-	putevent(new TuiEvent(evADDACCMGR, srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
+    {
+	if (strcmp(item_name(current_item(menu)), M_ADD_NEW_MGR) != 0)
+	    putevent(new TuiEvent(evADDACCMGR, srv, item_name(current_item(menu)))); //создаем событие открвыающее форму менеджера
+	else
+	    putevent(new TuiEvent(evADDACCMGR, srv, "Unnamed")); //создаем событие открвыающее форму менеджера
+    }
     return true;
 }
 
@@ -888,12 +912,6 @@ void ProjectAccMgrSubMenu::eventhandle(NEvent* ev) 	//обработчик со�
 		break;
 	    case KEY_LEFT:
 		putevent(new NEvent(NEvent::evKB, 27)); //закрыть это подменю
-		break;
-	    case 27:
-		if ( !items.empty()/* > 1*/ ) //1 из-за скроллбара
-		    destroysubmenu();
-		else
-		    ev->done = false; //пусть обрабатывает владелец
 		break;
 	    default:
 		ev->done = false; //нет реакции на этот код

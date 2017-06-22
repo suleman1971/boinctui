@@ -36,6 +36,7 @@ class NForm : public NGroup
     virtual void refresh();
     virtual void resize(int rows, int cols);
     virtual void settitle(const char* title);
+    virtual const char* gettitle() { return title; };
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
     virtual FIELD* addfield(FIELD* field);
     int 	getfieldcount() { return fieldcount; };

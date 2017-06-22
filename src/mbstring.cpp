@@ -78,3 +78,22 @@ char* rtrim(char* s) //удалить завершающие пробелы в �
     }
     return s;
 }
+
+
+char* ltrim(char* s) //удалить начальные пробелы в строке
+{
+    if (s == NULL)
+	return NULL;
+    if (strlen(s) == 0)
+	return s;
+    char* p = s;
+    while ( *p != '\0')
+    {
+        if (*p == ' ')
+	    p++;
+	else
+	    break;
+    }
+    memmove(s, p, strlen(p));
+    return s;
+}

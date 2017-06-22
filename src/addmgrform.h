@@ -29,12 +29,14 @@ class AddAccMgrForm : public NForm
 {
   public:
     AddAccMgrForm(int lines, int rows, Srv* srv, const char* mgrname);
-    void genfields(int& line, Item* project); //создаст массив полей
+    void genfields(int& line, Item* mgr); //создаст массив полей
     virtual void eventhandle(NEvent* ev);	//обработчик событий
   protected:
+    int		namefield;
     int		passwfield;
     int		errmsgfield;
     int		usernamefield;
+    int		urlfield;
     Srv*	srv;
     std::string mgrname;	//имя акк менеджера
     std::string mgrurl;		//url подключаемого менеджера
