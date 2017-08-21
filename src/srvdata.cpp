@@ -365,7 +365,7 @@ void Srv::updatemsgs() //обновить сообщения
 	msgno = lastmsgno; //запрашиваем начиная с последнего отображенного
     else
 	msgno = 0; //начинаем с первого
-    snprintf(req2,sizeof(req2),"<get_messages>\n<seqno>%d</seqno>\n",msgno);
+    snprintf(req2,sizeof(req2),"<get_messages>\n<seqno>%d</seqno>\n</get_messages>\n",msgno);
     Item* domtree = req(req2);
     if (domtree == NULL)
 	return;
