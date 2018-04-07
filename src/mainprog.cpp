@@ -132,7 +132,7 @@ void MainProg::updatestatuslinecontent()
 	    wstatus->appendstring(attrBG, " Enter Info");
 	}
 	wstatus->appendstring(attrWG, " |");
-	wstatus->appendstring(attrYG, " F9");
+	wstatus->appendstring(attrYG, " F9/M");
 	wstatus->appendstring(attrWG, " Menu |");
 	wstatus->appendstring(attrYG, " V");
 	wstatus->appendstring(attrWG, " Statistics |");
@@ -237,6 +237,8 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		uistate = uistate & ~stUIMODALFORM;
 		updatestatuslinecontent();
 		break;
+	    case 'M':
+	    case 'm':
 	    case KEY_F(9):
 		if (!menu->isenable())
 		{
