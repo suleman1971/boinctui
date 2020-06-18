@@ -35,10 +35,10 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     int attr1 = getcolorpair(COLOR_YELLOW, COLOR_BLACK) | A_BOLD;
     int attr2 = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
     text1->setstring(attr1,   "\n   Common Controls:\n");
-    text1->appendstring(attr2,"       \"N\"           - Toogle between BOINC hosts\n");
+    text1->appendstring(attr2,"       \"N\"           - Toggle between BOINC hosts\n");
     text1->appendstring(attr2,"       \"C\"           - Edit configuration\n");
     text1->appendstring(attr2,"       \"Q\"           - Quit boinctui\n");
-    text1->appendstring(attr2,"       \"F9\"          - Toogle main menu\n");
+    text1->appendstring(attr2,"       \"F9\"          - Toggle main menu\n");
     text1->appendstring(attr2,"       \"PgUp\"/\"PgDn\" - Scroll Messages Window\n");
     text1->appendstring(attr2,"\n");
     text1->appendstring(attr1,"   Task Controls:\n");
