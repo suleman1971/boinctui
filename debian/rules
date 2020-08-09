@@ -36,6 +36,8 @@ create_orig_tar_gz:
 	$(TARGET)-$(VERSION)/Makefile.in \
 	$(TARGET)-$(VERSION)/configure.in \
 	$(TARGET)-$(VERSION)/changelog \
+	$(TARGET)-$(VERSION)/gpl-3.0.txt \
+	$(TARGET)-$(VERSION)/boinctui.1 \
 	$(TARGET)-$(VERSION)/config ; cd $(TARGET)-$(VERSION)
 
 

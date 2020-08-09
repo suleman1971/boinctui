@@ -44,7 +44,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp
 clean:
 	rm -f $(ODIR)/*.o $(PACKAGE_TARNAME) config.log
 
-install:
+install: installman
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(BINDIR)
 	$(INSTALL_PROGRAM) $(PACKAGE_TARNAME) $(DESTDIR)$(BINDIR)
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(DOCDIR)
@@ -53,6 +53,11 @@ install:
 createobj:
 	@if ! [ -d "$(ODIR)" ] ; then echo "create $(ODIR)";  mkdir $(ODIR); fi
 
+installman:
+	@echo "install man (boinctui.1) to " $(DESTDIR)@mandir@/man1 " directory"
+	mkdir -p $(DESTDIR)@mandir@/man1
+	install -m 0644 boinctui.1 $(DESTDIR)@mandir@/man1
+
 #srctgz: clean
 #	@if ! [ -d "../$(PACKAGE_TARNAME)-$(VERSION)" ] ; then echo "create symlink ../$(PACKAGE_TARNAME)-$(VERSION)->$(notdir $(CURDIR))";  ln -n -s $(notdir $(CURDIR)) ../$(PACKAGE_TARNAME)-$(VERSION); fi
 #	cd ..; tar --exclude-vcs -vzcf $(PACKAGE_TARNAME)_$(VERSION).orig.tar.gz \
@@ -60,4 +65,7 @@ createobj:
 #	$(PACKAGE_TARNAME)-$(VERSION)/redhat \
 #	$(PACKAGE_TARNAME)-$(VERSION)/Makefile.in \
 #	$(PACKAGE_TARNAME)-$(VERSION)/configure.in \
-#	$(PACKAGE_TARNAME)-$(VERSION)/config
+#	$(PACKAGE_TARNAME)-$(VERSION)/config \
+#	$(PACKAGE_TARNAME)-$(VERSION)/debian \
+#	$(PACKAGE_TARNAME)-$(VERSION)/changelog \
+#	$(PACKAGE_TARNAME)-$(VERSION)/gpl-3.0.txt

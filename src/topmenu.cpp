@@ -468,7 +468,7 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	if (client_state != NULL)
 	{
 	    std::vector<Item*> projects = client_state->getItems("project");
-	    for (int i = 0; i < projects.size(); i++)
+        for (uint i = 0; i < projects.size(); i++)
 	    {
 		Item* project_name = projects[i]->findItem("project_name");
 		if (project_name != NULL)
@@ -490,7 +490,7 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 
 bool ProjectsSubMenu::action()
 {
-    bool result = false;
+    //bool result = false;
     if (items.size() > 1) //если уже открыто выходим (>1 из-за скроллбара)
 	return false;
     //формируем код операции для подменю
@@ -771,7 +771,7 @@ ProjectAllListSubMenu::ProjectAllListSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    if (projects != NULL)
 	    {
 		std::vector<Item*> projlist = projects->getItems("project");
-		for (int i = 0; i < projlist.size(); i++)
+        for (uint i = 0; i < projlist.size(); i++)
 		{
 		    Item* name = projlist[i]->findItem("name");
 		    Item* general_area = projlist[i]->findItem("general_area");
@@ -853,7 +853,7 @@ ProjectAccMgrSubMenu::ProjectAccMgrSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	    if (projects != NULL)
 	    {
 		std::vector<Item*> mgrlist = projects->getItems("account_manager");
-		for (int i = 0; i < mgrlist.size(); i++)
+        for (uint i = 0; i < mgrlist.size(); i++)
 		{
 		    Item* name = mgrlist[i]->findItem("name");
 		    if (name != NULL)

@@ -205,8 +205,8 @@ void NMenu::eventhandle(NEvent* ev) 	//обработчик событий
 		{
 		    if (item_index(current_item(menu)) > 0) //элемент не первый
 		    {
-			ITEM* preditem = mitems[item_index(current_item(menu)) - 1]; //предыдущий
-			menu_driver(menu, REQ_SCR_UPAGE);
+                //ITEM* preditem = mitems[item_index(current_item(menu)) - 1]; //предыдущий
+                menu_driver(menu, REQ_SCR_UPAGE);
 		    }
 		    ev->done = true;
 		}

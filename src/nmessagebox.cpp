@@ -92,7 +92,7 @@ NMessageBox::NMessageBox(const char* text) : NGroup(NRect(3, 40, 1, 1))
     int bsize = strlen(text); //количество байт
     int result = 0; //подсчитанное кол-во символов
     int nbytes = 0; //просмотренное кол-во байтов
-    int nlines = 0; //количество экранных строк
+    //int nlines = 0; //количество экранных строк
     int col = getwidth() - 4;
     const char* p = text;
     do
@@ -157,7 +157,7 @@ void NMessageBox::eventhandle(NEvent* ev) 	//обработчик событий
     if ( ev->done )
 	return;
     //одиночный или двойной клик
-    NMouseEvent* mevent = (NMouseEvent*)ev;
+    //NMouseEvent* mevent = (NMouseEvent*)ev;
     if (/*(*/ ev->type == NEvent::evMOUSE /*) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED))*/)
     {
 	//блокируем все мышиные мнутри окна

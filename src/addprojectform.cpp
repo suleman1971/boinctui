@@ -296,7 +296,7 @@ void AddProjectForm::eventhandle(NEvent* ev) 	//обработчик событ�
 {
     if ( ev->done )
 	return;
-    NMouseEvent* mevent = (NMouseEvent*)ev;
+    //NMouseEvent* mevent = (NMouseEvent*)ev;
     if ( ev->type == NEvent::evMOUSE)
     {
 	NForm::eventhandle(ev); //предок

@@ -50,7 +50,7 @@ void NScrollView::drawcontent() //отрисовывает буфер строк
     //выводим строки начиная со startindex
     for (int line = 0; line < getheight(); line++) //цикл по экранным строкам
     {
-	if (startindex+line < content.size())
+    if (startindex+line < (int)content.size())
 	{
 	    NColorString* cstring = content[startindex + line]; 
 	    std::list<NColorStringPart*>::iterator it;
@@ -99,14 +99,14 @@ void NScrollView::resize(int rows, int cols)
 
 void NScrollView::scrollto(int delta)//сдвинуть отображение на drlta строк вверх или вниз
 {
-    if (content.size()>getheight())
+    if ((int)content.size()>getheight())
     {
 	//kLogPrintf("NScrollView::scrollto(%d) startindex=%d content.size()=%d getheight()=%d\n",delta, startindex, content.size(), getheight());
 	int oldstartindex = startindex;
 	startindex = startindex + delta;
 	if ( startindex < 0 )
 	    startindex = 0;
-	if ( startindex > content.size()-getheight() )
+    if ( startindex > (int)content.size()-getheight() )
 	    startindex = content.size()-getheight()/* + 1*/; //+1 чтобы оставлять пустую строку
 	if (oldstartindex != startindex) //позиция изменилась нужно перерисовываться
 	    needrefresh = true;
@@ -131,7 +131,7 @@ void NScrollView::setautoscroll(bool b) //true чтобы включить ав�
 
 void NScrollView::setstartindex(int n) //установить отображение со строки n
 {
-    if ((content.size()-n) < getheight()) //последняя строка видима на экране
+    if (((int)content.size()-n) < getheight()) //последняя строка видимая на экране
     {
 	startindex = content.size()-getheight(); //поднять вверх
 	if (startindex < 0) //но не выше нулевой

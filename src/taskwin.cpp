@@ -539,7 +539,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
     NSelectList::eventhandle(ev); //предок
     if ( ev->done )
 	return;
-    bool selectorvisiblebak = (selectedindex >= 0)&&(selectedindex < content.size()); //состояние селектора до
+    bool selectorvisiblebak = (selectedindex >= 0)&&(selectedindex < (int)content.size()); //состояние селектора до
     //одиночный или двойной клик
     NMouseEvent* mevent = (NMouseEvent*)ev;
     if (( ev->type == NEvent::evMOUSE ) && (mevent->cmdcode & (BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED)))
@@ -567,7 +567,7 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 		break;
 	    case KEY_ENTER:
 	    case '\n':
-		if ((selectedindex >= 0)&&(selectedindex < content.size())) //селектор видимый
+        if ((selectedindex >= 0)&&(selectedindex < (int)content.size())) //селектор видимый
 		    putevent(new TuiEvent(evTASKINFO));
 		break;
 	    default:
@@ -604,9 +604,9 @@ void TaskWin::eventhandle(NEvent* ev) 	//обработчик событий
 	}
     }
     //если изменилась видимость селектора, то генерируем соотв евент
-    if (((selectedindex >= 0)&&(selectedindex < content.size()) )&&(!selectorvisiblebak))
+    if (((selectedindex >= 0)&&(selectedindex < (int)content.size()) )&&(!selectorvisiblebak))
 	putevent(new TuiEvent(evTASKSELECTORON)); //селектор включился
-    if (((selectedindex == -1)||(selectedindex == content.size()))&&(selectorvisiblebak))
+    if (((selectedindex == -1)||(selectedindex == (int)content.size()))&&(selectorvisiblebak))
 	putevent(new TuiEvent(evTASKSELECTOROFF)); //селектор выключился
 
     if (ev->done) //если обработали, то нужно перерисоваться

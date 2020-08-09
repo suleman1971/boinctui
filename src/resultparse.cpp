@@ -35,7 +35,7 @@ char* stripinvalidtag(char* xml, int len) 	//ГРЯЗНЫЙ ХАК нужен ч
 {
     const char* teg1 = "<body>";
     const char* teg2 = "</body>";
-    int bytesdone = 0; //просмотрено байт
+    //int bytesdone = 0; //просмотрено байт
     char* pos = (char*)xml;
     while (pos < xml + len)
     {
@@ -123,7 +123,7 @@ void callbackData(void *userdata, const char *content, int len)
     //kLogPrintf("\ncallbackData()-->[%s]<-- len=%d\n",tmp,len);
     //заносим значение в текущий эл-т
     bool empty = true;
-    for (int i = 0; i < strlen(tmp); i++)
+    for (uint i = 0; i < strlen(tmp); i++)
     {
 	if (tmp[i] != ' ')
 	{

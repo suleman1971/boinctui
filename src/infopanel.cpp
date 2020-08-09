@@ -136,7 +136,7 @@ void InfoPanel::refresh()
     }
     //по проектам
     mvwprintw(win, line++,0,"\n");
-    for (int i = 0; i < projects.size(); i++) //цикл по названиям проектов
+    for (int i = 0; i < (int)projects.size(); i++) //цикл по названиям проектов
     {
 	//расчитываем нужное кол-во строк
 	int needlines = 2;

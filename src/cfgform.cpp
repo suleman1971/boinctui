@@ -63,7 +63,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	field_opts_off(field, O_STATIC);
 	set_max_field(field,128); //max width 128
 	//set_field_type(field[nf], TYPE_ALNUM, 0);
-	if (i < slist.size())
+    if (i < (int)slist.size())
 	{
 	    Item* host = slist[i]->findItem("host");
 	    if (host != NULL)
@@ -76,7 +76,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
 	set_field_type(field, TYPE_INTEGER, 0, 0, 65535);
         field_opts_off(field, O_AUTOSKIP);
-	if (i < slist.size())
+    if (i < (int)slist.size())
 	{
 	    Item* port = slist[i]->findItem("port");
 	    if (port != NULL)
@@ -88,7 +88,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	field_opts_off(field, O_AUTOSKIP);
 	field_opts_off(field, O_STATIC);
 	set_max_field(field,128); //max width 128
-	if (i < slist.size())
+    if (i < (int)slist.size())
 	{
 	    Item* pwd = slist[i]->findItem("pwd");
 	    if (pwd != NULL)
@@ -118,7 +118,7 @@ void CfgForm::eventhandle(NEvent* ev) 	//обработчик событий
 {
     if ( ev->done )
 	return;
-    NMouseEvent* mevent = (NMouseEvent*)ev;
+    //NMouseEvent* mevent = (NMouseEvent*)ev;
     if ( ev->type == NEvent::evMOUSE)
     {
 	//if (isinside(mevent->row, mevent->col))

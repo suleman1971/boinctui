@@ -44,7 +44,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
     //выводим строки начиная со startindex
     for (int line = 0; line < getheight(); line++) //цикл по экранным строкам
     {
-	if (startindex+line < content.size()) //цикл по строкам
+    if (startindex+line < (int)content.size()) //цикл по строкам
 	{
 	    NColorString* cstring = content[startindex + line];
 	    std::list<NColorStringPart*>::iterator it;
@@ -104,7 +104,7 @@ void NSelectList::refresh()
 
 void* NSelectList::getselectedobj()
 {
-    if ((selectedindex >= 0)&&(selectedindex < objects.size()))
+    if ((selectedindex >= 0)&&(selectedindex < (int)objects.size()))
     {
 	return objects[selectedindex];
     }
@@ -135,7 +135,7 @@ void NSelectList::selectordown()
 	selectedindex++;
 	needrefresh = true;
 	//проверяем не нужно ли скролить
-	if ((startindex + getheight() < content.size())&&(startindex + getheight() - selectedindex < 4)) //видимых строк ниже серлектора осталось 
+    if ((startindex + getheight() < (int)content.size())&&(startindex + getheight() - selectedindex < 4)) //видимых строк ниже серлектора осталось
 	{
 	    scrollto(1);
 	}

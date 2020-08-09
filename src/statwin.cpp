@@ -236,7 +236,7 @@ void StatWin::eventhandle(NEvent* ev) 	//обработчик событий
 	    case KEY_NPAGE:
 		if (!content->getautoscroll())
 		{
-		    int oldpos = content->getstartindex();
+            //int oldpos = content->getstartindex();
 		    content->scrollto(getheight()/2); 	//вниз на пол окна
 		}
 		break;

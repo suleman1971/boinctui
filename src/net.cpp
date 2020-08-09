@@ -92,7 +92,7 @@ void TConnect::sendreq(const char* fmt, va_list vl) //отправить зап�
     if (hsock == -1)
 	createconnect(/*shost,sport*/);
     //отправляем запрос
-    if (send(hsock, req, strlen(req), 0) != strlen(req))
+    if (send(hsock, req, strlen(req), 0) != (int)strlen(req))
     {
 	kLogPrintf("send request %s:%s error\n",shost,sport);
 	disconnect();

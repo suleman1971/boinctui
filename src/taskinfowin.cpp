@@ -160,9 +160,9 @@ void Tree2Text(Item* item, std::vector<std::pair<std::string, std::string> >& vo
 	    std::string svalhr = raw2hr(*it2);
 	    if (svalhr.length())
 		sval = sval + " (" + svalhr + ")";
-	    if (strlen((*it2)->getname()) > maxlen1)
+        if ((int)strlen((*it2)->getname()) > maxlen1)
 		maxlen1 = strlen((*it2)->getname());
-	    if (sval.length()/*strlen((*it2)->getsvalue())*/ > maxlen2)
+        if ((int)sval.length()/*strlen((*it2)->getsvalue())*/ > maxlen2)
 		maxlen2 = sval.length() /*strlen((*it2)->getsvalue())*/;
 	    vout.push_back(std::pair<std::string, std::string>((*it2)->getname(), sval/*(*it2)->getsvalue()*/));
 	}
