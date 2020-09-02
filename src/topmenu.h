@@ -117,12 +117,13 @@ class ProjectAccMgrSubMenu : public NMenu //выпадающие меню вто
 class ProjectUserExistSubMenu : public NMenu //выпадающие меню третего New/Exist user
 {
   public:
-    ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname);
+    ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname, bool byurl);
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
   protected:
     virtual bool action(); //вызывается при нажатии Enter
     Srv*	srv; //текущий отображаемый сервер
     std::string	prjname; //имя выбранного проекта
+    bool byurl = false; //true если добавляем по url
 };
 
 

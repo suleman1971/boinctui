@@ -46,12 +46,13 @@ char* strlowcase(char* s) //в нижний регистр
 }
 
 
-AddProjectForm::AddProjectForm(int rows, int cols,  Srv* srv, const char* projname, bool userexist) : NForm(rows,cols)
+AddProjectForm::AddProjectForm(int rows, int cols,  Srv* srv, const char* projname, bool userexist, bool byurl) : NForm(rows,cols)
 {
     this->srv = srv;
     settitle(projname);
     this->projname = projname;
     this->userexist = userexist;
+	this->byurl = byurl;
     Item* project = NULL;
     if (srv !=NULL)
 	project = srv->findprojectbynamefromall(projname);
@@ -79,124 +80,147 @@ void AddProjectForm::genfields(int& line, Item* project) //создаст мас
 {
     FIELD* f;
     delfields();
-    if (project != NULL)
-    {
 	//сообщение об ошибке
 	errmsgfield = getfieldcount();
 	f = addfield(new_field(1, getwidth()-2, line++, 0, 0, 0));
 	if (!f)
-	    ERROREX();
+		ERROREX();
 	if (E_OK != set_field_buffer(f, 0, "Errr"))
-	    ERROREX();
+		ERROREX();
 	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD))
-	    ERROREX();
+		ERROREX();
 	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
+		ERROREX();
 	if (E_OK != field_opts_off(f, O_VISIBLE)) //по умолчанию невидима
-	    ERROREX();
-	//url
-	Item* url = project->findItem("url");
-	std::string s = "url          : ";
-	if (url !=NULL)
-	    projurl = url->getsvalue();
-	s = s + projurl;
-	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	//area
-	Item* general_area = project->findItem("general_area");
-	s = "General area : ";
-	if (general_area !=NULL)
-	    s = s + general_area->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
-	if (!f)
-	    ERROREX();
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	//specific area
-	Item* specific_area = project->findItem("specific_area");
-	s = "Specific area: ";
-	if (specific_area !=NULL)
-	    s = s + specific_area->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
-	if (!f)
-	    ERROREX();
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	//home
-	s = "Home         : ";
-	Item* home = project->findItem("home");
-	if (home !=NULL)
-	    s = s + home->getsvalue();
-	f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
-	if (!f)
-	    ERROREX();
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	//description
-	s = "Description  : ";
-	line++;
-	Item* description = project->findItem("description");
-	if (description !=NULL)
-	    s = s + description->getsvalue();
-	int h = s.size()/(getwidth() - 4) + 1;
-	if (h > 4)
-	    h = 4;
-	f = addfield(new_field(h, getwidth()-4, line, 1, 0, 0));
-	if (!f)
-	    ERROREX();
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	line += h+1;
-	//platforms
-	Item* platforms = project->findItem("platforms");
-	s = "Platforms    : ";
-	if (platforms !=NULL)
-	{
-	    std::vector<Item*> namelist = platforms->getItems("name"); //список названий платформ
-	    std::vector<Item*>::iterator it;
-	    for (it = namelist.begin(); it!=namelist.end(); it++)
-	    {
-		Item* name = (*it)->findItem("name");
-		if (it != namelist.begin())
-		    s = s + ',';
-		s = s + name->getsvalue();
-	    }
-	}
-	h = s.size()/(getwidth() - 4) + 1;
-	if (h > 5)
-	    h = 5;
-	f = addfield(new_field(h, getwidth()-4, ++line, 1, 0, 0));
-	if (!f)
-	    ERROREX();
-	if (E_OK != set_field_buffer(f, 0, s.c_str()))
-	    ERROREX();
-	if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
-	    ERROREX();
-	if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
-	    ERROREX();
-	line += h + 1;
+		ERROREX();
+    if (project != NULL)
+    {
+		//url
+		Item* url = project->findItem("url");
+		std::string s = "url          : ";
+		if (url !=NULL)
+			projurl = url->getsvalue();
+		s = s + projurl;
+		f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		//area
+		Item* general_area = project->findItem("general_area");
+		s = "General area : ";
+		if (general_area !=NULL)
+			s = s + general_area->getsvalue();
+		f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		//specific area
+		Item* specific_area = project->findItem("specific_area");
+		s = "Specific area: ";
+		if (specific_area !=NULL)
+			s = s + specific_area->getsvalue();
+		f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		//home
+		s = "Home         : ";
+		Item* home = project->findItem("home");
+		if (home !=NULL)
+			s = s + home->getsvalue();
+		f = addfield(new_field(1, getwidth()-4, line++, 1, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		//description
+		s = "Description  : ";
+		line++;
+		Item* description = project->findItem("description");
+		if (description !=NULL)
+			s = s + description->getsvalue();
+		int h = s.size()/(getwidth() - 4) + 1;
+		if (h > 4)
+			h = 4;
+		f = addfield(new_field(h, getwidth()-4, line, 1, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		line += h+1;
+		//platforms
+		Item* platforms = project->findItem("platforms");
+		s = "Platforms    : ";
+		if (platforms !=NULL)
+		{
+			std::vector<Item*> namelist = platforms->getItems("name"); //список названий платформ
+			std::vector<Item*>::iterator it;
+			for (it = namelist.begin(); it!=namelist.end(); it++)
+			{
+			Item* name = (*it)->findItem("name");
+			if (it != namelist.begin())
+				s = s + ',';
+			s = s + name->getsvalue();
+			}
+		}
+		h = s.size()/(getwidth() - 4) + 1;
+		if (h > 5)
+			h = 5;
+		f = addfield(new_field(h, getwidth()-4, ++line, 1, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, s.c_str()))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		line += h + 1;
     }
+
+    //project URL
+	if (byurl)
+	{
+		line++;
+		f = addfield(new_field(1, 10, line, 1 , 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != set_field_buffer(f, 0, "Project URL"))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_ACTIVE)) //статический текст
+			ERROREX();
+		projurlfield = getfieldcount();
+		f = addfield(new_field(1, 40, line++, 15, 0, 0));
+		if (!f)
+			ERROREX();
+		if (E_OK != field_opts_off(f, O_AUTOSKIP))
+			ERROREX();
+		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD))
+			ERROREX();
+	}
     //email
     line++;
     f = addfield(new_field(1, 10, line, 1 , 0, 0));
@@ -311,8 +335,10 @@ void AddProjectForm::eventhandle(NEvent* ev) 	//обработчик событ�
 	    {
 		form_driver(frm, REQ_NEXT_FIELD); //костыль чтобы текущее поле не потеряло значение
 		char* email = strlowcase(rtrim(field_buffer(fields[emailfield],0)));
+		if (byurl)
+			projurl = rtrim(field_buffer(fields[projurlfield],0));
 		char* passw = rtrim(field_buffer(fields[passwfield],0));
-		kLogPrintf("AddProjectForm OK name=[%s] url=[%s] email=[%s]\n passw=[%s]\n", projname.c_str(), projurl.c_str(), email, passw);
+		kLogPrintf("AddProjectForm OK name=[%s] url=[%s] email=[%s] passw=[%s]\n", projname.c_str(), projurl.c_str(), email, passw);
 		if (srv!=NULL)
 		{
 		    std::string errmsg;

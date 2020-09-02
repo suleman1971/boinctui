@@ -585,28 +585,36 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
     snprintf(sreq,sizeof(sreq),"<lookup_account_poll/>");
     std::string sauthenticator;
     bool done = false;
+    int maxcount = 30;
     do
     {
-	res = req(sreq);
-	if (res == NULL)
-	    return false;
-	kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
-	Item* error_num = res->findItem("error_num");
-	if ((error_num != NULL)&&(error_num->getivalue() != ERR_IN_PROGRESS))
-	{
-	    Item* error_msg = res->findItem("error_msg");
-	    if (error_msg != NULL)
-		errmsg = error_msg->getsvalue(); //возврат строки ошибки
-	    return false;
-	}
-	Item* authenticator  = res->findItem("authenticator");
-	if (authenticator != NULL)
-	{
-	    sauthenticator = authenticator->getsvalue();
-	    done = true;
-	}
-	free(res);
-	sleep(1); //ждем 1 сек
+        res = req(sreq);
+        if (res == NULL)
+            return false;
+        kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+        Item* error_num = res->findItem("error_num");
+        if (((error_num != NULL)||(strcmp(res->getname(),"error") == 0))&&(error_num->getivalue() != ERR_IN_PROGRESS))
+        {
+            Item* error_msg = res->findItem("error_msg");
+            if (error_msg != NULL)
+                errmsg += error_msg->getsvalue() + std::string(" ");
+            if (strcmp(res->getname(),"error") == 0)
+                errmsg +=  res->getsvalue();
+            return false;
+        }
+        Item* authenticator  = res->findItem("authenticator");
+        if (authenticator != NULL)
+        {
+            sauthenticator = authenticator->getsvalue();
+            done = true;
+        }
+        free(res);
+        sleep(1); //ждем 1 сек
+        if (--maxcount < 0)
+        {
+            errmsg = "error timeout";
+            return false;
+        }
     }
     while((count--)&&(!done));
     if (!done)
@@ -615,8 +623,13 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
     snprintf(sreq,sizeof(sreq),"<project_attach>\n<project_url>%s</project_url>\n<authenticator>%s</authenticator>\n<project_name>%s</project_name>\n</project_attach>\n",url,sauthenticator.c_str(),prjname);
     res = req(sreq);
     if (res == NULL)
-	return false;
+	    return false;
     kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    Item* error = res->findItem("error");
+    if (error != NULL)
+    {
+        errmsg += error->getsvalue();
+    }
     bool result = (res->findItem("success") != NULL);
     free(res);
     return result;

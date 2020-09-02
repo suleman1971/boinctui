@@ -47,11 +47,12 @@ class TuiEvent : public NEvent //класс программных событи�
 {
   public:
     TuiEvent(TuiEventType type) : NEvent(evPROG, type)	{};
-    TuiEvent(TuiEventType type, Srv* srv, const char* prjname, bool userexist) : NEvent(evPROG, type) //событие для добавления проекта
+    TuiEvent(TuiEventType type, Srv* srv, const char* prjname, bool userexist, bool byurl) : NEvent(evPROG, type) //событие для добавления проекта
     {
 	this->srv = srv;
 	this->sdata1 = prjname;
 	this->bdata1 = userexist;
+    this->bdata2 = byurl;
     };
     TuiEvent(TuiEventType type, Srv* srv, const char* mgrname) : NEvent(evPROG, type) //событие для подключения к менеджеру
     {
@@ -84,7 +85,8 @@ class TuiEvent : public NEvent //класс программных событи�
     Srv*		srv;
     std::string		sdata1; //произвольная строка
     std::string		sdata2; //произвольная строка
-    bool		bdata1; //произаольная bool переменная
+    bool		bdata1; //произвольная bool переменная
+    bool        bdata2; //произвольная bool переменная
     int			idata1; //произвольное целое
 };
 

@@ -28,10 +28,11 @@
 class AddProjectForm : public NForm
 {
   public:
-    AddProjectForm(int lines, int rows, Srv* srv, const char* projname, bool userexist);
+    AddProjectForm(int lines, int rows, Srv* srv, const char* projname, bool userexist, bool byurl);
     void genfields(int& line, Item* project); //создаст массив полей
     virtual void eventhandle(NEvent* ev);	//обработчик событий
   protected:
+    int   projurlfield;
     int		emailfield;
     int		passwfield;
     int		errmsgfield;
@@ -41,6 +42,7 @@ class AddProjectForm : public NForm
     std::string projname;	//имя подключаемого проекта
     std::string projurl;	//url подключаемого проекта
     bool	userexist;	//true если юзер уже создан
+    bool  byurl; //сделать строку url редактируемой
 };
 
 

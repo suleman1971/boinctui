@@ -322,7 +322,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
             //Srv* srv = gsrvlist->getcursrv();
 		    if (ev1->srv != NULL)
 		    {
-			AddProjectForm* addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1);
+			AddProjectForm* addform = new AddProjectForm(30,65,ev1->srv,ev1->sdata1.c_str(),ev1->bdata1, ev1->bdata2);
 			insert(addform);
 			addform->move(getmaxy(stdscr)/2-addform->getheight()/2,getmaxx(stdscr)/2-addform->getwidth()/2); //центрируем
 			uistate = uistate | stUIMODALFORM;

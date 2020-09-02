@@ -57,6 +57,7 @@
 #define M_ASCII_LINE_DRAW		"ASCII line draw"
 //Названия пунктов меню "Projects"
 #define M_ADD_PROJECT			"Add project"
+#define M_ADD_PROJECT_BY_URL	"Add project by URL"
 #define M_CONNECT_MANAGER		"Connect to account manager"
 #define M_SYNCHRONIZE_MANAGER		"Synchronize with manager"
 #define M_DISCONNECT_MANAGER		"Stop using account manager"
@@ -452,6 +453,7 @@ ProjectsSubMenu::ProjectsSubMenu(NRect rect, Srv* srv) : NMenu(rect)
 	}
     }
     additem(M_ADD_PROJECT,"");
+	additem(M_ADD_PROJECT_BY_URL,"");
     if (acctmgrname.empty())
 	additem(M_CONNECT_MANAGER,"");
     else
@@ -503,6 +505,18 @@ bool ProjectsSubMenu::action()
 	insert(new ProjectAllListSubMenu(NRect(5,25,beginrow, begincol), srv));
 	actiondone = true;
     }
+	if ( strcmp(item_name(current_item(menu)), M_ADD_PROJECT_BY_URL) == 0 ) //подключиться к проекту по url
+	{
+		if (srv != NULL)
+		{
+			const char* prjname = item_name(current_item(menu));
+			//создаем подменю для выбора новый/существующий пользователь
+			int begincol = getwidth() - 2; //смещение на экране по горизонтали
+			int beginrow = 2 + item_index(current_item(menu)) - top_row(menu); //смещение на экране по вертикали
+			insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname, true));
+		}
+		actiondone = true;
+	}
     if ( strcmp(item_name(current_item(menu)), M_CONNECT_MANAGER) == 0 ) //подключить менеджер
     {
 	insert(new ProjectAccMgrSubMenu(NRect(5,25,beginrow, begincol), srv));
@@ -799,7 +813,7 @@ bool ProjectAllListSubMenu::action()
 	//создаем подменю для выбора новый/существующий пользователь
 	int begincol = getwidth() - 2; //смещение на экране по горизонтали
 	int beginrow = 2 + item_index(current_item(menu)) - top_row(menu); //смещение на экране по вертикали
-	insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname));
+	insert(new ProjectUserExistSubMenu(NRect(5,25,beginrow, begincol), srv, prjname, false));
     }
     return true;
 }
@@ -924,10 +938,11 @@ void ProjectAccMgrSubMenu::eventhandle(NEvent* ev) 	//обработчик со�
 //=============================================================================================
 
 
-ProjectUserExistSubMenu::ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname) : NMenu(rect)
+ProjectUserExistSubMenu::ProjectUserExistSubMenu(NRect rect, Srv* srv, const char* prjname, bool byurl) : NMenu(rect)
 {
     this->srv = srv;
     this->prjname = prjname;
+	this->byurl = byurl;
 
     additem(M_PROJECT_USER_EXIST,"");
     additem(M_PROJECT_NEW_USER,"");
@@ -942,9 +957,9 @@ bool ProjectUserExistSubMenu::action()
     if (srv != NULL)
     {
 	if ( strcmp(item_name(current_item(menu)),M_PROJECT_USER_EXIST) == 0 )
-	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), true));
+	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), true, this->byurl));
 	if ( strcmp(item_name(current_item(menu)),M_PROJECT_NEW_USER) == 0 )
-	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), false));
+	    putevent(new TuiEvent(evADDPROJECT, srv, prjname.c_str(), false, this->byurl));
     }
     return true;
 }
