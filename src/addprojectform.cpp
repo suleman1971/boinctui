@@ -206,7 +206,7 @@ void AddProjectForm::genfields(int& line, Item* project) //создаст мас
 		f = addfield(new_field(1, 10, line, 1 , 0, 0));
 		if (!f)
 			ERROREX();
-		if (E_OK != set_field_buffer(f, 0, "Project URL"))
+		if (E_OK != set_field_buffer(f, 0, "ProjectURL"))
 			ERROREX();
 		if (E_OK != set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD))
 			ERROREX();
