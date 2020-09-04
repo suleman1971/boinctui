@@ -135,10 +135,10 @@ boinctui (2.3.3-1) UNRELEASED; urgency=low
 
   * scrollable widgets has scrollbars now
 
-  * optional ASCII line drawing mode (useful for wrong terminals 
+  * optional ASCII line drawing mode (useful for wrong terminals
     like putty etc.)
 
-  * message "unauthorize" add to caption then authorization failed 
+  * message "unauthorize" add to caption then authorization failed
     on boinc-client
 
   * bugfix: last item of long menu has incomplet submenu
@@ -152,10 +152,10 @@ boinctui (2.3.1-1) unstable; urgency=low
 
   * implemented detail task raw info window
 
-  * network requests moved to separete threads (ui not freeze then 
+  * network requests moved to separete threads (ui not freeze then
     network hang)
 
-  * confirmation dialogs for some operations (abort task, detach 
+  * confirmation dialogs for some operations (abort task, detach
     project etc.)
 
   * "Projects" menu restructured
@@ -179,7 +179,7 @@ boinctui (2.2.1-1) unstable; urgency=low
 
   * added watch file
 
-  * provided man page as debian/boinctui.1 
+  * provided man page as debian/boinctui.1
     and removed respective lintian override
 
   * changelog: closing ITP with 'initial release' notion,
@@ -187,7 +187,7 @@ boinctui (2.2.1-1) unstable; urgency=low
 
   [ Sergey Suslov ]
 
-  * bugfix: double free memory (potential crash after edit host 
+  * bugfix: double free memory (potential crash after edit host
     list via Config form)
 
   * "Sort by deadline" was added into View menu
