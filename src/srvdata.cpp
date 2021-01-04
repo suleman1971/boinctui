@@ -518,7 +518,7 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
     for (int i=0;i<MD5_DIGEST_LENGTH;i++)
 	sprintf(shash+i*2,"%02x",md5digest[i]);
     //формируем запрос для создания аккаунта
-    char sreq[1024];
+    char sreq[2048];
     snprintf(sreq,sizeof(sreq),
         "<create_account>\n"
         "   <url>%s</url>\n"
@@ -574,7 +574,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
     for (int i=0;i<MD5_DIGEST_LENGTH;i++)
 	sprintf(shash+i*2,"%02x",md5digest[i]);
     //формируем запрос для получения authenticator
-    char sreq[1024];
+    char sreq[2048];
     snprintf(sreq,sizeof(sreq),"<lookup_account>\n<url>%s</url>\n<email_addr>%s</email_addr>\n<passwd_hash>%s</passwd_hash>\n</lookup_account>\n",url,email,shash);
     Item* res = req(sreq);
     if (res == NULL)
