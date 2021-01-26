@@ -16,7 +16,7 @@
 // =============================================================================
 
 
-#include <math.h>
+#include <cmath>
 #include "nscrollbar.h"
 #include "kclog.h"
 
