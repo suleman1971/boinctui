@@ -221,7 +221,7 @@ TaskInfoWin::TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, 
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
 	box(win,0,0);
-    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2), this->caption.c_str());
+    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2), "%s",this->caption.c_str());
 
     scrollbar = new NScrollBar(NRect(content->getheight()+2,1, content->getbegrow()-1, getwidth()-1), 0, 0, ACS_VLINE);
     content->setscrollbar(scrollbar);

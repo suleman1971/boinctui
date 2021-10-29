@@ -34,10 +34,10 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
 	box(win,0,0);
-    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
+    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),"%s",caption);
     char buf[1024];
     snprintf(buf,sizeof(buf),"%s ver %s","BOINC Client manager", XSTR(VERSION));
-    mvwprintw(win,3,getwidth()/2-(strlen(buf)/2),buf);
+    mvwprintw(win,3,getwidth()/2-(strlen(buf)/2),"%s",buf);
     mvwprintw(win,5,getwidth()/2-(strlen("(c) Sergey Suslov")/2),"(c) Sergey Suslov");
     mvwprintw(win,6,getwidth()/2-(strlen("suleman1971@gmail.com")/2),"suleman1971@gmail.com");
 }

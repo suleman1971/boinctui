@@ -71,7 +71,7 @@ void StatWin::updatecaption()
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
 	box(win,0,0);
-    mvwprintw(win,0,getwidth()/2-(caption.size()/2), this->caption.c_str());
+    mvwprintw(win,0,getwidth()/2-(caption.size()/2), "%s",this->caption.c_str());
 }
 
 

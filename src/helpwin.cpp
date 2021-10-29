@@ -30,7 +30,7 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
 	box(win,0,0);
-    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),caption);
+    mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),"%s",caption);
     text1 = new NStaticText(NRect(getheight()-2,getwidth()-2,/*rect.begrow+*/1,/*rect.begcol+*/1));
     int attr1 = getcolorpair(COLOR_YELLOW, COLOR_BLACK) | A_BOLD;
     int attr2 = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
