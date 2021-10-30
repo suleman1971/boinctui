@@ -363,6 +363,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 {
     if (srv == NULL)
 	return;
+	int oldindex=getstartindex();
     clearcontent();
     if (srv->statedom.empty())
 	return;
@@ -531,6 +532,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 	} //цикл списка задач
     }
     srv->statedom.releaseptr(tmpstatedom);
+	setstartindex(oldindex);
 }
 
 
