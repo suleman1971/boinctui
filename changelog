@@ -1,3 +1,9 @@
+boinctui (2.5.2)
+
+  * task window scrolling fixed
+
+  * fix build errors with gcc-11.2
+
 boinctui (2.5.1)
 
   * implemented "Project/Add Project by URL" menu item

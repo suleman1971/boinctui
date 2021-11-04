@@ -1,3 +1,12 @@
+boinctui (2.5.2-1) unstable; urgency=low
+
+  * task window scrolling fixed (Closes: #997151)
+
+  * fix build errors with gcc-11.2
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Thu, 04 Nov 2021 08:44:55 +0300
+
+
 boinctui (2.5.1-1) unstable; urgency=low
 
   * implemented "Project/Add Project by URL" menu item
