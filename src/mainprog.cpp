@@ -451,7 +451,13 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 			gCfg->setivalue("transparent_background",(transparentbg==0)?1:0);
 			//transparentbg = (transparentbg==0)?1:0;
 			//refresh();
-			putevent(new NEvent(NEvent::evKB, 'Q'));
+		    menu->disable(); //выключаем меню
+		    //создаем окно сообщения с подтверждением
+		    NMessageBox* mbox = new NMessageBox("Need restart boinctui");
+		    NEvent* buttonNev = new NEvent(NEvent::evKB, 27); //событие для кнопки N
+		    mbox->addbutton(new NMButton("Yes",buttonNev, 'Y','y','\n',27,0));
+		    insert(mbox);
+		    uistate = uistate | stUIMODALFORM;
 			break;
 	    }
 	} //switch
