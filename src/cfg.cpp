@@ -45,6 +45,7 @@ Config::Config(const char* filename)
     //загружаем если файл уже есть или генерируем дефолтный
     load();
     asciilinedraw = getivalue("line_draw_mode");
+    transparentbg = getivalue("transparent_background");
 }
 
 

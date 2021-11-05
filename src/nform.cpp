@@ -31,7 +31,7 @@ NForm::NForm(int rows, int cols) : NGroup(NRect(rows,cols,0,0))
     set_form_win(frm, win);
     subwin = derwin(win, rows-2, cols-2, 1,1);
     set_form_sub(frm, subwin);
-    wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
+    wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     title = NULL;
     needrefresh = true;
     //перемещаем в центр экрана

@@ -21,7 +21,7 @@
 void NVLine::refresh()
 {
     wbkgd(win,bgcolor);
-    wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
+    wattrset(win,getcolorpair(COLOR_WHITE,getbgcolor()));
     if (asciilinedraw == 1)
 	wvline(win, '|', getheight()-0);
     else

@@ -41,6 +41,7 @@ void initcurses()
     mousemask(ALL_MOUSE_EVENTS, NULL); // Report all mouse events
     #endif
     timeout(100); //ожидание для getch() 100 милисекунд
+    use_default_colors();
     start_color();
 }
 

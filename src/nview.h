@@ -32,7 +32,9 @@ class NGroup;
 
 void initcolorpairs();
 int getcolorpair(int fcolor, int bcolor); //получить пару для комбинации цветов
+int getbgcolor(); //вернет цвет бакграунда (в зависимости от настройки transparentbg)
 extern int asciilinedraw; //1-рисовать рамки символами +----+
+extern int transparentbg; //1-прозрачный бэкграунд
 
 
 class NView //базовый визуальный класс

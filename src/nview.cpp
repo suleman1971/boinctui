@@ -22,6 +22,16 @@
 
 
 int asciilinedraw = 0; //1-рисовать рамки символами +----+
+int transparentbg = 0; //1-прозрачный бэкграунд
+
+
+int getbgcolor() //вернет цвет бакграунда (в зависимости от настройки transparentbg)
+{
+    if(transparentbg==1)
+        return -1;
+    else
+        return COLOR_BLACK;
+}
 
 
 int getcolorpair(int fcolor, int bcolor) //получить пару для комбинации цветов
@@ -73,7 +83,7 @@ NView::NView(NRect rect)
     #ifdef DEBUG
     refreshcount = 0; //счетчик обновлений
     #endif
-    wbkgdset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK)); //бакграунд
+    wbkgdset(win,getcolorpair(COLOR_WHITE,getbgcolor())); //бакграунд
     werase(win); //заполняем цветом фона
 }
 

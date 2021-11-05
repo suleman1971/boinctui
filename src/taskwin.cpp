@@ -409,23 +409,23 @@ void TaskWin::updatedata() //обновить данные с сервера
 	    if (name)
 	    {
 		int column = 0;
-		int attr = getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_NORMAL; //ставим цвет по умолчанию
+		int attr = getcolorpair(COLOR_WHITE,getbgcolor()) | A_NORMAL; //ставим цвет по умолчанию
 		NColorString* cs = new NColorString(attr, "");
 		std::string sstate = getresultstatestr(*it); //состояние задачи
 		//цвет и атрибут в зависимости от состояния задачи
 		if ((*it)->findItem("ready_to_report") != NULL)
-		    attr = getcolorpair(COLOR_BLACK,COLOR_BLACK) | A_BOLD;
+		    attr = getcolorpair(getbgcolor(),getbgcolor()) | A_BOLD;
 		if ((*it)->findItem("active_task") != NULL)
-		    attr =  getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD; //ставим цвет по умолчанию + A_BOLD;
+		    attr =  getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD; //ставим цвет по умолчанию + A_BOLD;
 		if ( sstate == "Run")
-		    attr = getcolorpair(COLOR_YELLOW,COLOR_BLACK) | A_BOLD;
+		    attr = getcolorpair(COLOR_YELLOW,getbgcolor()) | A_BOLD;
 		if ( sstate == "Upld")
-		    attr = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+		    attr = getcolorpair(COLOR_BLUE,getbgcolor()) | A_BOLD;
 		if ( sstate == "Dwnld")
-		    attr = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
+		    attr = getcolorpair(COLOR_GREEN,getbgcolor()) | A_BOLD;
 		int stateattr = attr;
 		if (( sstate == "DoneEr" ) || ( sstate == "Abort" ) || ( sstate == "WMem" ))
-		    stateattr = getcolorpair(COLOR_RED,COLOR_BLACK)/* | A_BOLD*/;
+		    stateattr = getcolorpair(COLOR_RED,getbgcolor())/* | A_BOLD*/;
 		//проверяем нужно-ли отображать эту задачу
 		if
 		( !(
@@ -451,11 +451,11 @@ void TaskWin::updatedata() //обновить данные с сервера
 		if (plan_class != NULL)
 		{
 		    if ((strstr(plan_class->getsvalue(),"ati") != NULL )||(strstr(plan_class->getsvalue(),"opencl") != NULL))
-			attrgpu = getcolorpair(COLOR_MAGENTA,COLOR_BLACK) | A_BOLD;
+			attrgpu = getcolorpair(COLOR_MAGENTA,getbgcolor()) | A_BOLD;
 		    if (strstr(plan_class->getsvalue(),"cuda") != NULL )
-			attrgpu = getcolorpair(COLOR_GREEN,COLOR_BLACK) | A_BOLD;
+			attrgpu = getcolorpair(COLOR_GREEN,getbgcolor()) | A_BOLD;
 		    if (strstr(plan_class->getsvalue(),"intel") != NULL ) //NEED CHECK !!!
-			attrgpu = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+			attrgpu = getcolorpair(COLOR_BLUE,getbgcolor()) | A_BOLD;
 		}
 		if (( sstate != "Run" )||( sstate != "Done"))
 		//    attrgpu = attrgpu & (~A_BOLD); //выключаем болд для незапущенных
@@ -476,7 +476,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    {
 			double dtime = estimated_cpu_time_remaining->getdvalue();
 			if ( ( sstate == "Run" )&&( dtime < 600)&&( dtime >= 0 ) ) //осталось [0-600[ сек
-			    attr2 = getcolorpair(COLOR_RED,COLOR_BLACK) | A_BOLD;
+			    attr2 = getcolorpair(COLOR_RED,getbgcolor()) | A_BOLD;
 			if ( dtime >= 0)
 			    cs->append(attr2," %4s", gethumanreadabletimestr(dtime).c_str()); //естимейт
 			else
@@ -495,7 +495,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 			double dtime = report_deadline->getdvalue();
 			double beforedl = dtime - time(NULL); //число секунд до дедлайна
 			if ( ( sstate != "Done")&&( beforedl < 3600 * 24 * 2) ) //осталось меньше 2-х дней
-			    attr2 = getcolorpair(COLOR_BLUE,COLOR_BLACK) | A_BOLD;
+			    attr2 = getcolorpair(COLOR_BLUE,getbgcolor()) | A_BOLD;
 			cs->append(attr2," %4s", (beforedl>0) ? gethumanreadabletimestr(beforedl).c_str() : "dead");
 		    }
 		    else

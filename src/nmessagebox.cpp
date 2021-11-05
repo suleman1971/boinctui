@@ -114,12 +114,12 @@ NMessageBox::NMessageBox(const char* text) : NGroup(NRect(3, 40, 1, 1))
     while ( (*p != 0)&&(nbytes < bsize) ); //дошли до конца
     //заполняем содержимое
     content = new NStaticText(NRect(contentheight, getwidth()-4, 2, 2));
-    content->setbgcolor(getcolorpair(COLOR_WHITE, COLOR_BLACK));
+    content->setbgcolor(getcolorpair(COLOR_WHITE, getbgcolor()));
     insert(content);
-    content->appendstring(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, text);
+    content->appendstring(getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD, text);
     modalflag = true;
     resize(contentheight + 6,getwidth());
-    wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
+    wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else

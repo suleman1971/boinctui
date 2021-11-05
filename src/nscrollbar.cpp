@@ -58,7 +58,7 @@ void NScrollBar::setpos(int vmin, int vmax, int vpos1, int vpos2)
 void NScrollBar::refresh()
 {
     wbkgd(win,bgcolor);
-    wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
+    wattrset(win,getcolorpair(COLOR_WHITE,getbgcolor()));
     chtype topsymbol = asciilinedraw ? '+'| (chtop & A_BOLD) : chtop;
     chtype bottomsymbol = asciilinedraw ? '+' | (chbottom & A_BOLD) : chbottom;
     chtype bodysymbol = asciilinedraw ? 'X' : ACS_CKBOARD;

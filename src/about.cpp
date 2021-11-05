@@ -29,7 +29,7 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
     modalflag = true;
     caption = strdup(" BOINCTUI ");
     resize(10,getwidth());
-    wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
+    wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else

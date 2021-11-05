@@ -51,7 +51,7 @@ MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
     colname.push_back("  application                   ");
     colname.push_back("  task");
     tablheader = new NStaticText(NRect(1, rect.cols -2-(INFPANWIDTH)-1, 1, 1));
-    tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD,"  #  state    done%%  project               est d/l   task");
+    tablheader->setstring(getcolorpair(COLOR_CYAN,getbgcolor()) | A_BOLD,"  #  state    done%%  project               est d/l   task");
     int wtaskheight = getheight() * wtaskheightpercent / 10000.0;
     if (wtaskheight < 5)
 	wtaskheight = 5;
@@ -139,13 +139,14 @@ void MainWin::setcoltitle()
 	if (wtask->iscolvisible(i))
 	    s = s + colname[i];
     }
-    tablheader->setstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) | A_BOLD, s.c_str());
+    tablheader->setbgcolor(getcolorpair(COLOR_WHITE,getbgcolor()));
+    tablheader->setstring(getcolorpair(COLOR_CYAN,getbgcolor()) | A_BOLD, s.c_str());
 }
 
 
 void MainWin::refresh()
 {
-    wattrset(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    wattrset(win, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
@@ -161,7 +162,8 @@ void MainWin::refresh()
 	//wattrset(win,0);
     }
     //wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
-    //wattroff(win, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    //wattroff(win, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
+    setcoltitle();
     NGroup::refresh();
 }
 
@@ -172,7 +174,7 @@ void MainWin::updatecaption()
     caption->clear();
     if (srv)
     {
-        caption->append(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
+        caption->append(getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
         if (srv->loginfail)
             caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
         else

@@ -446,6 +446,14 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		refresh();
 		break;
 	    }
+		case evTRANSPARENTBGMODECHANGE:
+	    {
+			gCfg->setivalue("transparent_background",(transparentbg==0)?1:0);
+			//transparentbg = (transparentbg==0)?1:0;
+			//refresh();
+			putevent(new NEvent(NEvent::evKB, 'Q'));
+			break;
+	    }
 	} //switch
     }
 }

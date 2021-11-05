@@ -51,7 +51,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     FIELD* field   = addfield(new_field(1, 44, nl, 5, 0, 0));
     field_opts_off(field, O_ACTIVE); //статический текст
     set_field_buffer(field, 0, "host             port   pwd");
-    set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(field, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     nl = nl + 1;
     //поля для хостов
     for (i = 0; i < nhost; i++) //цикл по хостам
@@ -104,7 +104,7 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
 	set_field_buffer(field, 0, "Esc-Cancel   Enter-Accept");
     else
 	set_field_buffer(field, 0, "Esc-Cancel   Enter-Accept   Ins-Add host");
-    set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(field, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     nl = nl + 2;
     //финализация списка полей
     addfield(NULL);

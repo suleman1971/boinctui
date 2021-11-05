@@ -94,7 +94,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     //имя менеджера
     f = addfield(new_field(1, getwidth()-4, line, 2, 0, 0));
     set_field_buffer(f, 0, "Description  ");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     namefield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
@@ -118,7 +118,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     line++;
     f = addfield(new_field(1, getwidth()-4, line, 2, 0, 0));
     set_field_buffer(f, 0, "URL          ");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     urlfield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
@@ -137,14 +137,14 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     f = addfield(new_field(3, getwidth()-4, line++, 2, 0, 0));
     set_field_buffer(f, 0,  "If you have not yet registered with this account manager" \
     			"     please do so before proceeding.");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     line = line + 2;
     //user name
     line++;
     f = addfield(new_field(1, 10, line, 2 , 0, 0));
     set_field_buffer(f, 0, "username");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     usernamefield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
@@ -154,7 +154,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     line++;
     f = addfield(new_field(1, 10, line, 2 , 0, 0));
     set_field_buffer(f, 0, "password");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     passwfield = getfieldcount();
     f = addfield(new_field(1, 40, line++, 15, 0, 0));
@@ -164,7 +164,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     line++;
     f = addfield(new_field(1, getwidth()-25, line++, 20 , 0, 0));
     set_field_buffer(f, 0, "Enter-Ok    Esc-Cancel");
-    set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    set_field_back(f, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     //финализация списка полей
     addfield(NULL);

@@ -71,10 +71,8 @@ void MsgWin::updatedata() //обновить данные с сервера
 		    sproject = project->getsvalue();
 		if ( (stimestamp != stimestampold)||(sproject != sprojectold)) //выводим имя и время проекта если они отличаются от предидущего
 		{
-		    //addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) /*| A_BOLD*/,"#%d %s ", number->getivalue(), tbuf); //номер и время сообщения
-		    addstring(getcolorpair(COLOR_CYAN,COLOR_BLACK) ,"%s ", tbuf); //время сообщения
-		    //strcpy(tbufold, tbuf);
-		    content.back()->append(getcolorpair(COLOR_YELLOW,COLOR_BLACK),"%s",sproject.c_str()); //добавить имя проекта другим цветом
+		    addstring(getcolorpair(COLOR_CYAN,getbgcolor()) ,"%s ", tbuf); //время сообщения
+		    content.back()->append(getcolorpair(COLOR_YELLOW,getbgcolor()),"%s",sproject.c_str()); //добавить имя проекта другим цветом
 		    stimestampold = stimestamp;
 		    sprojectold = sproject;
 		}
@@ -86,7 +84,7 @@ void MsgWin::updatedata() //обновить данные с сервера
 		    s[slen-3] = '\0';
 		    ss = ss + 9;
 		}
-		addstring(getcolorpair(COLOR_WHITE,COLOR_BLACK), "%s", ss/*body->getsvalue()*/); //само сообщение
+		addstring(getcolorpair(COLOR_WHITE,getbgcolor()), "%s", ss/*body->getsvalue()*/); //само сообщение
 		free(s);
 	    }
 	}

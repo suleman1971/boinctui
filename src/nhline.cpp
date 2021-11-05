@@ -21,7 +21,7 @@
 void NHLine::refresh()
 {
     wbkgd(win,bgcolor);
-    wattrset(win,getcolorpair(COLOR_WHITE,COLOR_BLACK));
+    wattrset(win,getcolorpair(COLOR_WHITE,getbgcolor()));
     if ( asciilinedraw == 1)
 	whline(win, '-', getwidth()-0);
     else

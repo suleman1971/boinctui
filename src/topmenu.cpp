@@ -55,6 +55,7 @@
 #define M_SORT_BY_APP			"Sort by application"
 #define M_SORT_BY_TASK			"Sort by task name"
 #define M_ASCII_LINE_DRAW		"ASCII line draw"
+#define M_TRANSPARENT_BG        "Transparent background"
 //Названия пунктов меню "Projects"
 #define M_ADD_PROJECT			"Add project"
 #define M_ADD_PROJECT_BY_URL	"Add project by URL"
@@ -305,6 +306,7 @@ ViewSubMenu::ViewSubMenu(NRect rect/*, Config* cfg*/) : NMenu(rect)
     additem(M_SORT_BY_TASK,     (taskssortmode == 7) ? "(*)" : "( )");
     additem("","");
     additem(M_ASCII_LINE_DRAW,  (asciilinedraw == 1) ? "[*]" : "[ ]");
+    additem(M_TRANSPARENT_BG,  (transparentbg == 1) ? "[*]" : "[ ]");
     additem(NULL,NULL);
 }
 
@@ -402,6 +404,12 @@ bool ViewSubMenu::action()
 	asciilinedraw = !asciilinedraw;
 	putevent(new TuiEvent(evASCIIMODECHANGE));
 	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_TRANSPARENT_BG) == 0 )
+    {
+		putevent(new TuiEvent(evTRANSPARENTBGMODECHANGE));
+		return true;
     }
 
     putevent(new TuiEvent(evCOLVIEWCH,item_index(current_item(menu)), false));

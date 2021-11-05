@@ -25,15 +25,15 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     caption = strdup(" Hot keys list ");
     modalflag = true;
     resize(17,60);
-    wattrset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD);
+    wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
     else
 	box(win,0,0);
     mvwprintw(win,0,getwidth()/2-(strlen(caption)/2),"%s",caption);
     text1 = new NStaticText(NRect(getheight()-2,getwidth()-2,/*rect.begrow+*/1,/*rect.begcol+*/1));
-    int attr1 = getcolorpair(COLOR_YELLOW, COLOR_BLACK) | A_BOLD;
-    int attr2 = getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD;
+    int attr1 = getcolorpair(COLOR_YELLOW, getbgcolor()) | A_BOLD;
+    int attr2 = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
     text1->setstring(attr1,   "\n   Common Controls:\n");
     text1->appendstring(attr2,"       \"N\"           - Toggle between BOINC hosts\n");
     text1->appendstring(attr2,"       \"C\"           - Edit configuration\n");

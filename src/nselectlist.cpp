@@ -76,7 +76,7 @@ void NSelectList::drawcontent() //отрисовывает буфер строк
 	    {
 		wbkgdset(win,getcolorpair(COLOR_WHITE,selectorbgcolor));
 		wclrtoeol(win); //очищаем до конца строки
-		wbkgdset(win,getcolorpair(COLOR_WHITE, COLOR_BLACK));
+		wbkgdset(win,getcolorpair(COLOR_WHITE, getbgcolor()));
 	    }
 	}
 	else //очищаем нижнюю незанятую часть окна (если есть)

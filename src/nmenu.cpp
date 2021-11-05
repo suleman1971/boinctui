@@ -26,9 +26,9 @@ NMenu::NMenu(NRect rect, bool horis) : NGroup(rect)
     ishoris = horis;
     posted = false;
     menu = new_menu(mitems);
-    setbackground(getcolorpair(COLOR_WHITE,COLOR_BLACK) | A_BOLD);
+    setbackground(getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     setforeground(getcolorpair(COLOR_BLACK,COLOR_WHITE));
-    set_menu_grey(menu, getcolorpair(COLOR_RED,COLOR_BLACK)); //цвет разделителей
+    set_menu_grey(menu, getcolorpair(COLOR_RED,getbgcolor())); //цвет разделителей
     set_menu_win(menu, win);
     postmenu();
     if (horis)

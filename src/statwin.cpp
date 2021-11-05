@@ -139,7 +139,7 @@ void StatWin::updatedata()
 	//формируем содержимое окна на основе структуры projects
 	std::vector<ProjStat>::iterator itprj;
 	std::list<time_t> daylist; //для заголовков дней
-	NColorString* cs = new NColorString(getcolorpair(COLOR_CYAN, COLOR_BLACK) | A_BOLD, "  %-*s %-*s", COLWIDTH-2, "", COLWIDTH-2, "Summary");
+	NColorString* cs = new NColorString(getcolorpair(COLOR_CYAN, getbgcolor()) | A_BOLD, "  %-*s %-*s", COLWIDTH-2, "", COLWIDTH-2, "Summary");
 	int n = hpos;
 	for (itprj = projects.begin(); itprj != projects.end(); itprj++, n--) //проекты
 	{
@@ -148,7 +148,7 @@ void StatWin::updatedata()
 	    std::string s = (*itprj).name.c_str();
 	    if (s.size() > COLWIDTH)
 		s.resize(COLWIDTH);
-	    cs->append(getcolorpair(COLOR_RED, COLOR_BLACK) | A_BOLD, " %*s ", COLWIDTH, s.c_str()); //имена проектов
+	    cs->append(getcolorpair(COLOR_RED, getbgcolor()) | A_BOLD, " %*s ", COLWIDTH, s.c_str()); //имена проектов
 	    std::list<DayStat>::iterator itdays;
 	    for(itdays = (*itprj).days.begin(); itdays!=(*itprj).days.end(); itdays++)
 	    {
@@ -164,8 +164,8 @@ void StatWin::updatedata()
 	    tm* daytm = localtime(&(*itday));
 	    char buf[128] = "?";
 	    strftime(buf, sizeof(buf),"%-2e %b",daytm); //"%-e %b %-k:%M"
-	    NColorString* cs = new NColorString(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, "%-*s", COLWIDTH, buf);
-	    cs->append(getcolorpair(COLOR_CYAN, COLOR_BLACK) | A_BOLD, " %*ld ", COLWIDTH, hostmode ? daysumhost[*itday] : daysumuser[*itday]);
+	    NColorString* cs = new NColorString(getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD, "%-*s", COLWIDTH, buf);
+	    cs->append(getcolorpair(COLOR_CYAN, getbgcolor()) | A_BOLD, " %*ld ", COLWIDTH, hostmode ? daysumhost[*itday] : daysumuser[*itday]);
 	    n = hpos;
 	    for (itprj = projects.begin(); itprj != projects.end(); itprj++, n--) //перебрать все проекты по этому дню
 	    {
@@ -187,9 +187,9 @@ void StatWin::updatedata()
 		    }
 		}
 		if (value != -1)
-		    cs->append(getcolorpair(COLOR_WHITE, COLOR_BLACK) | A_BOLD, " %*ld ",COLWIDTH, value);
+		    cs->append(getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD, " %*ld ",COLWIDTH, value);
 		else
-		    cs->append(getcolorpair(COLOR_BLACK, COLOR_BLACK) | A_BOLD, " %*s ",COLWIDTH, "-");
+		    cs->append(getcolorpair(getbgcolor(), getbgcolor()) | A_BOLD, " %*s ",COLWIDTH, "-");
 	    }
 	    content->addstring(cs);
 	}
