@@ -8,14 +8,14 @@
 #   $ ./configure --without-gnutls
 #   $ make srctgz
 #   $ cd ..
-#   $ mv boinctui_2.5.2.orig.tar.gz rpmbuild/SOURCES/
+#   $ mv boinctui_2.6.0.orig.tar.gz rpmbuild/SOURCES/
 #   $ rm -rf boinctui*
 #   $ cd rpmbuild/SPECS
 #   $ rpmbuild -bb boinctui.spec
 #   $ ls ../RPMS/
 
 Name:           boinctui
-Version:        2.5.2
+Version:        2.6.0
 Release:        1%{?dist}
 Summary:        Fullscreen Text Mode Manager For BOINC Client
 Group:          Applications/Communications
