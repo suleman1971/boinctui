@@ -234,72 +234,72 @@ TaskInfoWin::TaskInfoWin(const char* caption, Srv* srv, const char* projecturl, 
 void TaskInfoWin::updatedata()
 {
     if (srv == NULL)
-	return;
+		return;
     //===данные по процессам===
     if (srv->statedom.empty())
-	return;
+		return;
     Item* tmpstatedom = srv->statedom.hookptr();
     Item* client_state = tmpstatedom->findItem("client_state");
     std::vector<std::pair<std::string, std::string> > ss;
     maxlen1 = 0;
     maxlen2 = 0;
+	int oldstartindex = content->getstartindex();
     if (client_state != NULL)
     {
-	int oldstartindex = content->getstartindex();
-	content->clearcontent();
+		content->clearcontent();
         std::vector<Item*> results = client_state->getItems("result");
-	std::vector<Item*>::iterator it;
-	for (it = results.begin(); it!=results.end(); it++) //цикл списка задач
-	{
-	    Item* project_url = (*it)->findItem("project_url");
-	    Item* name = (*it)->findItem("name");
-	    if ((project_url != NULL)&&
-		(name != NULL)&&
-		(strcmp(project_url->getsvalue(), projecturl.c_str()) == 0)&&
-		(strcmp(name->getsvalue(), taskname.c_str()) == 0))
-	    {
-		//имя проекта
-		std::string pname = srv->findProjectName(tmpstatedom, (*it)->findItem("project_url")->getsvalue());
-		ss.push_back(std::pair<std::string, std::string>("PROJECT NAME", pname));
-		//имя приложения
-		char buf[256];
-		snprintf(buf, sizeof(buf),"%s","unknown application");
-		Item* wu_name = (*it)->findItem("wu_name");
-		if (wu_name != NULL)
+		std::vector<Item*>::iterator it;
+		for (it = results.begin(); it!=results.end(); it++) //цикл списка задач
 		{
-		    Item* app = srv->findappbywuname(wu_name->getsvalue());
-		    if (app != NULL)
-		    {
-			Item* user_friendly_name = app->findItem("user_friendly_name");
-			if (user_friendly_name != NULL)
-			snprintf(buf, sizeof(buf),"%s",user_friendly_name->getsvalue());
-		    }
-		}
-		ss.push_back(std::pair<std::string, std::string>("APP NAME", buf));
-		ss.push_back(std::pair<std::string, std::string>("", ""));
-		//raw данные
-		Tree2Text(*it, ss, maxlen1, maxlen2);
-		break;
-	    }
-	} //цикл списка задач
-	content->setstartindex(oldstartindex);
-	needrefresh = true;
+			Item* project_url = (*it)->findItem("project_url");
+			Item* name = (*it)->findItem("name");
+			if ((project_url != NULL)&&
+				(name != NULL)&&
+				(strcmp(project_url->getsvalue(), projecturl.c_str()) == 0)&&
+				(strcmp(name->getsvalue(), taskname.c_str()) == 0))
+			{
+				//имя проекта
+				std::string pname = srv->findProjectName(tmpstatedom, (*it)->findItem("project_url")->getsvalue());
+				ss.push_back(std::pair<std::string, std::string>("PROJECT NAME", pname));
+				//имя приложения
+				char buf[256];
+				snprintf(buf, sizeof(buf),"%s","unknown application");
+				Item* wu_name = (*it)->findItem("wu_name");
+				if (wu_name != NULL)
+				{
+					Item* app = srv->findappbywuname(wu_name->getsvalue());
+					if (app != NULL)
+					{
+					Item* user_friendly_name = app->findItem("user_friendly_name");
+					if (user_friendly_name != NULL)
+					snprintf(buf, sizeof(buf),"%s",user_friendly_name->getsvalue());
+					}
+				}
+				ss.push_back(std::pair<std::string, std::string>("APP NAME", buf));
+				ss.push_back(std::pair<std::string, std::string>("", ""));
+				//raw данные
+				Tree2Text(*it, ss, maxlen1, maxlen2);
+				break;
+	    	}
+		} //цикл списка задач
+		needrefresh = true;
     }
     srv->statedom.releaseptr(tmpstatedom);
     //заполняем визуальные строки
     std::vector<std::pair<std::string, std::string> >::iterator it;
     for (it = ss.begin(); it!=ss.end(); it++)
     {
-	int varcolor = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
-	int valcolor = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
-	if ((FindVar(ssbak, (*it).first) != (*it).second)&&(!ssbak.empty()))
-	    valcolor = getcolorpair(COLOR_CYAN, getbgcolor()) | A_BOLD;
+		int varcolor = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
+		int valcolor = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
+		if ((FindVar(ssbak, (*it).first) != (*it).second)&&(!ssbak.empty()))
+			valcolor = getcolorpair(COLOR_CYAN, getbgcolor()) | A_BOLD;
 
-	NColorString* cs = new NColorString(varcolor, "%-*s   ", maxlen1, (*it).first.c_str());
-	cs->append(valcolor, "%s\n", (*it).second.c_str());
-	content->addstring(cs);
+		NColorString* cs = new NColorString(varcolor, "%-*s   ", maxlen1, (*it).first.c_str());
+		cs->append(valcolor, "%s\n", (*it).second.c_str());
+		content->addstring(cs);
     }
     ssbak = ss;
+	content->setstartindex(oldstartindex);
 }
 
 

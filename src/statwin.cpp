@@ -84,7 +84,6 @@ void StatWin::updatedata()
     //===данные статистики===
     int startindexsave = content->getstartindex();
     content->clearcontent();
-    content->setstartindex(startindexsave);
     projects.clear();
     std::map<std::string, std::vector<DayStat> > allstat;
 
@@ -194,6 +193,7 @@ void StatWin::updatedata()
 	    content->addstring(cs);
 	}
     }
+    content->setstartindex(startindexsave);
     srv->statisticsdom.releaseptr(tmpstatisticsdom);
     srv->statedom.releaseptr(tmpstatedom);
 }
