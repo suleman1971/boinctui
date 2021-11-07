@@ -18,6 +18,8 @@
 #include <string.h>
 #include <algorithm>
 #include <sstream>
+#include <iomanip>
+#include <cmath>
 #include "taskwin.h"
 #include "net.h"
 #include "resultparse.h"
@@ -122,6 +124,18 @@ bool resultCmpLessByEstimate( Item* res1, Item* res2 ) //для сортиров
 }
 
 
+bool resultCmpLessByRcv( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* received_time1 = res1->findItem("received_time");
+    Item* received_time2 = res2->findItem("received_time");
+    if ( ( received_time1 != NULL) && (received_time2 != NULL) )
+		return (received_time1->getdvalue() < received_time2->getdvalue());
+    if ( ( received_time1 != NULL) && (received_time2 == NULL) )
+		return true;
+    return false;
+}
+
+
 bool resultCmpLessByDL( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
     Item* report_deadline1 = res1->findItem("report_deadline");
@@ -136,12 +150,26 @@ bool resultCmpLessByDL( Item* res1, Item* res2 ) //для сортировки �
     return false;
 }
 
+
 /*
 bool resultCmpLessByApp( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
     return false; //not implemented yet
 }
 */
+
+
+bool resultCmpLessBySwap( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
+{
+    Item* swap_size1 = res1->findItem("swap_size");
+    Item* swap_size2 = res2->findItem("swap_size");
+    if ( ( swap_size1 != NULL) && (swap_size2 != NULL) )
+		return (swap_size1->getdvalue() > swap_size2->getdvalue());
+    if ( ( swap_size1 != NULL) && (swap_size2 == NULL) )
+		return true;
+    return false;
+}
+
 
 bool resultCmpLessByTask( Item* res1, Item* res2 ) //для сортировки задач true если res1 < res2
 {
@@ -214,6 +242,23 @@ std::string getresultstatestr(Item* result)
 	}
     }
     return "Wait";
+}
+
+
+std::string gethumanreadablesize(size_t size)
+{
+	std::stringstream s;
+	size_t sizemb=std::round(size/(1024.0*1024.0));
+	if(sizemb==0)
+		s<<"  -  ";
+	else
+	{
+		if(sizemb<9999)
+			s<<sizemb<<"M";
+		else
+			s<<std::round(sizemb/1024.0)<<"G";
+	}
+	return s.str();
 }
 
 
@@ -390,12 +435,18 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    fcmpless = resultCmpLessByProject; //по project
 		    break;
 		case 4:
-		    fcmpless = resultCmpLessByEstimate; //по estimate
+		    fcmpless = resultCmpLessByRcv; //по rcv
 		    break;
 		case 5:
+		    fcmpless = resultCmpLessByEstimate; //по estimate
+		    break;
+		case 6:
 		    fcmpless = resultCmpLessByDL; //по deadline
 		    break;
-		case 7:
+		case 8:
+		    fcmpless = resultCmpLessBySwap; //по swap
+		    break;
+		case 9:
 		    fcmpless = resultCmpLessByTask; //по task
 		    break;
 	    }//switch
@@ -485,7 +536,21 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    else
 			cs->append(attr2," %4s", "?");
 		}
-		//колонка 5 время дедлайн
+		//колонка 5 received time column
+		if(iscolvisible(column++))
+		{
+		    Item* received_time = (*it)->findItem("received_time");
+		    int attr2 = attr;
+		    if (received_time != NULL)
+		    {
+				double dtime = received_time->getdvalue();
+				double beforedl = time(NULL) - dtime; //число секунд c момента получениия задачи
+				cs->append(attr2," %4s", gethumanreadabletimestr(beforedl).c_str());
+		    }
+		    else
+				cs->append(attr," %4s", "?");
+		}
+		//колонка 6 время дедлайн
 		if(iscolvisible(column++))
 		{
 		    Item* report_deadline = (*it)->findItem("report_deadline");
@@ -501,7 +566,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    else
 			cs->append(attr2," %4s", "?");
 		}
-		//колонка 6 имя приложения
+		//колонка 7 имя приложения
 		if(iscolvisible(column++))
 		{
 		    char buf[256];
@@ -521,7 +586,18 @@ void TaskWin::updatedata() //обновить данные с сервера
 			mbstrtrunc(buf,30);
 		    cs->append(attr,"  %-30s", buf);
 		}
-		//колонка 7 имя задачи
+		//колонка 8 swap size
+		if(iscolvisible(column++))
+		{
+		    Item* swap_size = (*it)->findItem("swap_size");
+		    if (swap_size != NULL)
+		    {
+				cs->append(attr," %5s ", gethumanreadablesize(swap_size->getdvalue()).c_str());
+			}
+		    else
+				cs->append(attr," %5s ", " - ");
+		}
+		//колонка 9 имя задачи
 		if(iscolvisible(column++))
 		    cs->append(attr,"  %s", name->getsvalue()); 
 		//добавляем сформированную строку и поле данных с именем задачи (для селектора)

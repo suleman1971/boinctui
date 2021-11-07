@@ -40,8 +40,10 @@
 #define M_VIEW_DONE			"Percent done column"
 #define M_VIEW_PROJECT			"Project name column"
 #define M_VIEW_ESTIMATE			"Estimate time column"
+#define M_VIEW_RCV              "Receive time column"
 #define M_VIEW_DEADLINE			"Deadline time column"
 #define M_VIEW_APPNAME			"Application name column"
+#define M_VIEW_SWAP             "Swap size column"
 #define M_VIEW_TASKNAME			"Task name column"
 #define M_ALL_TASKS			"All tasks"
 #define M_HIDE_DONE			"Hide done tasks"
@@ -51,8 +53,10 @@
 #define M_SORT_BY_DONE			"Sort by done %"
 #define M_SORT_BY_PROJECT		"Sort by project name"
 #define M_SORT_BY_ESTIMATE		"Sort by estimate time"
+#define M_SORT_BY_RCV           "Sort by receive time"
 #define M_SORT_BY_DL			"Sort by deadline"
 #define M_SORT_BY_APP			"Sort by application"
+#define M_SORT_BY_SWAP          "Sort by swap size"
 #define M_SORT_BY_TASK			"Sort by task name"
 #define M_ASCII_LINE_DRAW		"ASCII line draw"
 #define M_TRANSPARENT_BG        "Transparent background"
@@ -268,8 +272,10 @@ ViewSubMenu::ViewSubMenu(NRect rect/*, Config* cfg*/) : NMenu(rect)
     additem(M_VIEW_DONE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_PROJECT, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_ESTIMATE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_RCV, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_DEADLINE, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem(M_VIEW_APPNAME, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
+    additem(M_VIEW_SWAP, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");	
     additem(M_VIEW_TASKNAME, iscolenable(/*cfg,*/colnum++) ? "[*]" : "[ ]");
     additem("","");
     int taskslistmode = 0;
@@ -300,10 +306,12 @@ ViewSubMenu::ViewSubMenu(NRect rect/*, Config* cfg*/) : NMenu(rect)
     additem(M_SORT_BY_STATE,    (taskssortmode == 1) ? "(*)" : "( )");
     additem(M_SORT_BY_DONE,     (taskssortmode == 2) ? "(*)" : "( )");
     additem(M_SORT_BY_PROJECT,  (taskssortmode == 3) ? "(*)" : "( )");
-    additem(M_SORT_BY_ESTIMATE, (taskssortmode == 4) ? "(*)" : "( )");
-    additem(M_SORT_BY_DL,       (taskssortmode == 5) ? "(*)" : "( )");
-    //additem(M_SORT_BY_APP,      (taskssortmode == 6) ? "(*)" : "( )");  //not implemented yet
-    additem(M_SORT_BY_TASK,     (taskssortmode == 7) ? "(*)" : "( )");
+    additem(M_SORT_BY_RCV,  (taskssortmode == 4) ? "(*)" : "( )");
+    additem(M_SORT_BY_ESTIMATE, (taskssortmode == 5) ? "(*)" : "( )");
+    additem(M_SORT_BY_DL,       (taskssortmode == 6) ? "(*)" : "( )");
+    //additem(M_SORT_BY_APP,      (taskssortmode == 7) ? "(*)" : "( )");  //not implemented yet
+    additem(M_SORT_BY_SWAP,  (taskssortmode == 8) ? "(*)" : "( )");
+    additem(M_SORT_BY_TASK,     (taskssortmode == 9) ? "(*)" : "( )");
     additem("","");
     additem(M_ASCII_LINE_DRAW,  (asciilinedraw == 1) ? "[*]" : "[ ]");
     additem(M_TRANSPARENT_BG,  (transparentbg == 1) ? "[*]" : "[ ]");
@@ -375,27 +383,39 @@ bool ViewSubMenu::action()
 	return true;
     }
 
-    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_ESTIMATE) == 0 )
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_RCV) == 0 )
     {
-	putevent(new TuiEvent(evSORTMODECH, 4));
-	return true;
+		putevent(new TuiEvent(evSORTMODECH, 4));
+		return true;
     }
 
-    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_DL) == 0 )
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_ESTIMATE) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 5));
 	return true;
     }
 
-    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_APP) == 0 )
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_DL) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 6));
 	return true;
     }
 
-    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_TASK) == 0 )
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_APP) == 0 )
     {
 	putevent(new TuiEvent(evSORTMODECH, 7));
+	return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_SWAP) == 0 )
+    {
+		putevent(new TuiEvent(evSORTMODECH, 8));
+		return true;
+    }
+
+    if ( strcmp(item_name(current_item(menu)), M_SORT_BY_TASK) == 0 )
+    {
+	putevent(new TuiEvent(evSORTMODECH, 9));
 	return true;
     }
 
