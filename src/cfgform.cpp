@@ -48,53 +48,65 @@ void CfgForm::genfields(bool extfields) //создаст массив полей
     int i  = 0; //номер хоста
     int nl = 2; //номер экранной строки
     //статический заголовок полей хостов
-    FIELD* field   = addfield(new_field(1, 44, nl, 5, 0, 0));
+    FIELD* field   = addfield(new_field(1, 53, nl, 5, 0, 0));
     field_opts_off(field, O_ACTIVE); //статический текст
-    set_field_buffer(field, 0, "host             port   pwd");
+    set_field_buffer(field, 0, "host             port   pwd                   label");
     set_field_back(field, getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD);
     nl = nl + 1;
     //поля для хостов
     for (i = 0; i < nhost; i++) //цикл по хостам
     {
-	//поле для хоста
-	field = addfield(new_field(1, 15, nl,   5, 0, 0));
-	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	field_opts_off(field, O_AUTOSKIP);
-	field_opts_off(field, O_STATIC);
-	set_max_field(field,128); //max width 128
-	//set_field_type(field[nf], TYPE_ALNUM, 0);
-    if (i < (int)slist.size())
-	{
-	    Item* host = slist[i]->findItem("host");
-	    if (host != NULL)
-		set_field_buffer(field, 0, host->getsvalue());
-	}
-	if (i == 0)
-	    set_current_field(frm, field); //фокус на поле
-	//поле для порта
-	field = addfield(new_field(1, 5, nl, 17+5, 0, 0));
-	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	set_field_type(field, TYPE_INTEGER, 0, 0, 65535);
-        field_opts_off(field, O_AUTOSKIP);
-    if (i < (int)slist.size())
-	{
-	    Item* port = slist[i]->findItem("port");
-	    if (port != NULL)
-		set_field_buffer(field, 0, port->getsvalue());
-	}
-	//поле для пароля
-	field = addfield(new_field(1, 20, nl, 29, 0, 0));
-	set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
-	field_opts_off(field, O_AUTOSKIP);
-	field_opts_off(field, O_STATIC);
-	set_max_field(field,128); //max width 128
-    if (i < (int)slist.size())
-	{
-	    Item* pwd = slist[i]->findItem("pwd");
-	    if (pwd != NULL)
-		set_field_buffer(field, 0, pwd->getsvalue());
-	}
-	nl = nl + 2;
+		//поле для хоста
+		field = addfield(new_field(1, 15, nl,   5, 0, 0));
+		set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+		field_opts_off(field, O_AUTOSKIP);
+		field_opts_off(field, O_STATIC);
+		set_max_field(field,128); //max width 128
+		//set_field_type(field[nf], TYPE_ALNUM, 0);
+		if (i < (int)slist.size())
+		{
+			Item* host = slist[i]->findItem("host");
+			if (host != NULL)
+			set_field_buffer(field, 0, host->getsvalue());
+		}
+		if (i == 0)
+			set_current_field(frm, field); //фокус на поле
+		//поле для порта
+		field = addfield(new_field(1, 5, nl, 17+5, 0, 0));
+		set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+		set_field_type(field, TYPE_INTEGER, 0, 0, 65535);
+			field_opts_off(field, O_AUTOSKIP);
+		if (i < (int)slist.size())
+		{
+			Item* port = slist[i]->findItem("port");
+			if (port != NULL)
+			set_field_buffer(field, 0, port->getsvalue());
+		}
+		//поле для пароля
+		field = addfield(new_field(1, 20, nl, 29, 0, 0));
+		set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+		field_opts_off(field, O_AUTOSKIP);
+		field_opts_off(field, O_STATIC);
+		set_max_field(field,128); //max width 128
+		if (i < (int)slist.size())
+		{
+			Item* pwd = slist[i]->findItem("pwd");
+			if (pwd != NULL)
+			set_field_buffer(field, 0, pwd->getsvalue());
+		}
+		// hostid field
+		field = addfield(new_field(1, 20, nl, 51, 0, 0));
+		set_field_back(field, getcolorpair(COLOR_WHITE,COLOR_CYAN) | A_BOLD);
+		field_opts_off(field, O_AUTOSKIP);
+		field_opts_off(field, O_STATIC);
+		set_max_field(field,128);
+		if (i < slist.size())
+		{
+			Item* hostid = slist[i]->findItem("hostid");
+			if (hostid != NULL)
+			set_field_buffer(field, 0, hostid->getsvalue());
+		}
+		nl = nl + 2;
     }
     //клавиши упр-я
     nl++;
@@ -182,11 +194,12 @@ void	CfgForm::updatecfg() //сохраняет данные из формы в c
     //int n = field_count(frm);
     for (int i = 0; i < nhost; i++) //хосты из формы
     {
-	int nf = 1 + i*3; //номер поля для имени хоста
+	int nf = 1 + i*4; //номер поля для имени хоста
 	char* shost = rtrim(field_buffer(fields[nf],0));
 	char* sport = rtrim(field_buffer(fields[nf+1],0));
 	char* spwd  = rtrim(field_buffer(fields[nf+2],0));
-	kLogPrintf("SERVER %d [%s:%s <%s>]\n", i, shost, sport, spwd);
-	gCfg->addhost(shost, sport, spwd);
+	char* shostid = rtrim(field_buffer(fields[nf+3],0));
+	kLogPrintf("SERVER %d [%s:%s <%s> Label: %s]\n", i, shost, sport, spwd, shostid);
+	gCfg->addhost(shost, sport, spwd, shostid);
     }
 }

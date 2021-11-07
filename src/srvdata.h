@@ -59,7 +59,7 @@ bool daily_statisticsCmpAbove( Item* stat1, Item* stat2 ); //для сортир
 class Srv : public TConnect //описание соединения с сервером
 {
   public:
-    Srv(const char* shost, const char* sport, const char* pwd);
+    Srv(const char* shost, const char* sport, const char* pwd, const char* hostid);
     virtual ~Srv();
     void updateallprojects();	//обновить статистику <get_all_projects_list>
     static std::string findProjectName(Item* tree, const char* url); //найти в дереве tree имя проекта с заданным url
@@ -96,6 +96,7 @@ class Srv : public TConnect //описание соединения с серв�
     void lock() { pthread_mutex_lock(&mutex); };
     void unlock() { pthread_mutex_unlock(&mutex); };
     bool	loginfail; //true если получен unauthorize
+    char* hostid;
   protected:
     void updatestate();		//обновить состояние <get_state>
     void updatemsgs();		//обновить список сообщений <get_messages>

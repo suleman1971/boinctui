@@ -176,7 +176,10 @@ void MainWin::updatecaption()
     caption->clear();
     if (srv)
     {
-        caption->append(getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD," Host %s:%s ",srv->gethost(),srv->getport());
+        std::string shostid="";
+        if(strlen(srv->hostid)>0)
+            shostid="("+std::string(srv->hostid)+")";
+        caption->append(getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD," Host %s:%s%s ",srv->gethost(),srv->getport(),shostid.c_str());
         if (srv->loginfail)
             caption->append(getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD,"unauthorized!");
         else

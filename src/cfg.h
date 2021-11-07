@@ -35,7 +35,7 @@ class Config
     int   getivalue(const char* name) { return getivalue(getcfgptr(), name); }; //ищет name начиная с корня
     void  setivalue(Item* node, const char* name, int value); //создаст в node подэл-т name со значением value
     void  setivalue(const char* name, int value) { setivalue(getcfgptr(), name, value); }; //создаст в корне подэл-т name со значением value
-    void  addhost(const char* host, const char* port, const char* pwd);
+    void  addhost(const char* host, const char* port, const char* pwd, const char* hostid);
     bool  isdefault; //true если конфиг не найден и создан дефолтный
     std::string errmsg; //строка ошибки возникшей при загрузке файла конфига
   protected:

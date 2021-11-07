@@ -118,7 +118,7 @@ void Config::save()
 }
 
 
-void Config::addhost(const char* shost, const char* sport, const char* spwd)
+void Config::addhost(const char* shost, const char* sport, const char* spwd, const char* shostid)
 {
     if ( (strlen(shost) == 0)||(strlen(sport) == 0) )
 	return; //пустые не заносим
@@ -143,6 +143,9 @@ void Config::addhost(const char* shost, const char* sport, const char* spwd)
 	pwd->appendvalue(spwd);
 	srv->addsubitem(pwd);
     }
+    Item* hostid = new Item("hostid");
+    hostid->appendvalue(shostid);
+    srv->addsubitem(hostid);
 
     boinctui_cfg->addsubitem(srv);
 }
@@ -154,7 +157,7 @@ void Config::generatedefault()
     root       = new Item(""); //корневой
     Item* cfg  = new Item("boinctui_cfg");
     root->addsubitem(cfg);
-    addhost("127.0.0.1","31416","");
+    addhost("127.0.0.1","31416","","Local Server");
 }
 
 

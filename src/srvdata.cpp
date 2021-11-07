@@ -145,16 +145,20 @@ void SrvList::refreshcfg() //перечитать из конфига
     std::vector<Item*>::iterator it;
     for (it = slist.begin(); it != slist.end(); it++)
     {
-	Item* host = (*it)->findItem("host");
-	Item* port = (*it)->findItem("port");
-	Item* pwd = (*it)->findItem("pwd");
-	if ((host != NULL)&&(port != NULL))
-	{
-	    if (pwd == NULL)
-		servers.push_back(new Srv(host->getsvalue(), port->getsvalue(), ""));
-	    else
-		servers.push_back(new Srv(host->getsvalue(), port->getsvalue(), pwd->getsvalue()));
-	}
+        Item* host = (*it)->findItem("host");
+        Item* port = (*it)->findItem("port");
+        Item* pwd = (*it)->findItem("pwd");
+        Item* hostid = (*it)->findItem("hostid");
+        if ((host != NULL)&&(port != NULL))
+        {
+            std::string spwd="";
+            if(pwd!=NULL)
+                spwd=pwd->getsvalue();
+            std::string shostid="";
+            if(hostid!=NULL)
+                shostid=hostid->getsvalue();
+            servers.push_back(new Srv(host->getsvalue(), port->getsvalue(), spwd.c_str(), shostid.c_str()));
+        }
     }
     if (!servers.empty())
     {
@@ -191,10 +195,11 @@ void SrvList::nextserver() //переключиться на след серве
 //=============================================================================================
 
 
-Srv::Srv(const char* shost, const char* sport, const char* pwd) : TConnect(shost, sport)
+Srv::Srv(const char* shost, const char* sport, const char* pwd, const char* hostid) : TConnect(shost, sport)
 {
     allprojectsdom = NULL;
     this->pwd = strdup(pwd);
+    this->hostid = strdup(hostid);
     lastmsgno = 0;
     active = false;
     loginfail = false;
@@ -214,6 +219,7 @@ Srv::~Srv()
     }
     if (allprojectsdom != NULL) delete allprojectsdom;
     if (pwd != NULL) delete pwd;
+    if (hostid != NULL) delete hostid;
     pthread_mutex_destroy(&mutex);
     kLogPrintf("-Srv::~Srv()\n");
 }

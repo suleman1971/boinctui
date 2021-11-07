@@ -170,7 +170,7 @@ void MainProg::eventhandle(NEvent* ev)	//обработчик событий К�
 		if (getitembyid(typeid(CfgForm).name()) == NULL)
 		{
 		    menu->disable();
-		    CfgForm* cfgform = new CfgForm(15,54/*,cfg*/);
+		    CfgForm* cfgform = new CfgForm(15,76/*,cfg*/);
 		    insert(cfgform);
 		    cfgform->settitle("Configuration");
 		    cfgform->refresh();

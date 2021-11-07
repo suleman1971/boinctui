@@ -129,7 +129,7 @@ bool resultCmpLessByRcv( Item* res1, Item* res2 ) //для сортировки 
     Item* received_time1 = res1->findItem("received_time");
     Item* received_time2 = res2->findItem("received_time");
     if ( ( received_time1 != NULL) && (received_time2 != NULL) )
-		return (received_time1->getdvalue() < received_time2->getdvalue());
+		return (received_time1->getdvalue() > received_time2->getdvalue());
     if ( ( received_time1 != NULL) && (received_time2 == NULL) )
 		return true;
     return false;
