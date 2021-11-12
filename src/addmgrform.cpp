@@ -56,7 +56,7 @@ void AddAccMgrForm::genfields(int& line, Item* mgr) //создаст масси�
     //сообщение об ошибке
     errmsgfield = getfieldcount();
     f = addfield(new_field(1, getwidth()-2, line++, 0, 0, 0));
-    set_field_buffer(f, 0, "Errr");
+    set_field_buffer(f, 0, "Error");
     set_field_back(f, getcolorpair(COLOR_WHITE,COLOR_RED) | A_BOLD);
     field_opts_off(f, O_ACTIVE); //статический текст
     field_opts_off(f, O_VISIBLE); //по умолчанию невидима

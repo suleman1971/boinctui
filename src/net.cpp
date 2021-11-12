@@ -123,6 +123,8 @@ char* TConnect::waitresult() //получить ответ от сервера (
 	//копируем в суммарный буфер
 	answbuflen = answbuflen+bytesRcvd;
 	answbuf = (char*)realloc(answbuf,answbuflen);
+    if(answbuf==NULL)
+        return NULL;
 	memcpy(&answbuf[totalBytesRcvd], bufpart, bytesRcvd);
         totalBytesRcvd += bytesRcvd;
         if (answbuf[totalBytesRcvd-1] == '\003')

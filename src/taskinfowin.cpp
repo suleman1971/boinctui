@@ -138,6 +138,23 @@ std::string raw2hr (Item* item)
 	    }
 	}
     }
+	if(
+		!strcmp(item->getname(), "swap_size") ||
+		!strcmp(item->getname(), "working_set_size") ||
+		!strcmp(item->getname(), "working_set_size_smoothed")
+      )
+    {
+		double d = item->getdvalue()/(1024*1024*1024);
+		if (d < 1)
+		{
+			d *= 1024;
+			result << std::setprecision(4) << d << "MB";
+		}
+		else
+		{
+			result << std::setprecision(4) << d << "GB";
+		}
+    }
     return result.str();
 }
 

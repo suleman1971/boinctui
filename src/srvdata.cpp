@@ -192,6 +192,18 @@ void SrvList::nextserver() //переключиться на след серве
     (*cursrv)->setactive(true); //активиркем тред
 }
 
+void SrvList::prevserver()
+{
+    (*cursrv)->setactive(false);
+    if (cursrv == servers.begin())
+    {
+        cursrv = servers.end();
+        cursrv--;
+    }
+    else
+        cursrv--;
+    (*cursrv)->setactive(true);
+}
 //=============================================================================================
 
 

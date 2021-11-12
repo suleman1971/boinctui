@@ -17,7 +17,6 @@
 
 #include <string.h>
 #include <algorithm>
-#include <math.h>
 #include "kclog.h"
 #include "nmessagebox.h"
 

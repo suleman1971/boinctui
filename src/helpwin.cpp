@@ -24,7 +24,7 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
 {
     caption = strdup(" Hot keys list ");
     modalflag = true;
-    resize(17,60);
+    resize(18,60);
     wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
@@ -35,10 +35,11 @@ HelpWin::HelpWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/
     int attr1 = getcolorpair(COLOR_YELLOW, getbgcolor()) | A_BOLD;
     int attr2 = getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD;
     text1->setstring(attr1,   "\n   Common Controls:\n");
-    text1->appendstring(attr2,"       \"N\"           - Toggle between BOINC hosts\n");
+    text1->appendstring(attr2,"       \"N\"           - View next BOINC host\n");
+    text1->appendstring(attr2,"       \"P\"           - View previous BOINC host\n");
     text1->appendstring(attr2,"       \"C\"           - Edit configuration\n");
     text1->appendstring(attr2,"       \"Q\"           - Quit boinctui\n");
-    text1->appendstring(attr2,"       \"F9\"          - Toggle main menu\n");
+    text1->appendstring(attr2,"       \"F9\"/\"M\"      - Toggle main menu\n");
     text1->appendstring(attr2,"       \"PgUp\"/\"PgDn\" - Scroll Messages Window\n");
     text1->appendstring(attr2,"\n");
     text1->appendstring(attr1,"   Task Controls:\n");

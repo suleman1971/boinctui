@@ -487,7 +487,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		    continue; //пропускаем задачи не подходящие фильтру tasklistmode
 		//колонка 0 номер задачи
 		if(iscolvisible(column++))
-		    cs->append(attr, " %2d  ", tasknumber++);
+		    cs->append(attr, "%3d  ", tasknumber++);
 		//колонка 1 состояние
 		char sdone[64];
 		if (!fraction_done) //для неактивных секция fraction_done отсутствует

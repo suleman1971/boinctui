@@ -93,7 +93,9 @@ void NMenu::additem(const char* name, const char* comment) //добавить э
 {
     unpostmenu();
     mitems = (ITEM**)realloc(mitems,(itemnames.size()+1)*sizeof(ITEM*));
-    if (name == NULL) //финализация списка
+    if(mitems==NULL)
+		return;
+	if (name == NULL) //финализация списка
     {
 	mitems[itemnames.size()] = NULL;
 	set_menu_items(menu, mitems);

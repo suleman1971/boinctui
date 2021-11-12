@@ -128,6 +128,7 @@ class SrvList //список всех серверов
     void refreshcfg(); //перечитать из конфига
     void clear(); //удалить все соединения
     void nextserver(); //переключиться на след сервер в списке
+    void prevserver();
   protected:
     void addserver(Srv* c) { servers.push_back(c); };
     std::list<Srv*> servers; //список соединений

@@ -30,6 +30,7 @@
 #define M_HELP				"Help"
 //Названия пунктов меню "File"
 #define M_NEXT_HOST			"Next BOINC host"
+#define M_PREV_HOST			"Prev BOINC host"
 #define M_CONFIG_HOSTS			"Configure host list"
 #define M_VIEW_STATS			"View Statistics"
 #define M_RUN_BENCHMARKS		"Run CPU benchmarks"
@@ -236,6 +237,7 @@ void TopMenu::eventhandle(NEvent* ev) 	//обработчик событий
 FileSubMenu::FileSubMenu(NRect rect) : NMenu(rect)
 {
     additem(M_NEXT_HOST,"  N");
+    additem(M_PREV_HOST,"  P");
     additem(M_CONFIG_HOSTS,"  C");
     additem(M_VIEW_STATS,"  V");
     additem(M_RUN_BENCHMARKS,"");
@@ -249,6 +251,8 @@ bool FileSubMenu::action()
     putevent(new NEvent(NEvent::evKB, KEY_F(9))); //закрыть осн меню
     if ( strcmp(item_name(current_item(menu)),M_NEXT_HOST) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'N')); //создаем событие иммитирующее нажатие 'N'
+    if ( strcmp(item_name(current_item(menu)),M_PREV_HOST) == 0 )
+        putevent(new NEvent(NEvent::evKB, 'P'));
     if ( strcmp(item_name(current_item(menu)),M_CONFIG_HOSTS) == 0 )
 	putevent(new NEvent(NEvent::evKB, 'C')); //создаем событие иммитирующее нажатие 'C'
     if ( strcmp(item_name(current_item(menu)),M_VIEW_STATS) == 0 )
