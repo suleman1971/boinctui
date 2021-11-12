@@ -28,7 +28,7 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
 {
     modalflag = true;
     caption = strdup(" BOINCTUI ");
-    resize(10,getwidth());
+    resize(12,getwidth());
     wattrset(win,getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD);
     if(asciilinedraw == 1)
 	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
@@ -40,6 +40,8 @@ AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr
     mvwprintw(win,3,getwidth()/2-(strlen(buf)/2),"%s",buf);
     mvwprintw(win,5,getwidth()/2-(strlen("(c) Sergey Suslov")/2),"(c) Sergey Suslov");
     mvwprintw(win,6,getwidth()/2-(strlen("suleman1971@gmail.com")/2),"suleman1971@gmail.com");
+    mvwprintw(win,7,getwidth()/2-(strlen("Community PRs included by")/2),"Community PRs included by");
+    mvwprintw(win,8,getwidth()/2-(strlen("Mark Pentler - GitHub: mpentler")/2),"Mark Pentler - GitHub: mpentler");
 }
 
 
