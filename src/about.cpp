@@ -18,10 +18,7 @@
 #include <string.h>
 #include "about.h"
 #include "tuievent.h"
-
-//стрингификатор
-#define XSTR(S)		STR(S)
-#define STR(S)		#S
+#include "commondef.h"
 
 
 AboutWin::AboutWin(int rows, int cols) : NGroup(NRect(rows, cols, getmaxy(stdscr)/2-rows/2,getmaxx(stdscr)/2-cols/2))

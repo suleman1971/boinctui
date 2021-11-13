@@ -22,6 +22,7 @@
 #include "cfg.h"
 #include "resultparse.h"
 #include "kclog.h"
+#include "commondef.h"
 
 
 Config* gCfg;
@@ -91,6 +92,62 @@ void Config::load()
             errmsg = fullname + std::string("\n") +  errmsg;
 	    fclose (pfile);
         isdefault = false;
+    }
+    //upgrade config version
+    Item* boinctui_cfg=getcfgptr();
+    if(boinctui_cfg!=NULL)
+    {
+        std::string vercfg="";
+        std::string verprog=XSTR(VERSION);
+        Item* v=boinctui_cfg->findItem("version");
+        if(v!=NULL)
+        {
+            vercfg=v->getsvalue();
+        }
+        else
+        {
+            Item* version=new Item("version");
+            version->setsvalue(XSTR(VERSION));
+		    boinctui_cfg->addsubitem(version);
+        }
+        if(vercfg!=verprog)
+            kLogPrintf("prog ver='%s' config ver='%s' need upgrade\n",verprog.c_str(),vercfg.c_str());
+        if((vercfg=="")&&(verprog=="2.6.0"))
+        {
+            //column_view_mask
+            Item* column_view_mask = boinctui_cfg->findItem("column_view_mask");
+	        if (column_view_mask == NULL) //создать
+	        {
+		        column_view_mask = new Item("column_view_mask");
+		        column_view_mask->setivalue(-1);
+		        boinctui_cfg->addsubitem(column_view_mask);
+	        }
+            unsigned int columnmask = column_view_mask->getivalue();
+	        unsigned int x1 = 0x001F & columnmask; //# state done% project est
+            unsigned int x2 = 0x0060 & columnmask; //dl application
+            unsigned int x3 = 0x0080 & columnmask; //task
+            columnmask = x1 | (0x1 << 5) | (x2 << 1) | (0x1 << 8) | (x3 << 2);
+	        column_view_mask->setivalue(columnmask);
+            //tasks_sort_mode
+            Item* tasks_sort_mode = boinctui_cfg->findItem("tasks_sort_mode");
+	        if (tasks_sort_mode == NULL) //создать
+	        {
+		        tasks_sort_mode = new Item("tasks_sort_mode");
+		        tasks_sort_mode->setivalue(-1);
+		        tasks_sort_mode->addsubitem(tasks_sort_mode);
+	        }
+            unsigned int taskssortmode = tasks_sort_mode->getivalue();            
+            switch (taskssortmode)
+            {
+                case 5:
+                    taskssortmode=6;
+                    break;
+                case 7:
+                    taskssortmode=9;
+                    break;
+            }
+	        tasks_sort_mode->setivalue(taskssortmode);
+        }
     }
 }
 
