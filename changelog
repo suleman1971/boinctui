@@ -1,3 +1,11 @@
+boinctui (2.6.0)
+
+  * fix scrolling in statistics window and "raw task info" window
+
+  * merged some features from boinctui-extended branch (maintained by Mark Pentler):
+    transparent background, "receive time" and "swap size" columns in task window,
+    host's label in task window, etc.
+
 boinctui (2.5.2)
 
   * task window scrolling fixed
