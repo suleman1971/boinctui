@@ -29,8 +29,7 @@ MainProg::MainProg()
 {
     uistate = 0;
     done = false;
-    gCfg = new Config(".boinctui.cfg");
-    gsrvlist = new SrvList();
+	gsrvlist = new SrvList();
     evtimertime = 0; //запускаем таймер с нуля
     //основное окно
     wmain 	= new MainWin(NRect(getmaxy(stdscr)-2, getmaxx(stdscr), 1, 0)); //создаем основное окно

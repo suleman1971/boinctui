@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <algorithm>
 #include <stdarg.h>
+#include <fstream>
 #ifdef HAVE_OPENSSL
 #include <openssl/md5.h>
 #else
@@ -141,6 +142,21 @@ void SrvList::refreshcfg() //перечитать из конфига
     Item* boinctui_cfg = gCfg->getcfgptr();
     if (boinctui_cfg == NULL)
 	return;
+    if(gCfg->cmdlinehost!="")
+    {
+        if((gCfg->cmdlinepwd=="")&&(gCfg->cmdlocalhost))
+        {
+            std::ifstream ifs("/var/lib/boinc-client/gui_rpc_auth.cfg");
+            std::string s((std::istreambuf_iterator<char>(ifs)),
+                          (std::istreambuf_iterator<char>()));
+            for(auto c : s)
+            {
+                if(c>=0x20)
+                    gCfg->cmdlinepwd.push_back(c);
+            }
+        }
+        servers.push_back(new Srv(gCfg->cmdlinehost.c_str(),gCfg->cmdlineport.c_str(),gCfg->cmdlinepwd.c_str(),""));
+    }
     std::vector<Item*> slist = boinctui_cfg->getItems("server");
     std::vector<Item*>::iterator it;
     for (it = slist.begin(); it != slist.end(); it++)

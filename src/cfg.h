@@ -38,6 +38,10 @@ class Config
     void  addhost(const char* host, const char* port, const char* pwd, const char* hostid);
     bool  isdefault; //true если конфиг не найден и создан дефолтный
     std::string errmsg; //строка ошибки возникшей при загрузке файла конфига
+    std::string cmdlinehost="";
+    std::string cmdlineport="31416";
+    std::string cmdlinepwd="";
+    bool cmdlocalhost=false;
   protected:
     char* fullname;	//полное имя файла
     Item* root;  	//корень дерева конфига
