@@ -1,3 +1,9 @@
+boinctui (2.7.0)
+
+  * command line parameters "--boinchost" and "--pwd"
+  
+  * fix build with autoconf 2.7.1
+
 boinctui (2.6.0)
 
   * fix scrolling in statistics window and "raw task info" window
