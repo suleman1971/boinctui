@@ -2,7 +2,7 @@ Source: boinctui
 Section: net
 Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
-Build-Depends: autoconf, debhelper (>= 9), debhelper-compat (= 11),
+Build-Depends: autoconf, debhelper (>= 9), debhelper-compat (= 13),
  libncursesw5-dev, libgnutls-openssl-dev, libexpat1-dev
 Standards-Version: 4.5.0
 Vcs-Git: https://github.com/suleman1971/boinctui.git
