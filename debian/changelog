@@ -3,6 +3,7 @@ boinctui (2.7.0-2) UNRELEASED; urgency=medium
   * Trim trailing whitespace.
   * Bump debhelper from old 11 to 13.
   * Set upstream metadata fields: Archive.
+  * Fix day-of-week for changelog entry 2.6.0-1.
 
  -- Debian Janitor <janitor@jelmer.uk>  Wed, 07 Sep 2022 17:19:42 -0000
 
@@ -23,7 +24,7 @@ boinctui (2.6.0-1) unstable; urgency=low
     transparent background, "receive time" and "swap size" columns in task window,
     host's label in task window, etc.
 
- -- Sergey Suslov <suleman1971@gmail.com>  Sat, 19 Nov 2021 16:00:00 +0300
+ -- Sergey Suslov <suleman1971@gmail.com>  Fri, 19 Nov 2021 16:00:00 +0300
 
 
 boinctui (2.5.2-1) unstable; urgency=low
