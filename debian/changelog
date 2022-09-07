@@ -1,7 +1,13 @@
+boinctui (2.7.0-2) UNRELEASED; urgency=medium
+
+  * Trim trailing whitespace.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Wed, 07 Sep 2022 17:19:42 -0000
+
 boinctui (2.7.0-1) unstable; urgency=low
 
   * command line parameters "--boinchost" and "--pwd"
-  
+
   * fix build with autoconf 2.7.1
 
  -- Sergey Suslov <suleman1971@gmail.com>  Thu, 05 May 2022 17:00:00 +0300
