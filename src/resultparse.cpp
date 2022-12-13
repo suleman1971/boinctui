@@ -123,7 +123,7 @@ void callbackData(void *userdata, const char *content, int len)
     //kLogPrintf("\ncallbackData()-->[%s]<-- len=%d\n",tmp,len);
     //заносим значение в текущий эл-т
     bool empty = true;
-    for (uint i = 0; i < strlen(tmp); i++)
+    for (unsigned int i = 0; i < strlen(tmp); i++)
     {
 	if (tmp[i] != ' ')
 	{
