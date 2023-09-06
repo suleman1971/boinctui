@@ -56,6 +56,13 @@ AC_ARG_WITH(
     ]
 )
 
+AC_ARG_WITH(
+	[boinc-dir],
+	[AS_HELP_STRING([--with-boinc-dir=DIR], [Specify the BOINC data directory])],
+	[BOINC_DIR="$withval"],
+	[BOINC_DIR="/var/lib/boinc-client"]
+)
+AC_SUBST([BOINC_DIR])
 
 # Checks for header files.
 

@@ -146,7 +146,9 @@ void SrvList::refreshcfg() //перечитать из конфига
     {
         if((gCfg->cmdlinepwd=="")&&(gCfg->cmdlocalhost))
         {
-            std::ifstream ifs("/var/lib/boinc-client/gui_rpc_auth.cfg");
+            std::string boincDataDirPath = BOINC_DIR;
+            std::string guiRpcAuthCfgPath = boincDataDirPath + "/gui_rpc_auth.cfg";
+            std::ifstream ifs(guiRpcAuthCfgPath.c_str());
             std::string s((std::istreambuf_iterator<char>(ifs)),
                           (std::istreambuf_iterator<char>()));
             for(auto c : s)
