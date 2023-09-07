@@ -24,7 +24,7 @@ DATAROOTDIR = @datarootdir@
 BINDIR = @bindir@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 DOCDIR = $(DATAROOTDIR)@docdir@
-
+AM_CPPFLAGS = -DBOINC_DIR=\"@BOINC_DIR@\"
 
 BINDIR = @bindir@
 ifeq (@HAVE_OPENSSL@, 1)
@@ -39,7 +39,7 @@ all: createobj $(OBJS)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
 	@echo " "
-	$(CPP) -c $(CXXFLAGS) $(CPPFLAGS) $(DEFS) -o $(ODIR)/$*.o $<
+	$(CPP) -c $(CXXFLAGS) $(CPPFLAGS) $(AM_CPPFLAGS) $(DEFS) -o $(ODIR)/$*.o $<
 
 clean:
 	rm -f $(ODIR)/*.o $(PACKAGE_TARNAME) config.log
