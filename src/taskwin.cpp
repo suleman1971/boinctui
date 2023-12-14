@@ -465,7 +465,7 @@ void TaskWin::updatedata() //обновить данные с сервера
 		std::string sstate = getresultstatestr(*it); //состояние задачи
 		//цвет и атрибут в зависимости от состояния задачи
 		if ((*it)->findItem("ready_to_report") != NULL)
-		    attr = getcolorpair(getbgcolor(),getbgcolor()) | A_BOLD;
+		    attr = getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD;
 		if ((*it)->findItem("active_task") != NULL)
 		    attr =  getcolorpair(COLOR_WHITE,getbgcolor()) | A_BOLD; //ставим цвет по умолчанию + A_BOLD;
 		if ( sstate == "Run")
