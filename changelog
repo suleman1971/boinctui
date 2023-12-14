@@ -1,3 +1,9 @@
+boinctui (2.7.1)
+
+  * fix build with latest ncurses
+
+  * fix invisible dark gray text
+
 boinctui (2.7.0)
 
   * command line parameters "--boinchost" and "--pwd"
