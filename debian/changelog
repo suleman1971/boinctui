@@ -1,6 +1,6 @@
 boinctui (2.7.1-1) unstable; urgency=low
 
-  * fix build with latest ncurses
+  * fix build with latest ncurses (Closes: #1057928)
 
   * fix invisible dark gray text
 
