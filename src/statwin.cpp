@@ -188,7 +188,7 @@ void StatWin::updatedata()
 		if (value != -1)
 		    cs->append(getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD, " %*ld ",COLWIDTH, value);
 		else
-		    cs->append(getcolorpair(getbgcolor(), getbgcolor()) | A_BOLD, " %*s ",COLWIDTH, "-");
+		    cs->append(getcolorpair(COLOR_WHITE, getbgcolor()) | A_BOLD, " %*s ",COLWIDTH, "-");
 	    }
 	    content->addstring(cs);
 	}
