@@ -2,16 +2,16 @@ FROM alpine AS base
 
 RUN \
     apk add \
-        automake autoconf g++ make \
+        cmake g++ make \
         ncurses-dev expat-dev openssl-dev
 
 COPY ./ /workdir/
 WORKDIR /workdir
 
 RUN \
-    autoconf; \
-    automake --add-missing; \
-    ./configure --without-gnutls; \
+    mkdir -p build; \
+    cd build; \
+    cmake -DWITHOUT_GNUTLS=true ..; \
     make; \
     strip boinctui
 
@@ -22,5 +22,5 @@ RUN \
         expat ncurses openssl libstdc++ \
         libpanelw libformw libmenuw
 
-COPY --from=base /workdir/boinctui /
+COPY --from=base /workdir/build/boinctui /
 ENTRYPOINT ["/boinctui"]
