@@ -33,7 +33,10 @@ create_orig_tar_gz:
 	$(TARGET)-$(VERSION)/changelog \
 	$(TARGET)-$(VERSION)/gpl-3.0.txt \
 	$(TARGET)-$(VERSION)/boinctui.1 \
-	$(TARGET)-$(VERSION)/config ; cd $(TARGET)-$(VERSION)
+	$(TARGET)-$(VERSION)/config \
+	$(TARGET)-$(VERSION)/Dockerfile \
+	$(TARGET)-$(VERSION)/.dockerignore \
+	; cd $(TARGET)-$(VERSION)
 
 
 override_dh_clean:
