@@ -33,11 +33,11 @@ endif
 
 ###############################################################################
 
-all: createobj $(OBJS)
+all: $(OBJS)
 	@echo "\nLinking...\n"
 	$(CPP) -o $(PACKAGE_TARNAME) $(OBJS) $(LDFLAGS)
 
-$(ODIR)/%.o: $(SDIR)/%.cpp
+$(ODIR)/%.o: $(SDIR)/%.cpp | createobj
 	@echo " "
 	$(CPP) -c $(CXXFLAGS) $(CPPFLAGS) $(AM_CPPFLAGS) $(DEFS) -o $(ODIR)/$*.o $<
 
