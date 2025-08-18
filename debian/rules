@@ -20,11 +20,6 @@ include		config
 	dh $@
 
 
-override_dh_auto_configure:
-	autoconf
-	dh_auto_configure
-
-
 create_orig_tar_gz:
 	@if ! [ -d "../$(TARGET)-$(VERSION)" ] ; then \
 	    echo "crate symlink ../$(TARGET)-$(VERSION)->$(notdir $(CURDIR))"; \
