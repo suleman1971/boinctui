@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Sergey Suslov <suleman1971@gmail.com>
 Build-Depends: autoconf, debhelper (>= 9), debhelper-compat (= 13),
- libncurses-dev, libgnutls-openssl-dev, libexpat1-dev
+ libncurses-dev, libssl-dev, libexpat1-dev
 Standards-Version: 4.6.2
 Vcs-Git: https://github.com/suleman1971/boinctui.git
 Vcs-Browser: https://github.com/suleman1971/boinctui

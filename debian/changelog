@@ -1,3 +1,9 @@
+boinctui (2.7.2-2) unstable; urgency=low
+
+  * build with libssl-dev instead libgnutls-dev (Closes: #1121620)
+
+ -- Sergey Suslov <suleman1971@gmail.com>  Sat, 07 Feb 2026 18:38:00 +0300
+
 boinctui (2.7.2-1) unstable; urgency=low
 
   * fix build with "make --shuffle=reverse" options (Closes: #1105294)
