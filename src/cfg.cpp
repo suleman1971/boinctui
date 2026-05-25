@@ -55,7 +55,7 @@ Config::~Config()
     save();
     if (root != NULL)
 	delete root;
-    if (fullname == NULL)
+    if (fullname != NULL)
 	free(fullname);
 }
 
@@ -91,6 +91,7 @@ void Config::load()
         if (!errmsg.empty())
             errmsg = fullname + std::string("\n") +  errmsg;
 	    fclose (pfile);
+        free(buf);
         isdefault = false;
     }
     //upgrade config version
