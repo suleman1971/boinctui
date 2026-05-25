@@ -88,7 +88,6 @@ void PtrList::releaseptr(Item* ptr) //сообщить списку что ук�
 	{
 	    if ( ((*it) != list.back()) && ((*it)->refcount <= 0) ) //нашли (последний не трогаем)
 	    {
-		delete (*it)->dom;
 		delete (*it);
 		list.erase(it);
 		done = false;
@@ -349,6 +348,7 @@ bool Srv::login() //авторизоваться на сервере
     kLogPrintf("login() Boinc answer ---\n%s\n", r2->toxmlstring().c_str());
     if ( r2->findItem("unauthorized") != NULL ) //авторизация неуспешна
 	result = true;
+    delete r1;
     delete r2;
     return result;
 }
@@ -693,6 +693,7 @@ bool Srv::accountmanager(const char* url, const char* username, const char* pass
     if (res == NULL)
 	return false;
     kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
+    delete res;
     //ждем завершения
     snprintf(sreq,sizeof(sreq),"<acct_mgr_rpc_poll/>");
     bool done = false;

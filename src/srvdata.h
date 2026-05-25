@@ -30,6 +30,7 @@
 struct DomPtr
 {
     DomPtr(Item* ptr) {refcount = 0; dom = ptr; };
+    ~DomPtr() { delete dom; };
     Item* dom; //указатель на данные
     int   refcount; //количество hook-ов данного указателя
 };
