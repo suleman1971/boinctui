@@ -234,6 +234,8 @@ Srv::Srv(const char* shost, const char* sport, const char* pwd, const char* host
     loginfail = false;
     ccstatusdomneedupdate = false;
     pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&threadwaitmutex, NULL);
+    pthread_cond_init(&threadwaitcond, NULL);
 }
 
 
@@ -250,6 +252,8 @@ Srv::~Srv()
     if (pwd != NULL) free(pwd);
     if (hostid != NULL) free(hostid);
     pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&threadwaitmutex);
+    pthread_cond_destroy(&threadwaitcond);
     kLogPrintf("-Srv::~Srv()\n");
 }
 
@@ -978,12 +982,20 @@ void* Srv::updatethread(void* args) //трейд опрашивающий сер
 		me->updateacctmgrinfo(); //ин-я по аккаунт менеджеру
 	}
 	//спим 1 секунду проверяя me->ccstatusdomneedupdate
-	for (int i = 0; i < 10; i++)
-	{
-	    usleep(100000); //100 milisec
-	    if (me->ccstatusdomneedupdate)
-		break; //прервать сон если нужен срочный апдейт
-	}
+        pthread_mutex_lock(&me->threadwaitmutex);
+        for (int i = 0; i < 10; i++)
+        {
+            struct timespec ts;
+            clock_gettime(CLOCK_REALTIME, &ts);
+            ts.tv_nsec += 100000000; // 100 ms
+            if (ts.tv_nsec >= 1000000000) { ts.tv_sec++; ts.tv_nsec -= 1000000000; }
+            pthread_cond_timedwait(&me->threadwaitcond, &me->threadwaitmutex, &ts);
+            if (me->ccstatusdomneedupdate)
+                break; // прервать сон если нужен срочный апдейт
+            if (!me->active)
+                break; // прервать сон если поток деактивирован
+        }
+        pthread_mutex_unlock(&me->threadwaitmutex);
 	me->takt++;
     }
     kLogPrintf("%s:%s::updatethread() stopped\n",me->gethost(),me->getport());
@@ -1003,7 +1015,10 @@ void  Srv::setactive(bool b) //включить/выключить тред об
 	}
 	else
 	{
+            pthread_mutex_lock(&threadwaitmutex);
 	    active = false; //сигнализирует треду остановиться
+            pthread_cond_signal(&threadwaitcond);
+            pthread_mutex_unlock(&threadwaitmutex);
 	}
     }
 }
