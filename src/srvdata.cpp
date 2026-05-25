@@ -248,8 +248,8 @@ Srv::~Srv()
 	pthread_join(thread, NULL); //ждем пока тред остановится
     }
     if (allprojectsdom != NULL) delete allprojectsdom;
-    if (pwd != NULL) delete pwd;
-    if (hostid != NULL) delete hostid;
+    if (pwd != NULL) free(pwd);
+    if (hostid != NULL) free(hostid);
     pthread_mutex_destroy(&mutex);
     kLogPrintf("-Srv::~Srv()\n");
 }
@@ -499,7 +499,7 @@ bool Srv::getprojectconfig(const char* url, std::string& errmsg) //получи�
     if (res == NULL)
 	return false;
     kLogPrintf("request=\n ?\n\n answer=\n%s\n", res->toxmlstring().c_str());
-    free(res);
+    delete res;
     //ждем завершения
     bool done = false;
     int count = 30; //не больше 30 запросов
@@ -517,7 +517,7 @@ bool Srv::getprojectconfig(const char* url, std::string& errmsg) //получи�
 	        sleep(1); //ERR_IN_PROGRESS ждем 1 сек
 	    else
 	    {
-	        free(res);
+	        delete res;
 	        break;
 	    }
 	}
@@ -528,11 +528,11 @@ bool Srv::getprojectconfig(const char* url, std::string& errmsg) //получи�
 		done = true;
 	    else
 	    {
-		free(res);
+		delete res;
 		break;
 	    }
 	}
-	free(res);
+	delete res;
     }
     while((count--)&&(!done));
     return done;
@@ -568,7 +568,7 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
     if (res == NULL)
 	return false;
     kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
-    free(res);
+    delete res;
     //ждем завершения
     int count = 30; //не больше 30 запросов
     snprintf(sreq,sizeof(sreq),"<create_account_poll/>");
@@ -589,7 +589,7 @@ bool Srv::createaccount(const char* url, const char* email, const char* pass, co
 	}
 	if (res->findItem("authenticator") != NULL)
 	    done = true;
-	free(res);
+	delete res;
 	sleep(1); //ждем 1 сек
     }
     while((count--)&&(!done));
@@ -616,7 +616,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
     if (res == NULL)
 	return false;
     kLogPrintf("request=\n %s\n\n answer=\n%s\n",sreq, res->toxmlstring().c_str());
-    free(res);
+    delete res;
     int count = 30; //не больше 30 запросов
     snprintf(sreq,sizeof(sreq),"<lookup_account_poll/>");
     std::string sauthenticator;
@@ -644,7 +644,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
             sauthenticator = authenticator->getsvalue();
             done = true;
         }
-        free(res);
+        delete res;
         sleep(1); //ждем 1 сек
         if (--maxcount < 0)
         {
@@ -667,7 +667,7 @@ bool Srv::projectattach(const char* url, const char* prjname, const char* email,
         errmsg += error->getsvalue();
     }
     bool result = (res->findItem("success") != NULL);
-    free(res);
+    delete res;
     return result;
 }
 
@@ -715,13 +715,13 @@ bool Srv::accountmanager(const char* url, const char* username, const char* pass
 		    Item* message = res->findItem("message");
 		    if (message != NULL)
 	    		errmsg = message->getsvalue(); //возврат строки ошибки
-		    free(res);
+		    delete res;
 		    return false;
 		}
 		else
 		    sleep(1); //ERR_IN_PROGRESS ждем 1 сек
 	}
-	free(res);
+	delete res;
     }
     while((count--)&&(!done));
     acctmgrinfodom.needupdate = true; //чтобы тред обновил данные

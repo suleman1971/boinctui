@@ -52,11 +52,11 @@ NMenu::~NMenu()
     std::list<char*>::iterator it;
     for (it = itemnames.begin(); it != itemnames.end(); it++)
     {
-	delete (*it);
+	free(*it);
     }
     for (it = itemcomments.begin(); it != itemcomments.end(); it++)
     {
-	delete (*it);
+	free(*it);
     }
     //массив эл-тов
     if (mitems != NULL)
