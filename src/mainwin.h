@@ -33,6 +33,7 @@ class MainWin : public NGroup
 {
   public:
     MainWin(NRect rect/*, Config* cfg*/);
+    ~MainWin() { delete caption; };
     virtual void refresh();
     virtual void resize(int rows, int cols);
     void 	setserver(Srv* srv); //установить отображаемый сервер

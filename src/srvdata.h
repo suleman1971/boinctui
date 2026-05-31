@@ -30,6 +30,7 @@
 struct DomPtr
 {
     DomPtr(Item* ptr) {refcount = 0; dom = ptr; };
+    ~DomPtr() { delete dom; };
     Item* dom; //указатель на данные
     int   refcount; //количество hook-ов данного указателя
 };
@@ -49,7 +50,7 @@ class PtrList
     bool needupdate; //говорит треду что нужно незамедлительно обновлять данные
   private:
     std::list<DomPtr*> list;
-    pthread_mutex_t	mutex;
+    pthread_mutex_t mutex;
 };
 
 
@@ -88,14 +89,14 @@ class Srv : public TConnect //описание соединения с серв�
     PtrList	statisticsdom;	//xml дерево для <get_statistics>
     Item*	allprojectsdom;	//xml дерево для <get_all_projects_list>
     PtrList	acctmgrinfodom;	//xml дерево для <acct_mgr_info>
-    bool	ccstatusdomneedupdate; //если true тред обновит ccstatusdom без ожидания
+    volatile bool	ccstatusdomneedupdate; //если true тред обновит ccstatusdom без ожидания
     Item* req(const char* fmt, ...);  //выполнить запрос (вернет дерево или NULL)
     virtual void  createconnect();
     void  setactive(bool b); //включить/выключить тред обновления данных
     bool  isactive() {return active;};
     void lock() { pthread_mutex_lock(&mutex); };
     void unlock() { pthread_mutex_unlock(&mutex); };
-    bool	loginfail; //true если получен unauthorize
+    volatile bool	loginfail; //true если получен unauthorize
     char* hostid;
   protected:
     void updatestate();		//обновить состояние <get_state>
@@ -111,8 +112,10 @@ class Srv : public TConnect //описание соединения с серв�
     unsigned int 	takt; //номер оборота цикла updatethread()
     static void* 	updatethread(void* args); //трейд опрашивающий сервер
     pthread_t		thread;
-    bool		active; //true если трейд активен
+    volatile bool		active; //true если трейд активен
     pthread_mutex_t	mutex;
+    pthread_mutex_t threadwaitmutex;
+    pthread_cond_t threadwaitcond;
 };
 
 

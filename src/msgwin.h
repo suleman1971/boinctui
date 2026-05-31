@@ -27,7 +27,7 @@
 class MsgWin : public NScrollView
 {
   public:
-    MsgWin(NRect rect):NScrollView(rect) { sprojectold=""; stimestampold=""; };
+    MsgWin(NRect rect) : NScrollView(rect) { sprojectold=""; stimestampold=""; srv = NULL; lastmsgno = 0; };
     //virtual ~MsgWin() { };
     void	updatedata(); 	//обновить данные с сервера
     virtual void eventhandle(NEvent* ev); 	//обработчик событий
