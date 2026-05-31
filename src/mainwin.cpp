@@ -65,7 +65,6 @@ MainWin::MainWin(NRect rect/*, Config* cfg*/) : NGroup(rect)
     wtask->setscrollbar(taskscrollbar);
     wmsg = new MsgWin(NRect(getheight()-wtask->getheight()-4, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+3, 1)); //создаем окно евентов
     hline = new NHLine(NRect(1, getwidth()-2-(INFPANWIDTH+1), wtask->getheight()+2, 1), NULL); //горизонтальная линия
-    vline = NULL;
 //    vline = new NVLine(NRect(wtask->getheight()+1/*getheight()-2*/, 1, 1, getwidth()-INFPANWIDTH-2), NULL); //вертикальная линия
     msgscrollbar = new NScrollBar(NRect(wmsg->getheight()+2,1, wmsg->getbegrow()-1, getwidth()-INFPANWIDTH-2/*vline->getbegcol()*/),/*ACS_RTEE*/ACS_VLINE | A_BOLD,ACS_BTEE | A_BOLD, ACS_VLINE | A_BOLD); //скроллбар панели сообщений
     wmsg->setscrollbar(msgscrollbar);

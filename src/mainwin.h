@@ -50,7 +50,7 @@ class MainWin : public NGroup
   protected:
     Srv*	srv;
     NHLine*	hline; 		//гориз линия завершающая таблицу процессов
-    NVLine*	vline; 		//верт линия отделяющая инф панель
+    //NVLine*	vline; 		//верт линия отделяющая инф панель
     std::vector<std::string>	colname; 	//список названий колонок
     void	setcoltitle();
     int		wtaskheightpercent; //высота в процентах*100 списка задач относительно всего окна (10000 == 100%)
